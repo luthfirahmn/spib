@@ -13,6 +13,7 @@ class M_data extends CI_Model
 		FROM ms_user_regions a
 		LEFT JOIN `ms_regions` b ON a.`ms_regions_id`=b.`id`
 		WHERE ms_users_id='$ms_users_id'
+		ORDER BY b.id
 		")->result();
 	}
 
