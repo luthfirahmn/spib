@@ -2,7 +2,7 @@
 <html lang="en">
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/elements/bc_toasts.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:42:27 GMT -->
 	<head>
-		<title>Uppy File Upload | Berry Bootstrap 5 Admin Template</title>
+		<title>Instrument</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -205,7 +205,7 @@
 									</div>
 									
 									
-									<div id="data_tagihan"></div>
+									<div id="data_tagihan" class=""></div>
 								</div>
 
 								<hr>
@@ -364,21 +364,8 @@
 			<div class="footer-wrapper container-fluid">
 				<div class="row">
 					<div class="col my-1">
-						<p class="m-0">Copyright &copy; <a href="#">Codedthemes</a>
+						<p class="m-0">Copyright &copy; <a href="#">SPIB</a>
 						</p>
-					</div>
-					<div class="col-auto my-1">
-						<ul class="list-inline footer-link mb-0">
-							<li class="list-inline-item">
-								<a href="#">Home</a>
-							</li>
-							<li class="list-inline-item">
-								<a href="#">Privacy Policy</a>
-							</li>
-							<li class="list-inline-item">
-								<a href="#">Contact us</a>
-							</li>
-						</ul>
 					</div>
 				</div>
 			</div>
@@ -503,6 +490,11 @@
 			});
 
 			$("#tr_instrument_type_id").change(function(){
+					
+				if($('#latitude').prop('readonly') === false){
+					document.getElementById('latitude').value = "";
+					document.getElementById('longitude').value = "";
+				}
 				var idtype=$(this).val();
 				
 				var xhttp = new XMLHttpRequest();
@@ -513,12 +505,12 @@
 						var nama_type = JSON.parse(xhttp.responseText).type;
 
 						if(nama_type=='VWP'){
-							$('#latitude').prop('readonly', true);
-							$('#longitude').prop('readonly', true);
-							$("#form_vwp").show();
-						}else{
 							$('#latitude').prop('readonly', false);
 							$('#longitude').prop('readonly', false);
+							$("#form_vwp").show();
+						}else{
+							$('#latitude').prop('readonly', true);
+							$('#longitude').prop('readonly', true);
 							$("#form_vwp").hide();
 						}
 					}
@@ -528,14 +520,21 @@
 			});
 			
 			$("#ms_stasiun_id").change(function(){
+				
+				document.getElementById('latitude').value = "";
+				document.getElementById('longitude').value = "";
 				var kode=$(this).val();
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() 
 				{
 					if (this.readyState == 4 && this.status == 200) 
 					{
-						document.getElementById('latitude').value = JSON.parse(xhttp.responseText).latitude;
-						document.getElementById('longitude').value = JSON.parse(xhttp.responseText).longitude;
+						
+						if($('#latitude').prop('readonly') === true){
+
+document.getElementById('latitude').value = JSON.parse(xhttp.responseText).latitude;
+document.getElementById('longitude').value = JSON.parse(xhttp.responseText).longitude;
+}
 					}
 				};
 				xhttp.open("GET", "<?php echo base_url('InstrumentData/getPositionStation'); ?>"+'?kode='+kode, true);

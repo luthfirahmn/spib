@@ -22,6 +22,9 @@
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/style.css" id="main-style-link" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/style-preset.css" id="preset-style-link" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.7/sweetalert2.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.7/sweetalert2.min.js"></script>
 </head>
 
 <body>
@@ -76,13 +79,13 @@
                                 </button>
 
 
-                                <button type="button" class="btn btn-outline-secondary d-inline-flex">
+                                <button type="button" class="btn btn-outline-secondary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalUpload">
                                     <i class="ti ti-cloud-upload"></i>Upload
                                 </button>
                                 <button type="button" class="btn btn-outline-success d-inline-flex" id="download_all">
                                     <i class="ti ti-download"></i>Download All
                                 </button>
-                                <button type="button" class="btn btn-outline-danger d-inline-flex">
+                                <button type="button" class="btn btn-outline-danger d-inline-flex" id="deleteAll">
                                     <i class="ti ti-trash"></i>Delete All
                                 </button>
                             </div>
@@ -103,6 +106,12 @@
                                 </div>
 
                                 <div class="form-group col-md-2">
+                                    <label class="form-label" for="stasiun">Stasiun</label>
+                                    <select class="form-control" name="stasiun" id="stasiun">
+                                        <option>--Pilih Stasiun--</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-2">
                                     <label class="form-label" for="instrument">Instrument</label>
                                     <select class="form-control" name="instrument" id="instrument">
                                         <option>--Pilih Instrument--</option>
@@ -110,7 +119,7 @@
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label class="form-label" for="type">Type</label>
-                                    <select class="form-control" name="type" id="type">
+                                    <select class="form-control" name="keterangan" id="keterangan">
                                         <option value="MANUAL">Manual</option>
                                         <option value="OTOMATIS">Otomatis</option>
                                     </select>
@@ -118,7 +127,7 @@
 
                                 <div class="form-group col-md-2">
                                     <label class="form-label" for="date">Tanggal</label>
-                                    <input type="date" class="form-control" id="date" name="date" required>
+                                    <input type="date" class="form-control" id="tanggal" name="tanggal" required>
                                 </div>
                                 <!-- <div class="form-group col-md-2" style="margin-top:2rem">
                                     <button type="button" class="btn btn-info d-inline-flex" id="tombol_cari">
@@ -144,21 +153,8 @@
         <div class="footer-wrapper container-fluid">
             <div class="row">
                 <div class="col my-1">
-                    <p class="m-0">Copyright &copy; <a href="#">Codedthemes</a>
+                    <p class="m-0">Copyright &copy; <a href="#">SPIB</a>
                     </p>
-                </div>
-                <div class="col-auto my-1">
-                    <ul class="list-inline footer-link mb-0">
-                        <li class="list-inline-item">
-                            <a href="#">Home</a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">Privacy Policy</a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">Contact us</a>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -183,6 +179,14 @@
                                     <?php foreach ($region as $reg) { ?>
                                     <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                     <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="stasiun">Stasiun</label>
+                                <select class="form-control" id="add_stasiun" name="add_stasiun">
+                                    <option value="" selected>--Pilih Stasiun--</option>
                                 </select>
                             </div>
                         </div>
@@ -220,7 +224,78 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="add_data">Simpan</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Upload -->
+    <div class="modal fade" id="modalUpload" tabindex="-1" aria-labelledby="" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <!-- Ubah ukuran modal dari lg ke xl -->
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="">Upload Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="site">Site</label>
+                                <select class="form-control" id="upload_site" name="upload_site">
+                                    <option value="" selected>--- Pilih Site ---</option>
+                                    <?php foreach ($region as $reg) { ?>
+                                    <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="stasiun">Stasiun</label>
+                                <select class="form-control" id="upload_stasiun" name="upload_stasiun">
+                                    <option value="" selected>--Pilih Stasiun--</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="instrument">Instrument</label>
+                                <select class="form-control" id="upload_instrument" name="upload_instrument">
+                                    <option value="" selected>--Pilih Instrument--</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="formFile" class="form-label">Upload File</label>
+                                <input class="form-control" type="file" id="upload_file" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="formFile" class="form-label">&nbsp;</label> 
+                                <button type="button" class="btn btn-primary form-control" id="download_template">Download Template</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="add_sensor"></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="upload_data">Simpan</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
                 </div>
             </div>
         </div>
@@ -237,6 +312,53 @@
     <script src="
 	https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
+$("#deleteAll").click(function() {
+    var instrument_id = $("#instrument").val();
+    var ms_regions_id = $("#ms_regions_id").val();
+    var keterangan = $("#keterangan").val();
+    var tanggal = $("#tanggal").val();
+
+
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Anda tidak akan dapat mengembalikan ini!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Data yang diperlukan untuk menghapus
+            var data = {
+                instrument_id: instrument_id,
+                ms_regions_id: ms_regions_id,
+                tanggal: tanggal,
+                keterangan: keterangan
+            };
+
+            $.ajax({
+                url: "<?= base_url('Data/delete_data') ?>",
+                type: "POST",
+                dataType: "json",
+                data: data, // Kirim data yang diperlukan
+                success: function(response) {
+                    if (response.error) {
+                        toastr.error(response.message)
+                    } else {
+                        Createtable()
+                        toastr.success(response.message)
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toastr.error(response.error)
+                }
+            })
+        }
+    })
+})
+
     $("#add_data").click(function() {
         var add_instrument = $("#add_instrument").val();
         var add_site = $("#add_site").val();
@@ -285,16 +407,21 @@
         });
     })
 
-    $("#instrument").change(function() {
-        var instrument_id = $(this).val();
+
+    function Createtable(){
+        var instrument_id = $("#instrument").val();
         var ms_regions_id = $("#ms_regions_id").val();
+        var keterangan = $("#keterangan").val();
+        var tanggal = $("#tanggal").val();
 
         $.ajax({
             url: "<?php echo base_url('Data/list'); ?>",
             type: "POST",
             data: {
                 instrument_id: instrument_id,
-                ms_regions_id: ms_regions_id
+                ms_regions_id: ms_regions_id,
+                keterangan: keterangan,
+                tanggal: tanggal,
             },
             dataType: "json",
             success: function(response) {
@@ -346,11 +473,47 @@
                 console.error("Error:", error);
             }
         });
+    }
+   
+    $("#instrument").change(function() {
+        Createtable()
+    });
+
+    $("#keterangan").change(function() {
+        Createtable()
     });
 
 
+    $("#tanggal").change(function() {
+        Createtable()
+    });
+
+    $("#download_all").click(function() {
+    var instrument_id = $("#instrument").val();
+    var ms_regions_id = $("#ms_regions_id").val();
+    var keterangan = $("#keterangan").val();
+    var tanggal = $("#tanggal").val();
+
+    // Membangun parameter query
+    var query_params = "?instrument_id=" + instrument_id + "&ms_regions_id=" + ms_regions_id + "&keterangan=" + keterangan + "&tanggal=" + tanggal;
+
+    // Mengirim permintaan AJAX untuk mengunduh data
+    $.ajax({
+        url: "<?= base_url('Data/download_all'); ?>" + query_params,
+        type: "GET",
+        success: function(data) {
+            // Jika berhasil, alihkan pengguna ke URL yang mengandung parameter query
+            window.location = data;
+        },
+        error: function() {
+            // Jika terjadi kesalahan, tampilka
+                toastr.error('Gagal mengunduh data');
+        }
+    });
+});
 
 
+    
     $("#ms_regions_id").change(function() {
         var ms_regions_id = $(this).val();
 
@@ -358,7 +521,34 @@
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 var result = JSON.parse(xhttp.responseText).result;
-                var html = "<option>--- Pilih Instrument ---</option>";
+                var html = "<option>--- Pilih Stasiun ---</option>";
+                var stasiun = document.getElementById('stasiun');
+
+                if (result.length > 0) {
+                    for (i = 0; i < result.length; i++) {
+                        html += '<option value=' + result[i].id + '>' + result[i].nama_stasiun +
+                            '</option>';
+                    }
+                } else {
+                    html = '<option>--Tidak Ada Data--</option>';
+                }
+
+                stasiun.innerHTML = html;
+            }
+        };
+        xhttp.open("GET", "<?php echo base_url('Data/stasiun'); ?>" + '?ms_regions_id=' + ms_regions_id,
+            true);
+        xhttp.send();
+    });
+
+    $("#stasiun").change(function() {
+        var ms_stasiun_id = $(this).val();
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(xhttp.responseText).result;
+                var html = '<option value="">--- Pilih Stasiun ---</option>';
                 var instrument = document.getElementById('instrument');
 
                 if (result.length > 0) {
@@ -367,41 +557,13 @@
                             '</option>';
                     }
                 } else {
-                    html = '<option>--Tidak Ada Data--</option>';
+                    html = '<option value="">--Tidak Ada Data--</option>';
                 }
 
                 instrument.innerHTML = html;
             }
         };
-        xhttp.open("GET", "<?php echo base_url('Data/instrument'); ?>" + '?ms_regions_id=' + ms_regions_id,
-            true);
-        xhttp.send();
-    })
-
-
-    $("#add_site").change(function() {
-        var ms_regions_id = $(this).val();
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var result = JSON.parse(xhttp.responseText).result;
-                var html = "<option>--- Pilih Instrument ---</option>";
-                var instrument = document.getElementById('add_instrument');
-
-                if (result.length > 0) {
-                    for (i = 0; i < result.length; i++) {
-                        html += '<option value=' + result[i].id + '>' + result[i].nama_instrument +
-                            '</option>';
-                    }
-                } else {
-                    html = '<option>--Tidak Ada Data--</option>';
-                }
-
-                instrument.innerHTML = html;
-            }
-        };
-        xhttp.open("GET", "<?php echo base_url('Data/instrument'); ?>" + '?ms_regions_id=' + ms_regions_id,
+        xhttp.open("GET", "<?php echo base_url('Data/instrument'); ?>" + '?ms_stasiun_id=' + ms_stasiun_id,
             true);
         xhttp.send();
     });
@@ -422,16 +584,11 @@
 						<div class="row">
 									<div class="mb-2 col-md-6">
 										<label>` + result[i].jenis_sensor + `</label>
-										<input type="number" class="form-control" id="jenis_sensor_id_` + result[i].id + "_" + result[i]
-                            .id_sensor + '_' + result[i].flag +
-                            `" value="0" ">
+										<input type="number" class="form-control" id="jenis_sensor_id_` + result[i].id +`" value="0" ">
 									</div>
 									<div class="mb-2 col-md-6">
 										<label>Hitung ` + result[i].jenis_sensor + `</label>
-										<input type="number" class="form-control hitung_sensor" id="hitung_` + result[i].id + "_" + result[i]
-                            .id_sensor + '_' + result[i].flag +
-                            `" onclick="hitung(this.id, 'jenis_sensor_id_` + result[i].id + "_" + result[i]
-                            .id_sensor + '_' + result[i].flag + `')" readonly>
+										<input type="number" class="form-control hitung_sensor" id="hitung_` + result[i].id + `" onclick="hitung(this.id, 'jenis_sensor_id_` + result[i].id +`')" readonly>
 									</div>  </div>`
                     }
                     add_sensor.innerHTML = html;
@@ -448,10 +605,180 @@
         xhttp.send();
     })
 
+    $("#add_site").change(function() {
+        var ms_regions_id = $(this).val();
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(xhttp.responseText).result;
+                var html = "<option>--- Pilih Stasiun ---</option>";
+                var stasiun = document.getElementById('add_stasiun');
+
+                if (result.length > 0) {
+                    for (i = 0; i < result.length; i++) {
+                        html += '<option value=' + result[i].id + '>' + result[i].nama_stasiun +
+                            '</option>';
+                    }
+                } else {
+                    html = '<option>--Tidak Ada Data--</option>';
+                }
+
+                stasiun.innerHTML = html;
+            }
+        };
+        xhttp.open("GET", "<?php echo base_url('Data/stasiun'); ?>" + '?ms_regions_id=' + ms_regions_id,
+            true);
+        xhttp.send();
+    });
+
+    $("#add_stasiun").change(function() {
+        var ms_stasiun_id = $(this).val();
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(xhttp.responseText).result;
+                var html = '<option value="">--- Pilih Stasiun ---</option>';
+                var instrument = document.getElementById('add_instrument');
+
+                if (result.length > 0) {
+                    for (i = 0; i < result.length; i++) {
+                        html += '<option value=' + result[i].id + '>' + result[i].nama_instrument +
+                            '</option>';
+                    }
+                } else {
+                    html = '<option value="">--Tidak Ada Data--</option>';
+                }
+
+                instrument.innerHTML = html;
+            }
+        };
+        xhttp.open("GET", "<?php echo base_url('Data/instrument'); ?>" + '?ms_stasiun_id=' + ms_stasiun_id,
+            true);
+        xhttp.send();
+    });
+
+
     function hitung(id, targetId) {
         document.getElementById(id).value = document.getElementById(targetId).value * 1;
     }
-    </script>
+
+
+
+    // UPLOAD ===========
+    
+    $("#upload_site").change(function() {
+        var ms_regions_id = $(this).val();
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(xhttp.responseText).result;
+                var html = "<option>--- Pilih Stasiun ---</option>";
+                var stasiun = document.getElementById('upload_stasiun');
+
+                if (result.length > 0) {
+                    for (i = 0; i < result.length; i++) {
+                        html += '<option value=' + result[i].id + '>' + result[i].nama_stasiun +
+                            '</option>';
+                    }
+                } else {
+                    html = '<option>--Tidak Ada Data--</option>';
+                }
+
+                stasiun.innerHTML = html;
+            }
+        };
+        xhttp.open("GET", "<?php echo base_url('Data/stasiun'); ?>" + '?ms_regions_id=' + ms_regions_id,
+            true);
+        xhttp.send();
+    });
+
+    $("#upload_stasiun").change(function() {
+        var ms_stasiun_id = $(this).val();
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(xhttp.responseText).result;
+                var html = '<option value="">--- Pilih Stasiun ---</option>';
+                var instrument = document.getElementById('upload_instrument');
+
+                if (result.length > 0) {
+                    for (i = 0; i < result.length; i++) {
+                        html += '<option value=' + result[i].id + '>' + result[i].nama_instrument +
+                            '</option>';
+                    }
+                } else {
+                    html = '<option value="">--Tidak Ada Data--</option>';
+                }
+
+                instrument.innerHTML = html;
+            }
+        };
+        xhttp.open("GET", "<?php echo base_url('Data/instrument'); ?>" + '?ms_stasiun_id=' + ms_stasiun_id,
+            true);
+        xhttp.send();
+    });
+
+
+    $("#upload_instrument").change(function() {
+        if($(this).val() !== ''){
+            $('#upload_file').removeAttr('disabled')
+        }else{
+            $('#upload_file').attr('disabled')
+        }
+    })
+
+    $("#download_template").click(function(){
+    var instrument = $('#upload_instrument').val();
+    $.ajax({
+        url: "<?= base_url('Data/download_template/'); ?>" + instrument,
+        type: "GET",
+        success: function(data){
+            console.log(data);
+            // Redirect browser to download the file
+            window.location = data;
+        }
+    });
+});
+   
+    $('#upload_data').click(function(){
+            var site = $('#upload_site').val();
+            var stasiun = $('#upload_stasiun').val();
+            var instrument = $('#upload_instrument').val();
+            var file_data = $('#upload_file').prop('files')[0];   
+            var form_data = new FormData();                  
+            form_data.append('site', site);
+            form_data.append('stasiun', stasiun);
+            form_data.append('instrument', instrument);
+            form_data.append('file', file_data);
+
+            $.ajax({
+                url: '<?php echo base_url("Data/proses_upload_data"); ?>',
+                dataType: 'json',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,                         
+                type: 'post',
+                success: function(response) {
+                    if (!response.error) {
+
+                        toastr.success('Data berhasil ditambahkan');
+                        $('#modalUpload').modal('hide');
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('Gagal mengupload data');
+                }
+            });
+        });
+   
+   </script>
 </body>
 <!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 

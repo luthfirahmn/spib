@@ -87,8 +87,6 @@
                         </div>
                         <div class="card-body table-border-style">
                             <div id="listCCTV" class="row"></div>
-                            <embed src="http://admin:muslim1980@36.64.167.25/ISAPI/Streaming/channels/702/picture">
-                            </embed>
                         </div>
 
                     </div>
@@ -238,8 +236,8 @@ function getData(regionId) {
 								<button type="button" class="btn btn-sm btn-danger" onclick="deleteData(` + item.id + `)">Delete</button>
 							</div>
 						</div>
-                        <embed class="img-cctv"  src="` + '<?= base_url("CCTV/redirecting/") ?>' +
-                            item.url + `"  width="380" height="250" type="image/jpeg" />
+                        <video class="img-cctv"  src="` + '<?= base_url("CCTV/redirecting/") ?>' +
+                            item.url + `"  width="380" height="250" controls  autoplay />
 						     
 					</object>
 					</div>
@@ -250,7 +248,8 @@ function getData(regionId) {
                 $("#listCCTV").html(dataHtml)
 
 
-
+                // <embed class="img-cctv"  src="` + '<?= base_url("CCTV/redirecting/") ?>' +
+                //             item.url + `"  width="380" height="250" type="image/jpeg" />
                 // function reloadImage() {
                 //     $('.img-cctv').attr('src', function(i, src) {
                 //         return src.split('?')[0] + '?' + new Date().getTime();

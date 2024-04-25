@@ -17,26 +17,43 @@ class M_data extends CI_Model
 		")->result();
 	}
 
-	function instrument($ms_regions_id)
+
+	function stasiun($ms_regions_id)
 	{
-		$query = $this->db->query("SELECT id, nama_instrument FROM `tr_instrument` WHERE ms_regions_id='$ms_regions_id'");
+		$query = $this->db->query("SELECT id, nama_stasiun FROM `ms_stasiun` WHERE ms_regions_id='$ms_regions_id'");
 		return json_encode(array('result' => $query->result()));
 	}
 
-	function list($db_site, $instrument_id)
+	
+	function instrument($ms_stasiun_id)
+	{
+		$query = $this->db->query("SELECT id, nama_instrument FROM `tr_instrument` WHERE ms_stasiun_id='$ms_stasiun_id'");
+		return json_encode(array('result' => $query->result()));
+	}
+
+	function list($db_site, $instrument_id, $keterangan, $tanggal)
 	{
 		$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $instrument_id))->row()->kode_instrument;
+
+		if(!empty($tanggal)){
+			$ddt ="AND t1.tanggal = '$tanggal'";
+		}else{
+			$ddt = "";
+		}
 
 		$query = $db_site->query("
 						SELECT t1.id, t1.kode_instrument, t1.tanggal, t1.jam, t1.keterangan
 						FROM data t1
 						WHERE t1.kode_instrument = '$kode_instrument'
+						AND t1.keterangan = '$keterangan'
+						{$ddt}
+						ORDER BY t1.tanggal DESC, t1.jam DESC
 		");
 		$data = $query->result_array();
 
 		foreach ($data as $key => $value) {
 			$sensor = $db_site->query("
-				SELECT t3.jenis_sensor, t3.unit_sensor, CASE WHEN t2.data_primer IS NOT NULL THEN t2.data_primer ELSE t2.data_jadi END as val_sensor
+				SELECT t3.jenis_sensor, t3.unit_sensor, t2.data_jadi as val_sensor
 				FROM data_value t2
 				LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
 				WHERE t2.data_id = '" . $value['id'] . "'
@@ -52,14 +69,14 @@ class M_data extends CI_Model
 	function get_sensor_by_instrument_id($instrument_id)
 	{
 		$query = $this->db->query("SELECT 
-											t1.id,
-										CASE WHEN t4.jenis_sensor IS NOT NULL THEN t4.id ELSE t3.id END as id_sensor,
-										CASE WHEN t4.jenis_sensor IS NOT NULL THEN t4.jenis_sensor ELSE t3.jenis_sensor END as jenis_sensor,
-										CASE WHEN t4.jenis_sensor IS NOT NULL THEN 'jadi' ELSE 'mentah' END as flag
-								   FROM tr_koefisien_sensor_non_vwp t1
-								   LEFT JOIN sys_jenis_sensor t3 ON t1.jenis_sensor_mentah = t3.id
-								   LEFT JOIN sys_jenis_sensor t4 ON t1.jenis_sensor_jadi = t4.id
-								   WHERE t1.tr_instrument_id = '$instrument_id'
+										t1.id,
+										t1.jenis_sensor
+									FROM sys_jenis_sensor t1
+									WHERE t1.id IN (SELECT t2.jenis_sensor_mentah
+													FROM tr_koefisien_sensor_non_vwp  t2
+													WHERE t2.jenis_sensor_mentah = t1.id
+													AND t2.tr_instrument_id = '$instrument_id')
+									ORDER BY t1.id ASC
 								");
 		return json_encode(array('result' => $query->result()));
 	}

@@ -64,16 +64,16 @@
 			</div>
 		</div>
 		<div class="row">
-			<table class="table">
+			<table class="table border-2">
 				<thead>
 					<tr>
 						<th>Data Koefisien</th>
-						<th>Jenis Sensor Data Jadi</th>
 						<th>Jenis Sensor Data Mentah</th>
+						<th>Jenis Sensor Data Jadi</th>
 					</tr>
 				</thead>
-				<tbody>
-					<tr>
+				<tbody class="">
+				<tr>
 						<td>
 							<?php
 							
@@ -87,18 +87,23 @@
 						</td>
 						<td>
 							<?php
-								foreach($koe['jenis_sensor_jadi'] as $sns1){
-									echo $sns1->jenis_sensor.'</br>';
+								foreach($koe['jenis_sensor_mentah'] as $sns2){
+									if (!empty($sns2->jenis_sensor)) {
+										echo $sns2->jenis_sensor . '</br>';
+									}
 								}
 							?>
 						</td>
 						<td>
 							<?php
-								foreach($koe['jenis_sensor_mentah'] as $sns2){
-									echo $sns2->jenis_sensor.'</br>';
+								foreach($koe['jenis_sensor_jadi'] as $sns1){
+									if (!empty($sns1->jenis_sensor)) {
+										echo $sns1->jenis_sensor . '</br>';
+									}
 								}
 							?>
 						</td>
+						
 					</tr>
 				</tbody>
 			</table>
