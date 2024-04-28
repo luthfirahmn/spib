@@ -29,10 +29,11 @@ class Data extends MY_Controller
 		$instrument_id = $this->input->post("instrument_id");
 		$keterangan = $this->input->post("keterangan");
 		$tanggal = $this->input->post("tanggal");
+		$waktu = $this->input->post("waktu");
 
 		$db_site = $this->change_connection($site_id);
 
-		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal);
+		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu);
 
 		if (empty($data)) {
 			$columns = "";
@@ -41,7 +42,7 @@ class Data extends MY_Controller
 			$columns = array_keys((array) reset($data));
 		}
 		$result = array(
-			"draw" => $_POST['draw'],
+			// "draw" => $_POST['draw'],
 			"recordsTotal" => count($data),
 			"recordsFiltered" => count($data),
 			"columns" => $columns,
@@ -53,85 +54,99 @@ class Data extends MY_Controller
 	}
 
 
-	public function download_all(){
+	public function download_all()
+	{
 		$site_id = $this->input->get("ms_regions_id");
 		$instrument_id = $this->input->get("instrument_id");
 		$keterangan = $this->input->get("keterangan");
 		$tanggal = $this->input->get("tanggal");
+		$waktu = $this->input->post("waktu");
 
-		   // Ganti koneksi database berdasarkan $site_id
-		   $db_site = $this->change_connection($site_id);
+		// Ganti koneksi database berdasarkan $site_id
+		$db_site = $this->change_connection($site_id);
 
-		   // Ambil data dari model berdasarkan parameter yang diberikan
-		   $data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal);
-	   
-		   // Load library PHPExcel
-		   $this->load->library('PHPExcel');
-	   
-		   // Buat objek PHPExcel
-		   $objPHPExcel = new PHPExcel();
-	   
-		   // Set properti
-		   $objPHPExcel->getProperties()->setCreator("Your Name")
-										->setLastModifiedBy("Your Name")
-										->setTitle("Data Export")
-										->setSubject("Data Export")
-										->setDescription("Data Export")
-										->setKeywords("data")
-										->setCategory("Data");
-	   
-		   // Buat worksheet baru
-		   $objPHPExcel->setActiveSheetIndex(0);
-		   $sheet = $objPHPExcel->getActiveSheet();
-	   
-		   // Tambahkan header
-		   $columns = array_keys((array) reset($data));
-		   foreach ($columns as $key => $column) {
-			   $sheet->setCellValueByColumnAndRow($key, 1, $column);
-		   }
-	   
-		   // Tambahkan data
-		   $row = 2;
-		   foreach ($data as $item) {
-			   $col = 0;
-			   foreach ($item as $value) {
-				   $sheet->setCellValueByColumnAndRow($col, $row, $value);
-				   $col++;
-			   }
-			   $row++;
-		   }
-	   
-		  
-			// Save Excel file to a temporary location
-			$tempFilePath = FCPATH . 'assets/temp/report_data.xlsx';
-			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-			$objWriter->save($tempFilePath);
-			// Return the path to the Excel file
-			echo base_url('assets/temp/report_data.xlsx');
+		// Ambil data dari model berdasarkan parameter yang diberikan
+		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $download = 1);
+
+		// Load library PHPExcel
+		$this->load->library('PHPExcel');
+
+		// Buat objek PHPExcel
+		$objPHPExcel = new PHPExcel();
+
+		// Set properti
+		$objPHPExcel->getProperties()->setCreator("Your Name")
+			->setLastModifiedBy("Your Name")
+			->setTitle("Data Export")
+			->setSubject("Data Export")
+			->setDescription("Data Export")
+			->setKeywords("data")
+			->setCategory("Data");
+
+		// Buat worksheet baru
+		$objPHPExcel->setActiveSheetIndex(0);
+		$sheet = $objPHPExcel->getActiveSheet();
+
+		// Tambahkan header
+		$columns = array_keys((array) reset($data));
+		foreach ($columns as $key => $column) {
+			$sheet->setCellValueByColumnAndRow($key, 1, $column);
+		}
+
+		// Tambahkan data
+		$row = 2;
+		foreach ($data as $item) {
+			$col = 0;
+			foreach ($item as $value) {
+				$sheet->setCellValueByColumnAndRow($col, $row, $value);
+				$col++;
+			}
+			$row++;
+		}
+
+
+		// Save Excel file to a temporary location
+		$tempFilePath = FCPATH . 'assets/temp/report_data.xlsx';
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save($tempFilePath);
+		// Return the path to the Excel file
+		echo base_url('assets/temp/report_data.xlsx');
 	}
 
 
-	public function delete_data() {
-        $instrument_id = $this->input->post('instrument_id');
+	public function delete_data()
+	{
+		$instrument_id = $this->input->post('instrument_id');
 		$ms_regions_id = $this->input->post('ms_regions_id');
 		$keterangan = $this->input->post('keterangan');
 		$tanggal = $this->input->post('tanggal');
+		$waktu = $this->input->post("waktu");
 
 		$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $instrument_id))->row()->kode_instrument;
 		try {
 			$db_site = $this->change_connection($ms_regions_id);
 
 			$db_site->trans_start();
-			if(!empty($tanggal)){
-				$ddt ="AND t1.tanggal = '$tanggal'";
-			}else{
+			if (!empty($tanggal)) {
+				if ($waktu == 'jam') {
+					$ddt = "AND t1.tanggal = '$tanggal'";
+				} else {
+					$ddt = "AND DATE_FORMAT(t1.tanggal, '%Y-%m') = '$tanggal'";
+				}
+			} else {
 				$ddt = "";
 			}
-			
-			$query = $db_site->query("SELECT id FROM data  WHERE kode_instrument = '$kode_instrument' AND keterangan = '$keterangan' {$ddt}");
+
+			if (!empty($keterangan)) {
+				$kt = "AND t1.keterangan = '$keterangan'";
+			} else {
+				$kt = "";
+			}
+
+			$query = $db_site->query("SELECT id FROM data  WHERE kode_instrument = '$kode_instrument' AND {$kt} {$ddt}");
 			$result = $query->result();
 			if (!empty($result)) {
-				foreach($result as $row){
+				foreach ($result as $row) {
 
 					$db_site->query("DELETE FROM data_value WHERE data_id = '$row->id'");
 
@@ -209,7 +224,7 @@ class Data extends MY_Controller
 
 				foreach ($hitung_sensor as $sensor) {
 					$data_id = explode('_', $sensor['id']);
-			
+
 					$sensor_id = $data_id[1];
 
 					$data_primer = $sensor['value'];
@@ -220,7 +235,7 @@ class Data extends MY_Controller
 							break;
 						case "Hall Effect":
 							$derajat_angin = $data_primer;
-				
+
 							$data_jadi = $derajat_angin;
 							break;
 						default:
@@ -256,7 +271,9 @@ class Data extends MY_Controller
 	}
 
 
-	public function download_template($id_instrument){
+	public function download_template($id_instrument)
+	{
+
 		$query = $this->db->query("SELECT 
 										t1.jenis_sensor
 									FROM sys_jenis_sensor t1
@@ -266,71 +283,66 @@ class Data extends MY_Controller
 													AND t2.tr_instrument_id = '$id_instrument')
 									ORDER BY t1.id ASC
 									");
-		 // Load PHPExcel library
-		 $this->load->library('PHPExcel');
+		$this->load->library('PHPExcel');
 
-		 // Create new PHPExcel object
-		 $objPHPExcel = new PHPExcel();
-	 
-		 // Set active sheet
-		 $objPHPExcel->setActiveSheetIndex(0);
-		 $objPHPExcel->getActiveSheet()->setTitle('Data');
-	 
-		 // Fill header cells for "No", "Tanggal", and "Jam"
-		 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, 'No');
-		 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, 1, 'Tanggal');
-		 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, 1, 'Jam');
-	 
-		 // Fill "Jenis Sensor" header column dynamically
-		 $col = 3;
-		 foreach ($query->result_array() as $row_data) {
-			 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, 1, $row_data['jenis_sensor']);
-			 $col++;
-		 }
-	 
-		 // Fill data from query result
-		 $row = 2; // Start from row 2 after header row
-		 $col = 0;
-		 $no = 1;
-			 // Fill "No" column
-			 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $no);
-			 $col++;
-	 
-			 // Fill "Tanggal" and "Jam" columns with current date and time
-			 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d'));
-			 $col++;
-			 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('H:i:s'));
-			 $col++;
-	 
-			 // Fill dynamic "Jenis Sensor" column
-			 foreach ($query->result_array() as $sensor_data) {
-				 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
-				 $col++;
-			 }
-	 
-			 $row++;
-			 $no++;
-			 $col = 0; 
-	 
-			// Save Excel file to a temporary location
-			$tempFilePath = FCPATH . 'assets/temp/template.xlsx';
-			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-			$objWriter->save($tempFilePath);
-			// Return the path to the Excel file
-			echo base_url('assets/temp/template.xlsx');
+		$objPHPExcel = new PHPExcel();
+
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setTitle('Data');
+
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, 'No');
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, 1, 'Tanggal');
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, 1, 'Jam');
+
+		$col = 3;
+		foreach ($query->result_array() as $row_data) {
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, 1, $row_data['jenis_sensor']);
+			$col++;
+		}
+
+		$row = 2;
+		$col = 0;
+		$no = 1;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $no);
+		$col++;
+
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d'));
+		$col++;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, '00:00:00');
+		$col++;
+
+		foreach ($query->result_array() as $sensor_data) {
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
+			$col++;
+		}
+
+		$row++;
+		$no++;
+		$col = 0;
+
+		$get_instrument = $this->db->get_where("tr_instrument", array('id' => $id_instrument))->row();
+		$get_stasiun = $this->db->get_where("ms_stasiun", array('id' => $get_instrument->ms_stasiun_id))->row()->nama_stasiun;
+		$get_site = $this->db->get_where("ms_regions", array('id' => $get_instrument->ms_regions_id))->row()->site_name;
+
+		$nama_file = $get_site . '_' . $get_stasiun . '_' . $get_instrument->nama_instrument . '.xlsx';
+		$tempFilePath = FCPATH . 'assets/temp/' . $nama_file;
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save($tempFilePath);
+		echo base_url('assets/temp/' . $nama_file);
 	}
 
 
-	public function proses_upload_data() {
+	public function proses_upload_data()
+	{
 		// Load library PHPExcel
 		$this->load->library('PHPExcel');
-	
+
 		// Konfigurasi upload
 		$config['upload_path'] =  FCPATH . 'assets/temp/';
 		$config['allowed_types'] = 'xlsx|xls';
 		$this->load->library('upload', $config);
-	
-		
+
+
 		$site = $_POST['site'];
 		$stasiun = $_POST['stasiun'];
 		$instrument = $_POST['instrument'];
@@ -341,12 +353,12 @@ class Data extends MY_Controller
 		} else {
 			$data = $this->upload->data();
 			$file_path = $data['full_path'];
-	
+
 			$objPHPExcel = PHPExcel_IOFactory::load($file_path);
-	
+
 			$sheet = $objPHPExcel->getActiveSheet();
-	
-			
+
+
 
 			$query = $this->db->query("SELECT 
 										t1.id,
@@ -359,37 +371,37 @@ class Data extends MY_Controller
 													AND t2.tr_instrument_id = '$instrument')
 									ORDER BY t1.id ASC
 									");
-			  $jenis_sensor_ids = $query->result_array();
+			$jenis_sensor_ids = $query->result_array();
 
-			  // Array untuk menyimpan hasil
-			  $result = array();
-	  
-			  // Loop untuk membaca baris-baris data
-			  foreach ($sheet->getRowIterator() as $index => $row) {
-				  if ($index < 2) continue; 
-	  
-				  $jenis_sensor_id = $jenis_sensor_ids[0]['id']; 
-				  $nama_instrument = $jenis_sensor_ids[0]['nama_instrument']; 
-				  $kode_instrument = $jenis_sensor_ids[0]['kode_instrument']; 
-	  
-				  $cellIterator = $row->getCellIterator();
-				  $cellIterator->setIterateOnlyExistingCells(false); 
-	  
-				  $data_row = array();
-	  
-				  foreach ($cellIterator as $cell) {
-					  $data_row[] = $cell->getValue();
-				  }
+			// Array untuk menyimpan hasil
+			$result = array();
 
-				  $data_primer = $data_row[3]; 
+			// Loop untuk membaca baris-baris data
+			foreach ($sheet->getRowIterator() as $index => $row) {
+				if ($index < 2) continue;
 
-				  switch ($nama_instrument) {
+				$jenis_sensor_id = $jenis_sensor_ids[0]['id'];
+				$nama_instrument = $jenis_sensor_ids[0]['nama_instrument'];
+				$kode_instrument = $jenis_sensor_ids[0]['kode_instrument'];
+
+				$cellIterator = $row->getCellIterator();
+				$cellIterator->setIterateOnlyExistingCells(false);
+
+				$data_row = array();
+
+				foreach ($cellIterator as $cell) {
+					$data_row[] = $cell->getValue();
+				}
+
+				$data_primer = $data_row[3];
+
+				switch ($nama_instrument) {
 					case "Pressure":
 						$data_jadi = $data_primer / 100;
 						break;
 					case "Hall Effect":
 						$derajat_angin = $data_primer;
-			
+
 						// if ($derajat_angin > 337.5 || $derajat_angin < 22.5) {
 						// 	$arah_angin = "Utara";
 						// } elseif ($derajat_angin >= 22.5 && $derajat_angin < 67.5) {
@@ -407,26 +419,26 @@ class Data extends MY_Controller
 						// } elseif ($derajat_angin >= 292.5 && $derajat_angin < 337.5) {
 						// 	$arah_angin = "Barat Laut";
 						// }
-			
+
 						$data_jadi = $derajat_angin;
 						break;
 					default:
 						$data_jadi = $data_primer;
 						break;
 				}
-	  
+
 
 				$db_site = $this->change_connection($site);
-				
+
 				$data_array = array(
-								"kode_instrument" => $kode_instrument,
-								"tanggal" => $data_row[1],
-								"jam" => $data_row[2],
-								"keterangan" => "MANUAL",
-								"created_by" => $this->session->userdata('ap_id_user'),
-								"updated_by" => $this->session->userdata('ap_id_user'),
-							);
-				$query = $db_site->insert('data',$data_array);
+					"kode_instrument" => $kode_instrument,
+					"tanggal" => $data_row[1],
+					"jam" => $data_row[2],
+					"keterangan" => "MANUAL",
+					"created_by" => $this->session->userdata('ap_id_user'),
+					"updated_by" => $this->session->userdata('ap_id_user'),
+				);
+				$query = $db_site->insert('data', $data_array);
 
 				$last_insert_id = $db_site->insert_id();
 
@@ -439,19 +451,19 @@ class Data extends MY_Controller
 					"updated_by" => $this->session->userdata('ap_id_user'),
 				);
 
-	  
-				$query = $db_site->insert('data_value',$sensor_data);
-				 
-	  
+
+				$query = $db_site->insert('data_value', $sensor_data);
+
+
 				$result[] = $sensor_data;
-			  }
+			}
 
 			unlink($file_path);
 
 			echo json_encode(array('error' => false));
 		}
 	}
-	
+
 	public function change_connection($id_regions)
 	{
 
