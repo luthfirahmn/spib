@@ -98,9 +98,20 @@
 											<?php foreach($kategori as $kat){?>
 											<option value="<?= $kat->lookup_code ?>"><?= $kat->lookup_name ?></option>
 											<?php } ?>
+											<option value="00">Lainnya</option>
 										</select>
 									</div>
 								</div>
+
+								<div id="kat_lainnya" style="display: none;">
+									<div class="row">
+										<div class="form-group col-md-12">
+										<label class="form-label" for="lainnya">Kategori Lainnya</label>
+											<input type="text" class="form-control" id="lainnya" name="lainnya">
+										</div>
+									</div>
+								</div>
+
 								<div class="row">
 									<div class="form-group col-md-12">
 										<label class="form-label" for="description">Deskripsi</label>
@@ -151,6 +162,19 @@
 			Dropzone.options.imageUpload = {
 				maxFilesize:1
 			};
+		</script>
+
+		<script src="<?= base_url()?>assets/js/jquery-3.1.1.min.js"></script>
+		<script>
+			$("#category_id").change(function(){
+				var kategori=$(this).val();
+
+				if(kategori=='00'){
+					$("#kat_lainnya").show();
+				}else{
+					$("#kat_lainnya").hide();
+				}
+			});
 		</script>
 	</body>
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/forms/form2_flu-uppy.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:18 GMT -->
