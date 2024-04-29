@@ -7,14 +7,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description"
-        content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
-    <meta name="keywords"
-        content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
+    <meta name="description" content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
+    <meta name="keywords" content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
     <meta name="author" content="CodedThemes" />
     <link rel="icon" href="https://berrydashboard.io/bootstrap/default/assets/images/favicon.svg" type="image/x-icon" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap"
-        id="main-font-link" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" id="main-font-link" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/tabler-icons.min.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/feather.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/fontawesome.css" />
@@ -39,9 +36,9 @@
         <div class="pc-content">
 
             <?php if ($this->session->flashdata('warning')) : ?>
-            <div class="alert alert-warning d-flex align-items-center" role="alert">
-                <?php echo $this->session->flashdata('warning'); ?>
-            </div>
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <?php echo $this->session->flashdata('warning'); ?>
+                </div>
             <?php endif; ?>
 
             <div class="page-header">
@@ -72,12 +69,11 @@
                                     <select class="form-control" name="ms_regions_id" id="ms_regions_id">
                                         <option value="" selected>--- Pilih Site ---</option>
                                         <?php foreach ($region as $reg) { ?>
-                                        <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+                                            <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
-                                <button type="button" class="btn btn-outline-primary d-inline-flex"
-                                    data-bs-toggle="modal" data-bs-target="#modalTambah">
+                                <button type="button" class="btn btn-outline-primary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalTambah">
                                     <i class="ti ti-plus"></i>Tambah
                                 </button>
 
@@ -88,7 +84,6 @@
                         <div class="card-body table-border-style">
                             <div id="listCCTV" class="row"></div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -108,7 +103,7 @@
                         <select class="form-control mb-3" name="add_regions_id" id="add_regions_id">
                             <option value="" selected>--- Pilih Site ---</option>
                             <?php foreach ($region as $reg) { ?>
-                            <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+                                <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                             <?php } ?>
                         </select>
                         <input type="text" class="form-control mb-3" name="lokasi" id="lokasi" placeholder="Lokasi">
@@ -151,83 +146,83 @@
 </body>
 <!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 <script>
-$(document).ready(function() {
-    var region_id = $("#ms_regions_id").val();
-    getData(region_id);
+    $(document).ready(function() {
+        var region_id = $("#ms_regions_id").val();
+        getData(region_id);
 
 
 
-});
-
-$("#ms_regions_id").on("change", function() {
-    var region_id = $(this).val()
-    getData(region_id);
-})
-
-function resetForm(form) {
-    $(':input', form)
-        .not(':button, :submit, :reset, :hidden')
-        .val('')
-        .prop('checked', false)
-        .prop('selected', false);
-}
-$('#btnTambah').click(function() {
-    $('#modalTambah').modal('show');
-    $("#formcctv")[0].reset()
-});
-
-$('#btnEdit').click(function() {
-    $('#modalEdit').modal('show');
-});
-
-
-$("#add_data").click(function() {
-    var formData = $("#formcctv").serialize();
-
-    $.ajax({
-        type: "POST",
-        url: "<?= base_url("CCTV/add_data") ?>",
-        dataType: "json",
-        data: formData,
-        success: function(response) {
-            if (response.error) {
-                toastr.error(response.message)
-            } else {
-
-                toastr.success(response.message)
-                var region_id = $("#ms_regions_id").val();
-                getData(region_id);
-
-                $('#modalTambah').modal('hide');
-            }
-
-        },
-        error: function(xhr, status, error) {
-
-            toastr.error(response.error)
-        }
     });
-});
 
-function getData(regionId) {
-    var dataHtml = "";
-    if (regionId != '') {
+    $("#ms_regions_id").on("change", function() {
+        var region_id = $(this).val()
+        getData(region_id);
+    })
+
+    function resetForm(form) {
+        $(':input', form)
+            .not(':button, :submit, :reset, :hidden')
+            .val('')
+            .prop('checked', false)
+            .prop('selected', false);
+    }
+    $('#btnTambah').click(function() {
+        $('#modalTambah').modal('show');
+        $("#formcctv")[0].reset()
+    });
+
+    $('#btnEdit').click(function() {
+        $('#modalEdit').modal('show');
+    });
+
+
+    $("#add_data").click(function() {
+        var formData = $("#formcctv").serialize();
+
         $.ajax({
-            url: "<?= base_url('CCTV/list/') ?>" + regionId,
             type: "POST",
+            url: "<?= base_url("CCTV/add_data") ?>",
             dataType: "json",
-            success: function(data) {
-                console.log(data);
-                if (data.error === true) {
-                    dataHtml = `<div class="container-fluid bg-light d-flex align-items-center justify-content-center">
+            data: formData,
+            success: function(response) {
+                if (response.error) {
+                    toastr.error(response.message)
+                } else {
+
+                    toastr.success(response.message)
+                    var region_id = $("#ms_regions_id").val();
+                    getData(region_id);
+
+                    $('#modalTambah').modal('hide');
+                }
+
+            },
+            error: function(xhr, status, error) {
+
+                toastr.error(response.error)
+            }
+        });
+    });
+
+    function getData(regionId) {
+        var dataHtml = "";
+        if (regionId != '') {
+            $.ajax({
+                url: "<?= base_url('CCTV/list/') ?>" + regionId,
+                type: "POST",
+                dataType: "json",
+                success: function(data) {
+                    console.log(data);
+                    if (data.error === true) {
+                        dataHtml = `<div class="container-fluid bg-light d-flex align-items-center justify-content-center">
 							<div class="bg-grey-100 text-center p-4">
 							<h4 class="">` + data.message + `</h1>
 							</div>
 						</div>`;
-                } else {
+                    } else {
 
-                    data.data.forEach(function(item) {
-                        dataHtml += `
+                        data.data.forEach(function(item) {
+                            dataHtml += `
 					<div class="col-md-4">
 						<div class="d-flex justify-content-between align-items-center">
 							<p>` + item.lokasi + `</p>
@@ -236,79 +231,78 @@ function getData(regionId) {
 								<button type="button" class="btn btn-sm btn-danger" onclick="deleteData(` + item.id + `)">Delete</button>
 							</div>
 						</div>
-                        <video class="img-cctv"  src="` + '<?= base_url("CCTV/redirecting/") ?>' +
-                            item.url + `"  width="380" height="250" controls  autoplay />
-						     
+                            <embed class="img-cctv"  src="` +
+                                item.url + `"  width="380" height="250" type="image/jpeg" />
 					</object>
 					</div>
 					`;
-                    });
+                        });
+                    }
+
+                    $("#listCCTV").html(dataHtml)
+
+
+                    // <embed class="img-cctv"  src="` + '<?= base_url("CCTV/redirecting/") ?>' +
+                    //             item.url + `"  width="380" height="250" type="image/jpeg" />
+                    // function reloadImage() {
+                    //     $('.img-cctv').attr('src', function(i, src) {
+                    //         return src.split('?')[0] + '?' + new Date().getTime();
+                    //     });
+                    // }
+
+                    // setInterval(reloadImage, 3000);
+
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
                 }
-
-                $("#listCCTV").html(dataHtml)
-
-
-                // <embed class="img-cctv"  src="` + '<?= base_url("CCTV/redirecting/") ?>' +
-                //             item.url + `"  width="380" height="250" type="image/jpeg" />
-                // function reloadImage() {
-                //     $('.img-cctv').attr('src', function(i, src) {
-                //         return src.split('?')[0] + '?' + new Date().getTime();
-                //     });
-                // }
-
-                // setInterval(reloadImage, 3000);
-
-            },
-            error: function(xhr, status, error) {
-                console.log(error);
-            }
-        });
-    } else {
-        dataHtml = `<div class="container-fluid bg-light d-flex align-items-center justify-content-center">
+            });
+        } else {
+            dataHtml = `<div class="container-fluid bg-light d-flex align-items-center justify-content-center">
 							<div class="bg-grey-100 text-center p-4">
 							<h4 class="">Tidak Ada Data</h1>
 							</div>
 						</div>`;
-        $("#listCCTV").html(dataHtml)
-    }
-}
-
-function deleteData(id) {
-    Swal.fire({
-        title: 'Apakah Anda yakin?',
-        text: "Anda tidak akan dapat mengembalikan ini!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Hapus',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-
-            $.ajax({
-                url: "<?= base_url('CCTV/delete_data/') ?>" + id,
-                type: "POST",
-                dataType: "json",
-                success: function(response) {
-                    if (response.error) {
-                        toastr.error(response.message)
-                    } else {
-
-                        var region_id = $("#ms_regions_id").val();
-                        getData(region_id);
-                        toastr.success(response.message)
-                    }
-
-                },
-                error: function(xhr, status, error) {
-
-                    toastr.error(response.error)
-                }
-            })
+            $("#listCCTV").html(dataHtml)
         }
-    })
-}
+    }
+
+    function deleteData(id) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Anda tidak akan dapat mengembalikan ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "<?= base_url('CCTV/delete_data/') ?>" + id,
+                    type: "POST",
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.error) {
+                            toastr.error(response.message)
+                        } else {
+
+                            var region_id = $("#ms_regions_id").val();
+                            getData(region_id);
+                            toastr.success(response.message)
+                        }
+
+                    },
+                    error: function(xhr, status, error) {
+
+                        toastr.error(response.error)
+                    }
+                })
+            }
+        })
+    }
 </script>
 
 </html>
