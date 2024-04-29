@@ -1,7 +1,9 @@
 <?php class M_site extends CI_Model{ 
 
-	function site(){ 
-      return $this->db->query("select * from ms_sites where ms_regions_id='1'")->row();
+	function site($ap_id_user){ 
+      return $this->db->query("SELECT a.* FROM ms_sites a
+	  LEFT JOIN `ms_user_regions` b ON a.`ms_regions_id`=b.ms_regions_id
+	  WHERE b.`ms_users_id`='$ap_id_user'")->row();
    }
 	
    function provinsi(){

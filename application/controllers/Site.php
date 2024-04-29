@@ -11,7 +11,8 @@ class Site extends MY_Controller
 	}
 	
 	public function index(){
-		$site=$this->M_site->site();
+		$ap_id_user = $this->session->userdata('ap_id_user');
+		$site=$this->M_site->site($ap_id_user);
 		$kota=json_decode($this->M_site->kota($site->provinsi));
 		$data['kota']=$kota->result;
 		$kecamatan=json_decode($this->M_site->kecamatan($site->kabupaten));
@@ -42,27 +43,27 @@ class Site extends MY_Controller
 	}
 
 	public function edit_proses(){
-		$id='1';
 		$body=array(
-			'site_name' 		=> $this->input->post('site_name'),
-			'desa' 	=> $this->input->post('kelurahan'),
-			'kecamatan'		=> $this->input->post('kecamatan'),
-			'kabupaten'		=> $this->input->post('kota'),
-			'provinsi'	=> $this->input->post('provinsi'),
+			'id'					=> '2',
+			'site_name' 			=> $this->input->post('site_name'),
+			'desa' 					=> $this->input->post('kelurahan'),
+			'kecamatan'				=> $this->input->post('kecamatan'),
+			'kabupaten'				=> $this->input->post('kota'),
+			'provinsi'				=> $this->input->post('provinsi'),
 			'elev_tanggul_utama'	=> $this->input->post('elev_tanggul_utama'),
-			'elev_tanggul_pembantu'			=> $this->input->post('elev_tanggul_pembantu'),
+			'elev_tanggul_pembantu'	=> $this->input->post('elev_tanggul_pembantu'),
 			'elev_pelimpah'			=> $this->input->post('elev_pelimpah'),
-			'elev_pelimpah_pembantu'			=> $this->input->post('elev_pelimpah_pembantu'),
+			'elev_pelimpah_pembantu'=> $this->input->post('elev_pelimpah_pembantu'),
 			'elev_normal'			=> $this->input->post('elev_normal'),
 			'elev_siaga3'			=> $this->input->post('elev_siaga3'),
 			'elev_siaga2'			=> $this->input->post('elev_siaga2'),
 			'elev_siaga1'			=> $this->input->post('elev_siaga1'),
-			'batas_kritis_vwp'			=> $this->input->post('batas_kritis_vwp')
+			'batas_kritis_vwp'		=> $this->input->post('batas_kritis_vwp')
 		);
 
-		$this->db->where('ms_regions_id', $id);
-		$this->db->update('ms_sites', $body);
-		redirect('Site');
+		$status=$this->db->insert('ms_sites', $body);
+		var_dump($status);
+		//redirect('Site');
 	}
 
 }
