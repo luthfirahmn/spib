@@ -12,6 +12,8 @@ class M_instrumentData extends CI_Model
 			LEFT JOIN `ms_regions` b ON a.`ms_regions_id`=b.id
 			LEFT JOIN `tr_instrument_type` c ON a.`tr_instrument_type_id`=c.id
 			LEFT JOIN `ms_stasiun` d ON a.`ms_stasiun_id`=d.id
+			LEFT JOIN `ms_user_regions` e ON a.`ms_regions_id`=e.ms_regions_id
+			WHERE e.`ms_users_id`='$ap_id_user'
 		")->result();
 	}
 

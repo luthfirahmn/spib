@@ -50,12 +50,18 @@ class Dokumen extends MY_Controller
         exit;
 	}
 	
-	public function tambah_proses(){	
+	public function tambah_proses(){
+		$category_id=$this->input->post('category_id');
+		$lookup_name=$this->input->post('lainnya');
+		
+		$category = $this->cek_kategori($category_id, $lookup_name);
+
+		$cek_kategory=
 		$body=array(
 			'ms_regions_id' 	=> $this->input->post('ms_regions_id'),
 			'title' 			=> $this->input->post('title'),
 			'date'				=> $this->input->post('date'),
-			'category_id'		=> $this->input->post('category_id'),
+			'category_id'		=> $category,
 			'description'		=> $this->input->post('description'),
 			'created_by'		=> $this->session->userdata('ap_nama'),
 			'created_at'		=> date("Y-m-d h:i:s")
@@ -82,6 +88,10 @@ class Dokumen extends MY_Controller
 	}
 
 	public function edit_proses(){
+		$category_id= $this->input->post('category_id');
+		$lookup_name= $this->input->post('lainnya');
+		$category 	= $this->cek_kategori($category_id, $lookup_name);
+
 		$id = $this->input->post('id');
 		$dokumen=$this->M_dokumen->dokumen_detail($id);
 
@@ -91,7 +101,7 @@ class Dokumen extends MY_Controller
 			'ms_regions_id' 	=> $this->input->post('ms_regions_id'),
 			'title' 			=> $this->input->post('title'),
 			'date'				=> $this->input->post('date'),
-			'category_id'		=> $this->input->post('category_id'),
+			'category_id'		=> $category,
 			'description'		=> $this->input->post('description'),
 			'created_by'		=> $dokumen->created_by,
 			'created_at'		=> $dokumen->created_at,
@@ -135,4 +145,27 @@ class Dokumen extends MY_Controller
   
 		$this->zip->download($dokumen->title.'.zip');
    }
+
+
+   	public function cek_kategori($category_id, $lookup_name){
+		if($category_id=='00'){
+			$cek_cat=$this->db->query("select * from ms_lookup_values where lookup_config='DOCUMENT_CATEGORY' and lookup_name='$lookup_name'")->row();
+
+			if($cek_cat){
+				$category=$cek_cat->lookup_code;
+			}else{
+				$lookup_code=$this->db->query("select max(lookup_code) as lookup_code from ms_lookup_values where lookup_config='DOCUMENT_CATEGORY'")->row();
+				$category=$lookup_code->lookup_code+1;
+
+				$idcat=$this->db->query("select max(id) as id from ms_lookup_values where lookup_config='DOCUMENT_CATEGORY'")->row();
+				$id=$idcat->id+1;
+
+				$this->db->query("INSERT INTO `ms_lookup_values` VALUES('$id', 'DOCUMENT_CATEGORY', '$category', '$lookup_name')");
+			}
+		}else{
+			$category=$category_id;
+		}
+
+		return $category;
+	}
 }
