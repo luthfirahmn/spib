@@ -12,8 +12,8 @@ class M_instrument extends CI_Model
 		foreach ($get_subitem->result() as $lp) {
 			$trace_lot = $this->db->query("
 			SELECT b.`site_name` FROM `tr_instrument_tp_region` a
-			LEFT JOIN ms_regions b ON a.`ms_regions_id`=b.id
-			LEFT JOIN `ms_user_regions` c ON a.`ms_regions_id`=c.ms_regions_id
+			INNER JOIN ms_regions b ON a.`ms_regions_id`=b.id
+			INNER JOIN `ms_user_regions` c ON a.`ms_regions_id`=c.ms_regions_id
 			WHERE c.`ms_users_id`='$ap_id_user' AND a.`tr_instrument_type_id`='$lp->id'
 			")->result();
 
