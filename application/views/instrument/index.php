@@ -99,6 +99,7 @@
 										</thead>
 										<tbody>
 											<?php foreach($instrument as $rec){?>
+												<?php if(count($rec['region'])>0){?>
 											<tr>
 												<td>
 													<?php 
@@ -130,6 +131,7 @@
 														</div>
 													</div>
 												</td>
+												<?php } ?>
 											</tr>
 											<?php } ?>
 										</tbody>
