@@ -5,13 +5,13 @@ class M_sensor extends CI_Model
 		parent::__construct();
 	}
 
-	function sensor($ap_id_user){ 
+	function sensor($ap_id_user, $site_id){ 
 		return $this->db->query("
 		SELECT a.*, b.`site_name`
 		FROM `sys_jenis_sensor` a 
 		LEFT JOIN ms_regions b ON a.`ms_regions_id`=b.id
 		LEFT JOIN ms_user_regions d ON a.`ms_regions_id`= d.`ms_regions_id`
-		WHERE d.ms_users_id='$ap_id_user';
+		WHERE d.ms_users_id='$ap_id_user' and a.`ms_regions_id`='$site_id';
 		")->result();
 	}
 	

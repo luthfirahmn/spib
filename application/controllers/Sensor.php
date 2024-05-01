@@ -15,8 +15,26 @@ class Sensor extends MY_Controller
 		$roles_id = $this->session->userdata('roles_id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['hak_akses']=$this->M_akses->hak_akses($roles_id,'Sensor');
-		$data['sensor']=$this->M_sensor->sensor($ap_id_user);
+		//$data['sensor']=$this->M_sensor->sensor($ap_id_user);
+		$data['region']=$this->M_sensor->region($ap_id_user);
 		$this->load->view('sensor/index', $data);
+	}
+
+	public function list()
+	{
+		$ap_id_user 	= $this->session->userdata('ap_id_user');
+		$site_id 		= $this->input->post("ms_regions_id");
+		$roles_id 		= $this->session->userdata('roles_id');
+		$data['sensor'] = $this->M_sensor->sensor($ap_id_user, $site_id);
+		$data['hak_akses']=$this->M_akses->hak_akses($roles_id,'Sensor');
+
+		$list=array(
+			'rc'		=>'00',
+			'err_desc'	=>'Sukses',
+			'tabel'		=> $this->load->view('sensor/tabel', $data, true)
+		);
+
+		echo json_encode($list);
 	}
 
 	public function tambah(){

@@ -65,46 +65,29 @@
 										<i class="ti ti-plus"></i>Tambah Data
 									</a>
 								<?php } ?>
-								<div class="table-responsive">
-									<table class="table" id="pc-dt-simple">
-										<thead>
-											<tr>
-												<th>Region</th>
-												<th>Jenis Sensor</th>
-												<th>Jumlah Data</th>
-												<th>Unit</th>
-												<th>Icon</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-										<tbody>
-											<?php foreach($sensor as $rec){?>
-											<tr>
-												<td><?= $rec->site_name ?></td>
-												<td><?= $rec->jenis_sensor ?></td>
-												<td></td>									
-												<td><?= $rec->unit_sensor ?></td>
-												<td></td>
-												<td>
-													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-														<div class="btn-group" role="group">
-															<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Action </button>
-															<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-																<?php if($hak_akses->update=='1'){?>
-																	<a class="dropdown-item" href="<?= base_url('Sensor/edit?id='.$rec->id)?>"> <i class="ti ti-edit"></i> Edit</a>
-																<?php } ?>
-																<?php if($hak_akses->delete=='1'){?>
-																	<a class="dropdown-item" href="<?= base_url('Sensor/hapus?id='.$rec->id)?>" onclick="return confirm('Are you sure?')"> <i class="ti ti-trash"></i> Delete</a>
-																<?php } ?>
-															</div>
-														</div>
-													</div>
-												</td>
-											</tr>
-											<?php } ?>
-										</tbody>
-									</table>
-								</div>
+
+
+								<div class="row">
+                                <!-- <div class="form-group col-md-2">
+                                    <label class="form-label" for="keyword">Keyword:</label>
+                                    <input type="text" class="form-control" id="keyword" name="keyword">
+                                </div> -->
+                                <div class="form-group col-md-4">
+                                    <label class="form-label" for="ms_regions_id">Site:</label>
+                                    <select class="form-control" name="ms_regions_id" id="ms_regions_id">
+                                        <option>--- Pilih Site ---</option>
+                                        <?php foreach ($region as $reg) { ?>
+                                            <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                
+                            </div>
+
+							<div id="list_data_filter">
+							</div>
+								
 							</div>
 						</div>
 					</div>
@@ -145,6 +128,33 @@
 		<script>
 			const dataTable = new simpleDatatables.DataTable('#pc-dt-simple');
 		</script>
+
+	<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
+    <script src="
+	https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script>
+        function Createtable() {
+            var ms_regions_id = $("#ms_regions_id").val();
+			var list_data_filter = $('#list_data_filter');
+            $.ajax({
+                url: "<?php echo base_url('Sensor/list'); ?>",
+                type: "POST",
+                data: {
+                    ms_regions_id: ms_regions_id
+                },
+                success: function(data) {
+                    var json = data,
+					obj = JSON.parse(json);
+					list_data_filter.html(obj.tabel);					
+                }
+            });
+        }
+
+        $("#ms_regions_id").change(function() {
+            Createtable()
+        });
+
+    </script>
 	</body>
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 </html>
