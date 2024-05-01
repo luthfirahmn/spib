@@ -44,11 +44,33 @@ class Sensor extends MY_Controller
 	}
 	
 	public function tambah_proses(){
+		$temp = FCPATH.'/assets/upload/sensor/';
+		
+		$nama_file       = $this->input->post('var_name');
+		$fileupload      = $_FILES['file']['tmp_name'];
+		$ImageName       = $_FILES['file']['name'];
+		$ImageType       = $_FILES['file']['type'];
+		
+		if (!empty($fileupload)){
+			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
+			$ImageExt       = str_replace('.','',$ImageExt); // Extension
+			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
+			$NewImageName   = str_replace(' ', '', $nama_file.'.'.$ImageExt);
+		
+			move_uploaded_file($_FILES["file"]["tmp_name"], $temp.$NewImageName); // Menyimpan file
+		
+			$foto=$NewImageName;
+		} else {
+			$foto='';
+		}
+
+
 		$body=array(
 			'ms_regions_id' => $this->input->post('ms_regions_id'),
 			'jenis_sensor' 	=> $this->input->post('jenis_sensor'),
 			'unit_sensor'	=> $this->input->post('unit_sensor'),
-			'var_name'		=> $this->input->post('var_name')
+			'var_name'		=> $this->input->post('var_name'),
+			'icon'			=> $foto
 		);
 
 		$status=$this->M_sensor->simpan($body);
@@ -69,13 +91,34 @@ class Sensor extends MY_Controller
 	}
 
 	public function edit_proses(){
+		$temp = FCPATH.'/assets/upload/sensor/';
+		
+		$nama_file       = $this->input->post('var_name');
+		$fileupload      = $_FILES['file']['tmp_name'];
+		$ImageName       = $_FILES['file']['name'];
+		$ImageType       = $_FILES['file']['type'];
+		
+		if (!empty($fileupload)){
+			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
+			$ImageExt       = str_replace('.','',$ImageExt); // Extension
+			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
+			$NewImageName   = str_replace(' ', '', $nama_file.'.'.$ImageExt);
+		
+			move_uploaded_file($_FILES["file"]["tmp_name"], $temp.$NewImageName); // Menyimpan file
+		
+			$foto=$NewImageName;
+		} else {
+			$foto='';
+		}
+
 		$id = $this->input->post('id');
 
 		$body=array(
 			'ms_regions_id' => $this->input->post('ms_regions_id'),
 			'jenis_sensor' 	=> $this->input->post('jenis_sensor'),
 			'unit_sensor'	=> $this->input->post('unit_sensor'),
-			'var_name'		=> $this->input->post('var_name')
+			'var_name'		=> $this->input->post('var_name'),
+			'icon'			=> $foto
 		);
 
 		$this->db->where('id', $id);

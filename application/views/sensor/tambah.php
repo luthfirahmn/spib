@@ -19,6 +19,9 @@
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/style.css" id="main-style-link" />
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/style-preset.css" id="preset-style-link" />
 
+		<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+		<link rel="stylesheet" href="<?= base_url()?>assets/imageupload/style.css">
+
 	</head>
 	<body>
 		<div class="loader-bg">
@@ -80,6 +83,20 @@
 										<input type="text" class="form-control" id="var_name" name="var_name" required>
 									</div>
 								</div>
+								
+								<div class="row">
+									<div class="form-group col-md-6">
+										<label class="form-label" for="file">Icon</label>
+										<input type="file" id="file" name="file" accept="image/*" hidden>
+										<div class="img-area" data-img="">
+											<i class='bx bxs-cloud-upload icon'></i>
+											<h3>Upload Icon</h3>
+											<p>Icon size must be less than <span>2MB</span></p>
+										</div>
+										<button type="button" class="select-image">Select Icon</button>
+									</div>
+								</div>
+								
 								<button type="submit" class="btn btn-primary">Submit</button>
 							</div>
 							
@@ -125,6 +142,8 @@
 				maxFilesize:1
 			};
 		</script>
+
+	<script src="<?= base_url()?>assets/imageupload/script.js"></script>
 	</body>
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/forms/form2_flu-uppy.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:18 GMT -->
 </html>
