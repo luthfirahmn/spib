@@ -57,6 +57,26 @@ class Site extends MY_Controller
 	}
 
 	public function add_proses(){
+		$temp = FCPATH.'/assets/upload/sensor/';
+		
+		$nama_file       = $this->input->post('site_name');
+		$fileupload      = $_FILES['file']['tmp_name'];
+		$ImageName       = $_FILES['file']['name'];
+		$ImageType       = $_FILES['file']['type'];
+		
+		if (!empty($fileupload)){
+			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
+			$ImageExt       = str_replace('.','',$ImageExt); // Extension
+			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
+			$NewImageName   = str_replace(' ', '', $nama_file.'.'.$ImageExt);
+		
+			move_uploaded_file($_FILES["file"]["tmp_name"], $temp.$NewImageName); // Menyimpan file
+		
+			$foto=$NewImageName;
+		} else {
+			$foto='';
+		}
+
 		$body=array(
 			'ms_regions_id'			=> $this->input->post('ms_regions_id'),
 			'site_name' 			=> $this->input->post('site_name'),
@@ -72,7 +92,8 @@ class Site extends MY_Controller
 			'elev_siaga3'			=> $this->input->post('elev_siaga3'),
 			'elev_siaga2'			=> $this->input->post('elev_siaga2'),
 			'elev_siaga1'			=> $this->input->post('elev_siaga1'),
-			'batas_kritis_vwp'		=> $this->input->post('batas_kritis_vwp')
+			'batas_kritis_vwp'		=> $this->input->post('batas_kritis_vwp'),
+			'foto'					=> $foto
 		);
 
 		$status=$this->db->insert('ms_sites', $body);
@@ -80,6 +101,26 @@ class Site extends MY_Controller
 	}
 
 	public function edit_proses(){
+		$temp = FCPATH.'/assets/upload/sensor/';
+		
+		$nama_file       = $this->input->post('site_name');
+		$fileupload      = $_FILES['file']['tmp_name'];
+		$ImageName       = $_FILES['file']['name'];
+		$ImageType       = $_FILES['file']['type'];
+		
+		if (!empty($fileupload)){
+			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
+			$ImageExt       = str_replace('.','',$ImageExt); // Extension
+			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
+			$NewImageName   = str_replace(' ', '', $nama_file.'.'.$ImageExt);
+		
+			move_uploaded_file($_FILES["file"]["tmp_name"], $temp.$NewImageName); // Menyimpan file
+		
+			$foto=$NewImageName;
+		} else {
+			$foto='';
+		}
+
 		$id=$this->input->post('idsite');
 		$body=array(
 			'site_name' 			=> $this->input->post('site_name'),
@@ -95,7 +136,8 @@ class Site extends MY_Controller
 			'elev_siaga3'			=> $this->input->post('elev_siaga3'),
 			'elev_siaga2'			=> $this->input->post('elev_siaga2'),
 			'elev_siaga1'			=> $this->input->post('elev_siaga1'),
-			'batas_kritis_vwp'		=> $this->input->post('batas_kritis_vwp')
+			'batas_kritis_vwp'		=> $this->input->post('batas_kritis_vwp'),
+			'foto'					=> $foto
 		);
 
 		$this->db->where('id', $id);

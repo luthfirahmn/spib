@@ -17,6 +17,9 @@
 		<link rel="stylesheet" href="<?= base_url()?>assets/fonts/material.css" />
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/style.css" id="main-style-link" />
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/style-preset.css" id="preset-style-link" />
+
+		<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+		<link rel="stylesheet" href="<?= base_url()?>assets/imageupload/style.css">
 	</head>
 	<body>
 		<div class="loader-bg">
@@ -152,7 +155,19 @@
 										</div>
 									</div>
 									
-									
+									<div class="row">
+										<div class="form-group col-md-6">
+											<label class="form-label" for="file">Foto Bendungan/Layout</label>
+											<input type="file" id="file" name="file" accept="image/*" hidden>
+											<div class="img-area" data-img="">
+												<i class='bx bxs-cloud-upload icon'></i>
+												<h3>Upload Foto Bendungan/Layout</h3>
+												<p>Image size must be less than <span>2MB</span></p>
+											</div>
+											<button type="button" class="select-image">Select Foto Bendungan/Layout</button>
+										</div>
+									</div>
+
 									<button type="submit" class="btn btn-primary">Submit</button>
 								</form>
 							</div>
@@ -188,6 +203,7 @@
 				</div>
 			</div>
 		</footer>
+		<script src="<?= base_url()?>assets/imageupload/script.js"></script>
 		<script src="<?= base_url()?>assets/js/plugins/popper.min.js"></script>
 		<script src="<?= base_url()?>assets/js/plugins/simplebar.min.js"></script>
 		<script src="<?= base_url()?>assets/js/plugins/bootstrap.min.js"></script>
