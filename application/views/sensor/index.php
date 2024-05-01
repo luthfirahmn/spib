@@ -129,32 +129,32 @@
 			const dataTable = new simpleDatatables.DataTable('#pc-dt-simple');
 		</script>
 
-	<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
-    <script src="
-	https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script>
-        function Createtable() {
-            var ms_regions_id = $("#ms_regions_id").val();
-			var list_data_filter = $('#list_data_filter');
-            $.ajax({
-                url: "<?php echo base_url('Sensor/list'); ?>",
-                type: "POST",
-                data: {
-                    ms_regions_id: ms_regions_id
-                },
-                success: function(data) {
-                    var json = data,
-					obj = JSON.parse(json);
-					list_data_filter.html(obj.tabel);					
-                }
-            });
-        }
+		<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
+		<script src="
+		https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+		<script>
+			function Createtable() {
+				var ms_regions_id = $("#ms_regions_id").val();
+				var list_data_filter = $('#list_data_filter');
+				$.ajax({
+					url: "<?php echo base_url('Sensor/list'); ?>",
+					type: "POST",
+					data: {
+						ms_regions_id: ms_regions_id
+					},
+					success: function(data) {
+						var json = data,
+						obj = JSON.parse(json);
+						list_data_filter.html(obj.tabel);					
+					}
+				});
+			}
 
-        $("#ms_regions_id").change(function() {
-            Createtable()
-        });
+			$("#ms_regions_id").change(function() {
+				Createtable()
+			});
 
-    </script>
+		</script>
 	</body>
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 </html>

@@ -183,8 +183,8 @@
 					mymap.removeLayer(marker);
 				}
 				marker = new L.marker(e.latlng).bindPopup('Hi There!').addTo(mymap);
-				$('#latitude').val(e.latlng['lat']);
-				$('#longitude').val(e.latlng['lng']);
+				$('#latitude').val(e.latlng['lat'].toFixed(6));
+				$('#longitude').val(e.latlng['lng'].toFixed(6));
 			});
 		</script>
 	</body>

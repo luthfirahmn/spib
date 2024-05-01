@@ -176,7 +176,7 @@
 		
 		<script src="<?= base_url()?>assets/js/customizer.js"></script>
 		<script type="text/javascript">
-			var mymap = L.map('mapid').setView([-6.17518434559771, 106.82719113101369], 13);
+			var mymap = L.map('mapid').setView([-6.175184, 106.827191], 13);
 			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 				attribution: '© OpenStreetMap contributors'
 			}).addTo(mymap);
@@ -187,8 +187,8 @@
 					mymap.removeLayer(marker);
 				}
 				marker = new L.marker(e.latlng).bindPopup('Hi There!').addTo(mymap);
-				$('#latitude').val(e.latlng['lat']);
-				$('#longitude').val(e.latlng['lng']);
+				$('#latitude').val(e.latlng['lat'].toFixed(6));
+				$('#longitude').val(e.latlng['lng'].toFixed(6));
 			});
 		</script>
 	</body>
