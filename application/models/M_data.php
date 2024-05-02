@@ -38,11 +38,14 @@ class M_data extends CI_Model
 		if (!empty($tanggal)) {
 			if ($waktu == 'jam') {
 				$ddt = "AND t1.tanggal = '$tanggal'";
+				$grdt= "GROUP BY DATE_FORMAT(t1.jam, '%H') ";
 			} else {
 				$ddt = "AND DATE_FORMAT(t1.tanggal, '%Y-%m') = '$tanggal'";
+				$grdt= "GROUP BY t1.tanggal ";
 			}
 		} else {
 			$ddt = "";
+			$grdt= "";
 		}
 
 
@@ -57,6 +60,7 @@ class M_data extends CI_Model
 						WHERE t1.kode_instrument = '$kode_instrument'
 						{$kt}
 						{$ddt}
+						{$grdt}
 						ORDER BY t1.tanggal ASC, t1.jam ASC
 		");
 		$data = $query->result_array();

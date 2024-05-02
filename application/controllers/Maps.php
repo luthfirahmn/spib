@@ -8,18 +8,16 @@ class Maps extends MY_Controller
         $this->load->dbutil();
         $this->load->database();
         $this->load->model('M_akses');
-        $this->load->model('M_station');
+        $this->load->model('M_maps');
     }
 
 
     public function index()
     {
-
-
         $roles_id = $this->session->userdata('roles_id');
         $ap_id_user = $this->session->userdata('ap_id_user');
         $data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Maps');
-        $data['station'] = $this->M_station->station($ap_id_user);
+        $data['station'] = $this->M_maps->station($ap_id_user);
         $this->load->view('maps/index', $data);
     }
 }

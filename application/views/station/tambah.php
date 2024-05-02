@@ -18,14 +18,11 @@
 		<link rel="stylesheet" href="<?= base_url()?>assets/fonts/material.css" />
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/style.css" id="main-style-link" />
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/style-preset.css" id="preset-style-link" />
-
-
-
-
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
 		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
+		<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+		<link rel="stylesheet" href="<?= base_url()?>assets/imageupload/style.css">
 	</head>
 	<body>
 		<div class="loader-bg">
@@ -129,10 +126,15 @@
 										<input type="number" step=".001" class="form-control" id="elevasi" name="elevasi" required>
 									</div>
 									<div class="form-group col-md-6">
-										<label for="foto" class="form-label">Foto</label>
-										<div class="input-group">
-											<input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+										<label class="form-label" for="file">Foto</label>
+										<input type="file" id="file" name="foto" accept="image/*" hidden>
+										<div class="img-area" data-img="">
+											<i class='bx bxs-cloud-upload icon'></i>
+											<h3>Upload Foto</h3>
+											<p>Foto size must be less than <span>2MB</span></p>
+											
 										</div>
+										<button type="button" class="select-image">Select Foto</button>
 									</div>
 								</div>
 								<button type="submit" class="btn btn-primary">Submit</button>
@@ -167,6 +169,7 @@
 				</div>
 			</div>
 		</footer>
+		<script src="<?= base_url()?>assets/imageupload/script.js"></script>
 		<script src="<?= base_url()?>assets/js/plugins/popper.min.js"></script>
 		<script src="<?= base_url()?>assets/js/plugins/simplebar.min.js"></script>
 		<script src="<?= base_url()?>assets/js/plugins/bootstrap.min.js"></script>
@@ -176,7 +179,7 @@
 		
 		<script src="<?= base_url()?>assets/js/customizer.js"></script>
 		<script type="text/javascript">
-			var mymap = L.map('mapid').setView([-6.17518434559771, 106.82719113101369], 13);
+			var mymap = L.map('mapid').setView([-6.175184, 106.827191], 13);
 			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 				attribution: '© OpenStreetMap contributors'
 			}).addTo(mymap);
@@ -187,8 +190,8 @@
 					mymap.removeLayer(marker);
 				}
 				marker = new L.marker(e.latlng).bindPopup('Hi There!').addTo(mymap);
-				$('#latitude').val(e.latlng['lat']);
-				$('#longitude').val(e.latlng['lng']);
+				$('#latitude').val(e.latlng['lat'].toFixed(6));
+				$('#longitude').val(e.latlng['lng'].toFixed(6));
 			});
 		</script>
 	</body>

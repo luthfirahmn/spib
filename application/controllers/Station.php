@@ -15,8 +15,26 @@ class Station extends MY_Controller
 		$roles_id = $this->session->userdata('roles_id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['hak_akses']=$this->M_akses->hak_akses($roles_id,'Station');
-		$data['station']=$this->M_station->station($ap_id_user);
+		//$data['station']=$this->M_station->station($ap_id_user);
+		$data['region']=$this->M_station->region($ap_id_user);
 		$this->load->view('station/index', $data);
+	}
+
+	public function list()
+	{
+		$ap_id_user 	= $this->session->userdata('ap_id_user');
+		$site_id 		= $this->input->post("ms_regions_id");
+		$roles_id 		= $this->session->userdata('roles_id');
+		$data['station'] = $this->M_station->station($ap_id_user, $site_id);
+		$data['hak_akses']=$this->M_akses->hak_akses($roles_id,'Station');
+
+		$list=array(
+			'rc'		=>'00',
+			'err_desc'	=>'Sukses',
+			'tabel'		=> $this->load->view('station/tabel', $data, true)
+		);
+
+		echo json_encode($list);
 	}
 
 	public function tambah(){
