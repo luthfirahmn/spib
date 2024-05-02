@@ -219,8 +219,11 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div id="add_sensor"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="hasil_data_jadi"></div>
                         </div>
                     </div>
 
@@ -285,13 +288,6 @@
                                 <label for="formFile" class="form-label">&nbsp;</label>
                                 <button type="button" class="btn btn-primary form-control" id="download_template">Download Template</button>
                             </div>
-                        </div>
-                    </div>
-
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div id="add_sensor"></div>
                         </div>
                     </div>
 
@@ -367,18 +363,31 @@
             var add_site = $("#add_site").val();
             var add_tanggal = $("#add_tanggal").val();
             var add_jam = $("#add_jam").val();
-            var hitung_sensor = [];
+            var data_mentah = [];
+            var data_jadi = [];
             var isAllValueExist = true;
-            $(".hitung_sensor").each(function() {
+            $(".data_mentah").each(function() {
                 if ($(this).val() != "") {
-                    hitung_sensor.push({
-                        id: $(this).attr('id'),
+                    data_mentah.push({
+                        id: $(this).attr('id_sensor'),
                         value: $(this).val()
                     });
                 } else {
                     isAllValueExist = false;
                 }
             });
+
+            $(".data_jadi_id_sensor").each(function() {
+                if ($(this).val() != "") {
+                    data_jadi.push({
+                        id: $(this).attr('id_sensor'),
+                        value: $(this).val()
+                    });
+                } else {
+                    isAllValueExist = false;
+                }
+            });
+
             if (add_instrument == "" || add_site == "" || add_tanggal == "" || add_jam == "" || isAllValueExist ==
                 false) {
                 toastr.info('Harap isi semua kolom yang tersedia')
@@ -393,7 +402,8 @@
                     add_site: add_site,
                     add_tanggal: add_tanggal,
                     add_jam: add_jam,
-                    hitung_sensor: hitung_sensor
+                    data_mentah: data_mentah,
+                    data_jadi: data_jadi
                 },
                 success: function(response) {
                     if (!response.error) {
@@ -604,25 +614,23 @@
 
                     if (result.length > 0) {
                         var html = '';
+                        html += `<p class="fw-bold">Data Mentah</p>`
                         for (i = 0; i < result.length; i++) {
                             html += `
-						<div class="row">
-                            <div class="mb-2 col-md-6">
+                                <div class="mb-1 ">
                                 <label>` + result[i].jenis_sensor + `</label>
-                                <input type="number" class="form-control" id="jenis_sensor_id_` + result[i].id + `" value="0" ">
-                            </div>
-                            <div class="mb-2 col-md-4">
-                                <label>Hitung ` + result[i].jenis_sensor + `</label>
-                                <input type="number" class="form-control hitung_sensor" id="hitung_` + result[i].id + `"  readonly>
-                                
-                            </div>  
-                            <div class="mb-2 mt-4 col-md-2">
-                                <label></label>
-                                <button type="button" class="btn btn-primary" onclick="hitung('hitung_` + result[i].id + `', 'jenis_sensor_id_` + result[i].id + `')">Hitung</button>
-                                
-                            </div>  
-                        </div>`
+                                <input type="number" class="form-control data_mentah" id_sensor="` + result[i].id + `" id="` + result[i].var_name + `" value="0" ">
+                                </div>
+                            `
                         }
+
+                        html += `
+                        </div>
+                        <div class="mt-2 col-md-2">
+                            <label></label>
+                            <button type="button" class="btn btn-primary" onclick="hitung()">Hitung</button>
+                        </div>  
+                        `;
                         add_sensor.innerHTML = html;
                     } else {
                         var html = `<div>
@@ -692,8 +700,51 @@
         });
 
 
-        function hitung(id, targetId) {
-            $('#' + id).val($('#' + targetId).val() * 1)
+        function hitung() {
+            var instrument = $("#add_instrument").val();
+            var data_mentah = {};
+            $('.data_mentah').each(function() {
+                var id = $(this).attr('id');
+                var val = $(this).val();
+                data_mentah[id] = val;
+            });
+
+            $.ajax({
+                url: "<?= base_url('Data/hitung'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    instrument: instrument,
+                    data_mentah: data_mentah
+                },
+                success: function(response) {
+                    if (response.error !== true) {
+                        var html = '';
+                        html += `<p class="fw-bold ">Data Jadi</p>
+                                <table class="table table-striped " id="data_jadi_setelah_hitung">
+                                    <tbody>`
+                        for (i = 0; i < response.data.length; i++) {
+                            html += `
+                            <input type="hidden" class="data_jadi_id_sensor" id_sensor="` + response.data[i].id_sensor + `" value="` + response.data[i].hasil + `">
+                                        <tr>
+                                            <td>` + response.data[i].nama_sensor + `</td>
+                                            <td class="fw-bold">` + response.data[i].hasil + `</td>
+                                        </tr>`;
+
+                        }
+                        html += `
+                                    </tbody>
+                                </table>`;
+                        hasil_data_jadi.innerHTML = html;
+
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('Terjadi Kesalahan');
+                }
+            });
         }
 
         // UPLOAD ===========

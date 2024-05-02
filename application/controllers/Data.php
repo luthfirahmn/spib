@@ -197,7 +197,6 @@ class Data extends MY_Controller
 		$add_tanggal = $this->input->post('add_tanggal');
 		$add_jam = $this->input->post('add_jam');
 		$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $add_instrument))->row()->kode_instrument;
-		$nama_instrument = $this->db->get_where("tr_instrument", array('id' => $add_instrument))->row()->nama_instrument;
 		$db_site = $this->change_connection($add_site);
 
 
@@ -220,39 +219,41 @@ class Data extends MY_Controller
 					throw new Exception("Data gagal di input");
 				}
 
-				$hitung_sensor = $this->input->post('hitung_sensor');
+				$data_mentah_raw = $this->input->post('data_mentah');
 
-				foreach ($hitung_sensor as $sensor) {
-					$data_id = explode('_', $sensor['id']);
-
-					$sensor_id = $data_id[1];
-
-					$data_primer = $sensor['value'];
-
-					switch ($nama_instrument) {
-						case "Pressure":
-							$data_jadi = $data_primer / 100;
-							break;
-						case "Hall Effect":
-							$derajat_angin = $data_primer;
-
-							$data_jadi = $derajat_angin;
-							break;
-						default:
-							$data_jadi = $data_primer;
-							break;
-					}
-
+				foreach ($data_mentah_raw  as $row) {
+					$id_sensor = $row['id'];
+					$data_mentah = $row['value'];
 					$data_value = array(
 						'data_id' => $last_id,
-						'sensor_id' => $sensor_id,
-						'data_primer' => $data_primer,
+						'sensor_id' => $id_sensor,
+						'data_primer' => $data_mentah,
+						'data_jadi' => "",
+						"created_by" => $this->session->userdata('ap_id_user'),
+						"updated_by" => $this->session->userdata('ap_id_user'),
+					);
+					$insert_data_value = $db_site->insert("data_value", $data_value);
+					if (!$insert_data_value) {
+
+						throw new Exception("Gagal insert data value");
+					}
+				}
+
+
+				$data_jadi_raw = $this->input->post('data_jadi');
+
+				foreach ($data_jadi_raw  as $row) {
+					$id_sensor = $row['id'];
+					$data_jadi = $row['value'];
+					$data_value = array(
+						'data_id' => $last_id,
+						'sensor_id' => $id_sensor,
+						'data_primer' => 0,
 						'data_jadi' => $data_jadi,
 						"created_by" => $this->session->userdata('ap_id_user'),
 						"updated_by" => $this->session->userdata('ap_id_user'),
 					);
 					$insert_data_value = $db_site->insert("data_value", $data_value);
-
 					if (!$insert_data_value) {
 
 						throw new Exception("Gagal insert data value");
@@ -266,10 +267,340 @@ class Data extends MY_Controller
 				throw new Exception("Koneksi db gagal");
 			}
 		} catch (Exception $e) {
+			$db_site->rollback();
 			echo json_encode(["error" => true, "message" => $e->getMessage()]);
 		}
 	}
 
+	public function hitung()
+	{
+		try {
+			$instrument_id = $_POST["instrument"];
+			$data_mentah = $_POST["data_mentah"];
+
+			$data = array();
+			$data["data_mentah"] = $data_mentah;
+			$data["instrument_id"] = $instrument_id;
+
+			$hasil = $this->hitung_data($data);
+			if (!$hasil) {
+				throw new Exception("Formula belum tersedia");
+			}
+
+			echo json_encode(["error" => false, "data" => $hasil]);
+		} catch (Exception $e) {
+			echo json_encode(["error" => true, "message" => $e->getMessage()]);
+		}
+	}
+
+	private function hitung_data($data)
+	{
+		try {
+
+			$get_instrument = $this->db->get_where("tr_instrument", array('id' => $data["instrument_id"]))->row();
+
+			$type_instrument_name = $this->db->get_where("tr_instrument_type", array('id' => $get_instrument->tr_instrument_type_id))->row()->name;
+
+
+			$koefisien_arr = $this->db->get_where("tr_koefisien", array(
+				'tr_instrument_id' => $get_instrument->id,
+				'tr_instrument_type_id' => $get_instrument->tr_instrument_type_id
+			))->row()->parameter;
+
+
+			$koefisien = json_decode($koefisien_arr, true);
+
+			$query = $this->db->query("SELECT 
+											t1.id,
+											t1.tr_koefisien_id,
+											t1.jenis_sensor_jadi,
+											t2.jenis_sensor nama_sensor,
+											t2.var_name kode_sensor_jadi
+										 FROM tr_koefisien_sensor_non_vwp t1
+										 INNER JOIN  sys_jenis_sensor t2 ON t1.jenis_sensor_jadi = t2.id
+										 WHERE t1.tr_instrument_id = {$data['instrument_id']}
+										 AND t1.jenis_sensor_jadi != 0
+										 ");
+			$data_jadi = $query->result();
+			// pre($data_jadi);
+			$hasil = [];
+			switch ($type_instrument_name) {
+				case "Pressure":
+					foreach ($data_jadi as $row) {
+						$action = $this->pressure($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				case "Ultrasonic":
+					foreach ($data_jadi as $row) {
+						$action = $this->ultrasonic($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				case "Hall Effect":
+					foreach ($data_jadi as $row) {
+						$action = $this->hall_effect($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				case "Standard":
+					foreach ($data_jadi as $row) {
+						$action = $this->standard($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				case "Tipping Bucket":
+					foreach ($data_jadi as $row) {
+						$action = $this->tipping_bucket($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				case "Open Stand Pipe":
+					foreach ($data_jadi as $row) {
+						$action = $this->open_stand_pipe($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				case "Seismograph":
+					foreach ($data_jadi as $row) {
+						$action = $this->seismograph($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				case "Accelerograph":
+					foreach ($data_jadi as $row) {
+						$action = $this->accelerograph($row, $data["data_mentah"], $koefisien);
+						if (!$action) {
+							throw new Exception();
+						}
+						$hasil[] = $action;
+					}
+					break;
+				default:
+					throw new Exception();
+			}
+
+			return $hasil;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function pressure($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "tinggi_muka_air":
+					$hitung = (($data_mentah["ketinggian_air"] / 100) + 0) + $koefisien["elevasi_sensor"];
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "debit_rembesan":
+					$hitung = $koefisien["konstanta_v"] * pow(($data_mentah["ketinggian_air"] / 100) + 0, 2.5) * 1000;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function ultrasonic($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "tinggi_muka_air":
+					$hitung = $koefisien["elevasi_sensor"] - (($data_mentah["ketinggian_air"] / 100) + 0);
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "status_siaga":
+					if (($data_mentah["status_siaga"]) >= 4) {
+						$hitung = "-";
+					} elseif (($data_mentah["status_siaga"]) < 4 and ($data_mentah["status_siaga"]) >= 3) {
+						$hitung = "Normal";
+					} elseif (($data_mentah["status_siaga"]) < 3 and ($data_mentah["status_siaga"]) >= 2) {
+						$hitung = "Waspada";
+					} elseif (($data_mentah["status_siaga"]) < 2 and ($data_mentah["status_siaga"]) >= 1) {
+						$hitung = "Siaga";
+					} elseif (($data_mentah["status_siaga"]) < 1) {
+						$hitung = "Awas";
+					}
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "evaporation":
+					$hitung = $koefisien["elevasi_sensor"] - (($data_mentah["ketinggian_air"] / 100) + 0);
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function hall_effect($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "wind_direction":
+					$arah_mata_angin = $data_mentah["derajat_arah_angin"] + 0;
+
+					if ($arah_mata_angin > 337.5 || $arah_mata_angin < 22.5) {
+						$arah_angin = "Utara";
+					} elseif ($arah_mata_angin >= 22.5 && $arah_mata_angin < 67.5) {
+						$arah_angin = "Timur Laut";
+					} elseif ($arah_mata_angin >= 67.5 && $arah_mata_angin < 112.5) {
+						$arah_angin = "Timur";
+					} elseif ($arah_mata_angin >= 112.5 && $arah_mata_angin < 157.5) {
+						$arah_angin = "Tenggara";
+					} elseif ($arah_mata_angin >= 157.5 && $arah_mata_angin < 202.5) {
+						$arah_angin = "Selatan";
+					} elseif ($arah_mata_angin >= 202.5 && $arah_mata_angin < 247.5) {
+						$arah_angin = "Barat Daya";
+					} elseif ($arah_mata_angin >= 247.5 && $arah_mata_angin < 292.5) {
+						$arah_angin = "Barat";
+					} elseif ($arah_mata_angin >= 292.5 && $arah_mata_angin < 337.5) {
+						$arah_angin = "Barat Laut";
+					}
+
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $arah_angin];
+					break;
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function standard($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "wind_speed":
+					$hitung = $data_mentah["wind_speed"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "wind_direction":
+					$hitung = $data_mentah["wind_direction"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "air_temperature":
+					$hitung = $data_mentah["air_temperature"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "air_humidity":
+					$hitung = $data_mentah["air_humidity"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "air_pressure":
+					$hitung = $data_mentah["air_pressure"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "solar_radiation":
+					$hitung = $data_mentah["solar_radiation"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				case "kedalaman_air":
+					$hitung = $data_mentah["kedalaman_air"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function tipping_bucket($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "rainfall":
+					$hitung = ($data_mentah["knock"] + 0) * $koefisien["resolusi_sensor"];
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function open_stand_pipe($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "tinggi_muka_air":
+					$hitung = $koefisien["elevasi_top_pipa"] - ($data_mentah["kedalaman_air"] + 0);
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function seismograph($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "seismometer":
+					$hitung = $data_mentah["seismometer"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	public function accelerograph($data_jadi, $data_mentah, $koefisien)
+	{
+		try {
+			switch ($data_jadi->kode_sensor_jadi) {
+				case "accelerometer":
+					$hitung = $data_mentah["accelerometer"] + 0;
+					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
+					break;
+				default:
+					throw new Exception();
+			}
+		} catch (Exception $e) {
+			return false;
+		}
+	}
 
 	public function download_template($id_instrument)
 	{
@@ -331,26 +662,32 @@ class Data extends MY_Controller
 		echo base_url('assets/temp/' . $nama_file);
 	}
 
-
 	public function proses_upload_data()
 	{
-		// Load library PHPExcel
-		$this->load->library('PHPExcel');
-
-		// Konfigurasi upload
-		$config['upload_path'] =  FCPATH . 'assets/temp/';
-		$config['allowed_types'] = 'xlsx|xls';
-		$this->load->library('upload', $config);
 
 
 		$site = $_POST['site'];
 		$stasiun = $_POST['stasiun'];
 		$instrument = $_POST['instrument'];
 
-		if (!$this->upload->do_upload('file')) {
-			$error = array('error' => true, 'message' => $this->upload->display_errors());
-			echo json_encode($error);
-		} else {
+		$db_site = $this->change_connection($site);
+
+		if (!$db_site) {
+			echo json_encode(["error" => true, "message" => "Koneksi database ke site bermasalah"]);
+		}
+
+		$db_site->trans_begin();
+		try {
+			$this->load->library('PHPExcel');
+
+			// Konfigurasi upload
+			$config['upload_path'] =  FCPATH . 'assets/temp/';
+			$config['allowed_types'] = 'xlsx|xls';
+			$this->load->library('upload', $config);
+
+			if (!$this->upload->do_upload('file')) {
+				throw new Exception($this->upload->display_errors());
+			}
 			$data = $this->upload->data();
 			$file_path = $data['full_path'];
 
@@ -358,31 +695,31 @@ class Data extends MY_Controller
 
 			$sheet = $objPHPExcel->getActiveSheet();
 
-
-
-			$query = $this->db->query("SELECT 
-										t1.id,
-										(SELECT nama_instrument FROM tr_instrument WHERE id = '$instrument' LIMIT 1) nama_instrument,
-										(SELECT kode_instrument FROM tr_instrument WHERE id = '$instrument' LIMIT 1) kode_instrument
-									FROM sys_jenis_sensor t1
-									WHERE t1.id IN (SELECT t2.jenis_sensor_mentah
-													FROM tr_koefisien_sensor_non_vwp  t2
-													WHERE t2.jenis_sensor_mentah = t1.id
-													AND t2.tr_instrument_id = '$instrument')
-									ORDER BY t1.id ASC
-									");
-			$jenis_sensor_ids = $query->result_array();
-
-			// Array untuk menyimpan hasil
-			$result = array();
-
-			// Loop untuk membaca baris-baris data
+			$sensor_mentah = [];
 			foreach ($sheet->getRowIterator() as $index => $row) {
-				if ($index < 2) continue;
 
-				$jenis_sensor_id = $jenis_sensor_ids[0]['id'];
-				$nama_instrument = $jenis_sensor_ids[0]['nama_instrument'];
-				$kode_instrument = $jenis_sensor_ids[0]['kode_instrument'];
+				$cellIterator = $row->getCellIterator();
+				$cellIterator->setIterateOnlyExistingCells(false);
+
+				$data_row = array();
+				foreach ($cellIterator as  $cell) {
+					$var_name = $this->db->get_where("sys_jenis_sensor", array('jenis_sensor' => $cell->getValue()))->row();
+					if (isset($var_name->var_name)) {
+						$data_row[] = $var_name->var_name;
+					} else {
+						$data_row[] = $cell->getValue();
+					}
+				}
+
+				$start_index = 3;
+				$sensor_mentah = array_slice($data_row, $start_index);
+
+				break;
+			}
+
+			foreach ($sheet->getRowIterator() as $index => $row) {
+
+				if ($index < 2) continue;
 
 				$cellIterator = $row->getCellIterator();
 				$cellIterator->setIterateOnlyExistingCells(false);
@@ -390,79 +727,98 @@ class Data extends MY_Controller
 				$data_row = array();
 
 				foreach ($cellIterator as $cell) {
-					$data_row[] = $cell->getValue();
+					if ($cell->getColumn() == 'B') {
+						$date = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
+						$formattedDate = date('Y-m-d', $date);
+						$data_row[] = $formattedDate;
+					} elseif ($cell->getColumn() == 'C') {
+						$time = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
+						$formattedTime = date('H:i:s', $time);
+						$data_row[] = $formattedTime;
+					} else {
+						$data_row[] = $cell->getValue();
+					}
 				}
 
-				$data_primer = $data_row[3];
+				$start_index = 3;
+				$value_mentah = array_slice($data_row, $start_index);
 
-				switch ($nama_instrument) {
-					case "Pressure":
-						$data_jadi = $data_primer / 100;
-						break;
-					case "Hall Effect":
-						$derajat_angin = $data_primer;
+				$data = [];
 
-						// if ($derajat_angin > 337.5 || $derajat_angin < 22.5) {
-						// 	$arah_angin = "Utara";
-						// } elseif ($derajat_angin >= 22.5 && $derajat_angin < 67.5) {
-						// 	$arah_angin = "Timur Laut";
-						// } elseif ($derajat_angin >= 67.5 && $derajat_angin < 112.5) {
-						// 	$arah_angin = "Timur";
-						// } elseif ($derajat_angin >= 112.5 && $derajat_angin < 157.5) {
-						// 	$arah_angin = "Tenggara";
-						// } elseif ($derajat_angin >= 157.5 && $derajat_angin < 202.5) {
-						// 	$arah_angin = "Selatan";
-						// } elseif ($derajat_angin >= 202.5 && $derajat_angin < 247.5) {
-						// 	$arah_angin = "Barat Daya";
-						// } elseif ($derajat_angin >= 247.5 && $derajat_angin < 292.5) {
-						// 	$arah_angin = "Barat";
-						// } elseif ($derajat_angin >= 292.5 && $derajat_angin < 337.5) {
-						// 	$arah_angin = "Barat Laut";
-						// }
-
-						$data_jadi = $derajat_angin;
-						break;
-					default:
-						$data_jadi = $data_primer;
-						break;
+				$data = array();
+				$data_mentah_raw = array_combine($sensor_mentah, $value_mentah);
+				$data["data_mentah"] = $data_mentah_raw;
+				$data["instrument_id"] = $instrument;
+				$hasil = $this->hitung_data($data);
+				// pre($hasil);
+				if (!$hasil) {
+					throw new Exception("Formula belum tersedia");
 				}
 
-
-				$db_site = $this->change_connection($site);
-
-				$data_array = array(
-					"kode_instrument" => $kode_instrument,
-					"tanggal" => $data_row[1],
-					"jam" => $data_row[2],
-					"keterangan" => "MANUAL",
-					"created_by" => $this->session->userdata('ap_id_user'),
-					"updated_by" => $this->session->userdata('ap_id_user'),
-				);
-				$query = $db_site->insert('data', $data_array);
-
-				$last_insert_id = $db_site->insert_id();
-
-				$sensor_data = array(
-					'data_id' => $last_insert_id,
-					'sensor_id' => $jenis_sensor_id,
-					'data_primer' => $data_primer,
-					'data_jadi' => $data_jadi,
+				$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $instrument))->row()->kode_instrument;
+				$data = array(
+					'kode_instrument' => $kode_instrument,
+					'tanggal' => $data_row[1],
+					'jam' => $data_row[1],
+					'keterangan' => "MANUAL",
 					"created_by" => $this->session->userdata('ap_id_user'),
 					"updated_by" => $this->session->userdata('ap_id_user'),
 				);
 
+				$db_site->insert("data", $data);
+				$last_id = $db_site->insert_id();
 
-				$query = $db_site->insert('data_value', $sensor_data);
+				if ($last_id < 1) {
+					throw new Exception("Data gagal di input");
+				}
+
+				foreach ($data_mentah_raw as $index => $row) {
+					$id_sensor = $this->db->get_where("sys_jenis_sensor", array('var_name' => $index))->row()->id;
+
+					$data_value = array(
+						'data_id' => $last_id,
+						'sensor_id' => $id_sensor,
+						'data_primer' => $row,
+						'data_jadi' => "",
+						"created_by" => $this->session->userdata('ap_id_user'),
+						"updated_by" => $this->session->userdata('ap_id_user'),
+					);
+					$insert_data_value = $db_site->insert("data_value", $data_value);
+					if (!$insert_data_value) {
+						throw new Exception("Gagal insert data value");
+					}
+				}
 
 
-				$result[] = $sensor_data;
+
+				foreach ($hasil  as $row) {
+					$data_value = array(
+						'data_id' => $last_id,
+						'sensor_id' => $row['id_sensor'],
+						'data_primer' => 0,
+						'data_jadi' => $row['hasil'],
+						"created_by" => $this->session->userdata('ap_id_user'),
+						"updated_by" => $this->session->userdata('ap_id_user'),
+					);
+					$insert_data_value = $db_site->insert("data_value", $data_value);
+					if (!$insert_data_value) {
+
+						throw new Exception("Gagal insert data value");
+					}
+				}
 			}
 
+			$db_site->trans_commit();
 			unlink($file_path);
 
-			echo json_encode(array('error' => false));
+			echo json_encode(array('error' => false, "message" => "data berhasil diinput"));
+		} catch (Exception $e) {
+			$db_site->rollback();
+			echo json_encode(["error" => true, "message" => $e->getMessage()]);
 		}
 	}
+
+
 
 	public function change_connection($id_regions)
 	{
