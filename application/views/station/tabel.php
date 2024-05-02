@@ -1,3 +1,4 @@
+
 <div class="table-responsive">
 	<table class="table" id="pc-dt-simple">
 		<thead>
@@ -11,6 +12,7 @@
 				<th>Jumlah Instrument</th>
 				<th>Jenis Komunikasi</th>
 				<th>GSM/IP</th>
+				<th>Foto</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -26,6 +28,12 @@
 				<td></td>
 				<td><?= $rec->komunikasi ?></td>
 				<td><?= $rec->kontak_gsm ?></td>
+				<td>
+					<div class="d-inline-block align-middle" bis_skin_checked="1">
+						<img src="<?= base_url('assets/upload/station/'.$rec->foto)?>" alt="image" class="img-radius wid-40 align-top m-r-15" onClick="viewImage('<?= $rec->foto ?>')">
+					</div>
+				</td>
+
 				<td>
 					<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 						<div class="btn-group" role="group">
@@ -46,3 +54,29 @@
 		</tbody>
 	</table>
 </div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <span class="close" onClick="closeImage()">&times;</span>
+  <img class="modal-content" id="img01" onClick="closeImage()">
+</div>
+
+
+
+<link rel="stylesheet" href="<?= base_url()?>assets/imageupload/preview.css"/>
+<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
+<script>
+	
+	function viewImage(foto) {
+		var modal = document.getElementById("myModal");
+		var modalImg = document.getElementById("img01");
+		modal.style.display = "block";
+  		modalImg.src = "<?= base_url('assets/upload/station/')?>"+foto;
+
+	}
+
+	function closeImage() { 
+		var modal = document.getElementById("myModal");
+		modal.style.display = "none";
+	}
+</script>
