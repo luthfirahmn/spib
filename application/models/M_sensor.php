@@ -7,11 +7,12 @@ class M_sensor extends CI_Model
 
 	function sensor($ap_id_user, $site_id){ 
 		return $this->db->query("
-		SELECT a.*, b.`site_name`
+		SELECT a.*, f.`site_name`
 		FROM `sys_jenis_sensor` a 
-		LEFT JOIN ms_regions b ON a.`ms_regions_id`=b.id
 		LEFT JOIN ms_user_regions d ON a.`ms_regions_id`= d.`ms_regions_id`
-		WHERE d.ms_users_id='$ap_id_user' and a.`ms_regions_id`='$site_id';
+		LEFT JOIN sys_jenis_sensor_region e ON a.id=e.sys_jenis_sensor_id
+		LEFT JOIN ms_regions f ON e.`ms_regions_id`=f.id
+		WHERE d.ms_users_id='$ap_id_user' AND e.`ms_regions_id`='$site_id';
 		")->result();
 	}
 	
@@ -34,9 +35,35 @@ class M_sensor extends CI_Model
 		")->result();
 	}
 
-	function simpan($body){
+	function region_detail($ms_users_id, $sys_jenis_sensor_id)
+	{
+		return $this->db->query("
+		SELECT b.id, b.site_name, 
+		COALESCE (
+		(
+			SELECT ms_regions_id FROM `sys_jenis_sensor_region` WHERE `ms_regions_id`=b.id AND `sys_jenis_sensor_id`='$sys_jenis_sensor_id'
+		), '99') AS pilih
+		FROM ms_user_regions a
+		LEFT JOIN `ms_regions` b ON a.`ms_regions_id`=b.`id`
+		WHERE a.ms_users_id='$ms_users_id'
+		")->result();
+	}
+
+	function simpan($body, $site){
 		$this->db->trans_begin();
 		$this->db->insert('sys_jenis_sensor', $body);
+
+		$sensor = $this->db->query('select max(id) as id from sys_jenis_sensor')->row();
+		$sys_jenis_sensor_id = $sensor->id;
+
+		for ($i = 0; $i < sizeof($site); $i++) {
+			$detail = array(
+				'ms_regions_id' 		=> $site[$i],
+				'sys_jenis_sensor_id' => $sys_jenis_sensor_id
+			);
+
+			$this->db->insert('sys_jenis_sensor_region', $detail);
+		}
 		
 		if ($this->db->trans_status() === FALSE){
 			$this->db->trans_rollback();

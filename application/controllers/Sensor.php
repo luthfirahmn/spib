@@ -64,16 +64,16 @@ class Sensor extends MY_Controller
 			$foto='';
 		}
 
-
+		$site = $this->input->post('ms_regions_id');
 		$body=array(
-			'ms_regions_id' => $this->input->post('ms_regions_id'),
+			'ms_regions_id' => '1',
 			'jenis_sensor' 	=> $this->input->post('jenis_sensor'),
 			'unit_sensor'	=> $this->input->post('unit_sensor'),
 			'var_name'		=> $this->input->post('var_name'),
 			'icon'			=> $foto
 		);
 
-		$status=$this->M_sensor->simpan($body);
+		$status=$this->M_sensor->simpan($body, $site);
 		if($status){
 			$this->session->set_flashdata('warning', 'Sukses!');
 		}else{
@@ -85,7 +85,7 @@ class Sensor extends MY_Controller
 	public function edit(){
 		$id = $this->input->get('id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
-		$data['region']=$this->M_sensor->region($ap_id_user);
+		$data['region'] = $this->M_sensor->region_detail($ap_id_user, $id);
 		$data['sensor']=$this->M_sensor->sensor_detail($id);
 		$this->load->view('sensor/edit', $data);
 	}
@@ -111,18 +111,41 @@ class Sensor extends MY_Controller
 			$foto='';
 		}
 
-		$id = $this->input->post('id');
+		$id 	= $this->input->post('id');
+		$site 	= $this->input->post('ms_regions_id');
 
 		$body=array(
-			'ms_regions_id' => $this->input->post('ms_regions_id'),
+			'ms_regions_id' => '1',
 			'jenis_sensor' 	=> $this->input->post('jenis_sensor'),
 			'unit_sensor'	=> $this->input->post('unit_sensor'),
 			'var_name'		=> $this->input->post('var_name'),
 			'icon'			=> $foto
 		);
 
+		$this->db->trans_begin();
+		$this->db->delete('sys_jenis_sensor_region', array('sys_jenis_sensor_id' => $id));
+
+
 		$this->db->where('id', $id);
-		$status=$this->db->update('sys_jenis_sensor', $body);
+		$this->db->update('sys_jenis_sensor', $body);
+
+		for ($i = 0; $i < sizeof($site); $i++) {
+			$detail = array(
+				'ms_regions_id' 		=> $site[$i],
+				'sys_jenis_sensor_id' 	=> $id
+			);
+
+			$this->db->insert('sys_jenis_sensor_region', $detail);
+		}
+		
+		if ($this->db->trans_status() === FALSE){
+			$this->db->trans_rollback();
+		}else{
+			$this->db->trans_commit();
+		}
+
+		$status=$this->db->trans_status();
+
 
 		if($status){
 			$this->session->set_flashdata('warning', 'Sukses!');
@@ -134,7 +157,7 @@ class Sensor extends MY_Controller
 
 	function hapus(){
 		$id = $this->input->get('id');
-		$status=$this->db->delete('sys_jenis_sensor', array('id' => $id));;
+		$status=$this->db->delete('sys_jenis_sensor', array('id' => $id));
 		if($status){
 			$this->session->set_flashdata('warning', 'Sukses!');
 		}else{

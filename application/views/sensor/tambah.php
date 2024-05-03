@@ -66,9 +66,9 @@
 									</div>
 									<div class="form-group col-md-6">
 										<label class="form-label" for="ms_regions_id">Site</label>
-										<select class="form-control" name="ms_regions_id" id="ms_regions_id">
-											<?php foreach($region as $reg){?>
-											<option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+										<select class="form-control" name="ms_regions_id[]" id="choices-multiple-remove-button" placeholder="This is a placeholder" multiple required>
+											<?php foreach($region as $rg){?>
+											<option value="<?= $rg->id ?>"><?= $rg->site_name ?></option>
 											<?php } ?>
 										</select>
 									</div>
@@ -143,7 +143,16 @@
 			};
 		</script>
 
-	<script src="<?= base_url()?>assets/imageupload/script.js"></script>
+		<script src="<?= base_url()?>assets/imageupload/script.js"></script>
+
+		<script src="<?= base_url()?>assets/js/plugins/choices.min.js"></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				var multipleCancelButton = new Choices('#choices-multiple-remove-button', {
+					removeItemButton: true
+				});
+			});
+		</script>
 	</body>
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/forms/form2_flu-uppy.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:18 GMT -->
 </html>
