@@ -115,7 +115,10 @@
 
         var popupContent =
             '<img id="stationImage" src="<?= base_url('assets/upload/station/') . $stasiun->foto ?>" style="width: 100%;">';
+        popupContent += '<p style="margin-top: 10px;">Nama Site: <?= $stasiun->site_name ?></p>';
         popupContent += '<p style="margin-top: 10px;">Nama Stasiun: <?= $stasiun->nama_stasiun ?></p>';
+        popupContent += '<a href="#"><p style="margin-top: 10px;">Koordinat: <?= $stasiun->longitude." ".$stasiun->latitude ?></p></a>';
+        popupContent += '<a href="#" type="button" class="btn btn-light-primary mb-3">Detail</a>';
 
         var popup = L.popup()
             .setLatLng(e.latlng)
