@@ -57,6 +57,15 @@ $submenu = $this->session->userdata('submenu');
 						}
 					}
 				?>
+
+				<li class="pc-item">
+					<a href="Grafik" class="pc-link">
+						<span class="pc-micon">
+							<i class="ti ti-chart-infographic"></i>
+						</span>
+						<span class="pc-mtext">Grafik</span>
+					</a>
+				</li>
 			</ul>
 		</div>
 	</div>
