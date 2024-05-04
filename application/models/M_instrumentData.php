@@ -10,10 +10,10 @@ class M_instrumentData extends CI_Model
 	{
 		return $this->db->query("
 			SELECT a.*, b.site_name, c.name, d.nama_stasiun FROM `tr_instrument` a
-			LEFT JOIN `ms_regions` b ON a.`ms_regions_id`=b.id
-			LEFT JOIN `tr_instrument_type` c ON a.`tr_instrument_type_id`=c.id
-			LEFT JOIN `ms_stasiun` d ON a.`ms_stasiun_id`=d.id
-			LEFT JOIN `ms_user_regions` e ON a.`ms_regions_id`=e.ms_regions_id
+			INNER JOIN `ms_regions` b ON a.`ms_regions_id`=b.id
+			INNER JOIN `tr_instrument_type` c ON a.`tr_instrument_type_id`=c.id
+			INNER JOIN `ms_stasiun` d ON a.`ms_stasiun_id`=d.id
+			INNER JOIN `ms_user_regions` e ON a.`ms_regions_id`=e.ms_regions_id
 			WHERE e.`ms_users_id`='$ap_id_user'
 		")->result();
 	}
@@ -24,7 +24,7 @@ class M_instrumentData extends CI_Model
 	{
 		$type = $this->db->query("
 		SELECT a.* FROM `tr_instrument_type` a
-		LEFT JOIN `tr_instrument_tp_region` b ON a.`id`=b.`tr_instrument_type_id`
+		INNER JOIN `tr_instrument_tp_region` b ON a.`id`=b.`tr_instrument_type_id`
 		WHERE b.`ms_regions_id`='$ms_regions_id'
 		")->result();
 
@@ -57,7 +57,7 @@ class M_instrumentData extends CI_Model
 		return $this->db->query("
 		SELECT b.id, b.site_name 
 		FROM ms_user_regions a
-		LEFT JOIN `ms_regions` b ON a.`ms_regions_id`=b.`id`
+		INNER JOIN `ms_regions` b ON a.`ms_regions_id`=b.`id`
 		WHERE ms_users_id='$ms_users_id'
 		")->result();
 	}

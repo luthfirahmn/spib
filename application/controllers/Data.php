@@ -604,7 +604,6 @@ class Data extends MY_Controller
 
 	public function download_template($id_instrument)
 	{
-
 		$query = $this->db->query("SELECT 
 										t1.jenis_sensor
 									FROM sys_jenis_sensor t1
@@ -639,13 +638,19 @@ class Data extends MY_Controller
 
 		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d'));
 		$col++;
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, '00:00:00');
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, '0:00:00');
 		$col++;
 
 		foreach ($query->result_array() as $sensor_data) {
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
 			$col++;
 		}
+
+		// Atur format kolom tanggal
+		$objPHPExcel->getActiveSheet()->getStyle('B')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDDSLASH);
+
+		// Atur format kolom jam
+		$objPHPExcel->getActiveSheet()->getStyle('C')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_TIME4);
 
 		$row++;
 		$no++;
@@ -728,12 +733,28 @@ class Data extends MY_Controller
 
 				foreach ($cellIterator as $cell) {
 					if ($cell->getColumn() == 'B') {
-						$date = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
-						$formattedDate = date('Y-m-d', $date);
+						if (is_numeric($cell->getValue())) {
+
+							$date = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
+
+							$formattedDate = date('Y-m-d', $date);
+						} else {
+							$formattedDate = $cell->getValue();
+						}
+
+
 						$data_row[] = $formattedDate;
 					} elseif ($cell->getColumn() == 'C') {
-						$time = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
-						$formattedTime = date('H:i:s', $time);
+
+						// pre($cell->getValue());
+						if (is_numeric($cell->getValue())) {
+							$time = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
+							// date_default_timezone_set('Asia/Jakarta');
+							$formattedTime = date('H:i:s', $time);
+						} else {
+							$formattedTime = $cell->getValue();
+						}
+
 						$data_row[] = $formattedTime;
 					} else {
 						$data_row[] = $cell->getValue();
@@ -754,12 +775,11 @@ class Data extends MY_Controller
 				if (!$hasil) {
 					throw new Exception("Formula belum tersedia");
 				}
-
 				$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $instrument))->row()->kode_instrument;
 				$data = array(
 					'kode_instrument' => $kode_instrument,
 					'tanggal' => $data_row[1],
-					'jam' => $data_row[1],
+					'jam' => $data_row[2],
 					'keterangan' => "MANUAL",
 					"created_by" => $this->session->userdata('ap_id_user'),
 					"updated_by" => $this->session->userdata('ap_id_user'),
