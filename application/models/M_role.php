@@ -23,91 +23,34 @@ class M_role extends CI_Model
 		")->result();
 	}
 
-// 	function is_valid($u, $p)
-// 	{
-// 		return $this->db->get_where('ms_users', 
-// 			array(
-// 				'username' 	=> $u,
-// 				'password'	=> $p
-// 			)
-// 		);
-// 	}
 
-// 	function list_user(){
-// 		return $this->db->query('
-// 		SELECT a.*, b.role_name FROM ms_users a
-// 		LEFT JOIN ms_roles b ON a.ms_roles_id=b.id
-// 		')->result();
-// 	}
+	function simpan($body, $role_name){
+		$this->db->trans_begin();
+		// $this->db->delete('ms_users', array('id' => $id_user));
+		// $this->db->delete('ms_user_regions', array('ms_users_id' => $id_user));
+		// $this->db->insert('ms_users', $body);
 
-// 	function region(){ 
-// 		$this->db->select('id, site_name');
-// 		$this->db->from('ms_regions');
-// 		$query = $this->db->get()->result();
+		$role=$this->db->query("select * from ms_roles where role_name='$role_name'")->result();
 
-// 		return $query;
-// 	}
+		if($role){}else{
+			$this->db->insert('ms_roles', $body);
+			$rl = $this->db->query('select max(id) as id from ms_roles')->row();
+			$ms_roles_id = $rl->id;
 
-
-
-// 	function simpan($body, $site){
-// 		$this->db->trans_begin();
-// 		$this->db->insert('ms_users', $body);
-
-// 		$user=$this->db->query('select max(id) as id from ms_users')->row();
-// 		$ms_users_id=$user->id;
-
-// 		for($i=0; $i<sizeof($site); $i++){
-// 			$detail = array(
-// 				'ms_users_id' 	=> $ms_users_id,
-// 				'ms_regions_id' => $site[$i]
-// 			);
-			
-// 			$this->db->insert('ms_user_regions', $detail);
-// 		}
+			$this->db->query("
+				INSERT INTO `ms_accesscontrols`(ms_roles_id, ms_menus_id)
+				SELECT '$ms_roles_id', id FROM `ms_menus`
+			");
+		}
 		
-// 		if ($this->db->trans_status() === FALSE){
-// 			$this->db->trans_rollback();
-// 		}else{
-// 			$this->db->trans_commit();
-// 		}
+		if ($this->db->trans_status() === FALSE){
+			$this->db->trans_rollback();
+		}else{
+			$this->db->trans_commit();
+		}
 
-// 		return $this->db->trans_status();
-// 	}
-
-// 	function detail_user($id){
-// 		return $this->db->query("
-// 		SELECT a.*, b.id as role_id, b.role_name FROM ms_users a
-// 		LEFT JOIN ms_roles b ON a.ms_roles_id=b.id
-// 		where a.id='$id'
-// 		")->row();
-// 	}
-
-// 	function edit($body, $site, $id_user){
-// 		$this->db->trans_begin();
-// 		$this->db->delete('ms_users', array('id' => $id_user));
-// 		$this->db->delete('ms_user_regions', array('ms_users_id' => $id_user));
-// 		$this->db->insert('ms_users', $body);
-// 		$user=$this->db->query('select max(id) as id from ms_users')->row();
-// 		$ms_users_id=$user->id;
-
-// 		for($i=0; $i<sizeof($site); $i++){
-// 			$detail = array(
-// 				'ms_users_id' 	=> $ms_users_id,
-// 				'ms_regions_id' => $site[$i]
-// 			);
-			
-// 			$this->db->insert('ms_user_regions', $detail);
-// 		}
-		
-// 		if ($this->db->trans_status() === FALSE){
-// 			$this->db->trans_rollback();
-// 		}else{
-// 			$this->db->trans_commit();
-// 		}
-
-// 		return $this->db->trans_status();
-// 	}
+		return $this->db->trans_status();
+	}
 
 // 	function hapus($id_user){
 // 		$this->db->trans_begin();

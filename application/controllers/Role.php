@@ -56,44 +56,26 @@ class Role extends MY_Controller
 	// 	$this->load->view('region/tambah');
 	// }
 	
-	// public function tambah_proses(){
-	// 	$config['upload_path'] = FCPATH.'/assets/upload/';
-    //     $config['allowed_types'] = 'gif|jpg|png';
-    //     $config['max_size'] = 2000;
-  
-  
-    //     $this->load->library('upload', $config);
-  
-    //     if (!$this->upload->do_upload('logo_site')) 
-    //     {
-    //         $logo_site='';
-    //     } 
-    //     else
-    //     {
-    //         $data =  $this->upload->data();
-    //         $logo_site=$data['file_name'];
-    //     }
+	public function tambah_proses(){
+		$role_name 	= $this->input->post('nama_role');
+		$body=array(
+			'role_name' 	=> $role_name,
+			'status' 		=> $this->input->post('status'),
+			'created_by'	=> $this->session->userdata('ap_nama'),
+			'created_at'	=> date("Y-m-d h:i:s"),
+			'updated_by'	=> $this->session->userdata('ap_nama'),
+			'updated_at'	=> date("Y-m-d h:i:s")
+		);
 
-	// 	$body=array(
-	// 		'site_name' 		=> $this->input->post('site_name'),
-	// 		'database_name' 	=> $this->input->post('database_name'),
-	// 		'database_host'		=> $this->input->post('database_host'),
-	// 		'database_port'		=> $this->input->post('database_port'),
-	// 		'database_username'	=> $this->input->post('database_username'),
-	// 		'database_password'	=> $this->input->post('database_password'),
-	// 		'app_name'			=> $this->input->post('app_name'),
-	// 		'logo_site'			=> $data['file_name']
-	// 	);
-
-	// 	$status=$this->db->insert('ms_regions', $body);
-	// 	if($status){
-	// 		$this->session->set_flashdata('success', 'Sukses!');
-	// 	}else{
-	// 		$this->session->set_flashdata('warning', 'Gagal!');
-	// 	}
+		$status=$this->M_role->simpan($body, $role_name);
+		if($status){
+			$this->session->set_flashdata('success', 'Sukses!');
+		}else{
+			$this->session->set_flashdata('warning', 'Gagal!');
+		}
 		
-	// 	redirect('Region');
-	// }
+		redirect('Role');
+	}
 
 	// public function edit(){
 	// 	$id=$this->input->get('id');
