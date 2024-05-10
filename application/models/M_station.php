@@ -1,21 +1,24 @@
 <?php
-class M_station extends CI_Model 
+class M_station extends CI_Model
 {
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
 	}
 
-	function station($ap_id_user, $site_id){ 
+	function station($ap_id_user, $site_id)
+	{
 		return $this->db->query("
-		SELECT a.*, b.`site_name`
+		SELECT a.*, b.`site_name`, (SELECT COUNT(*) FROM tr_instrument t1 WHERE t1.ms_stasiun_id = a.id) count 
 		FROM `ms_stasiun` a 
 		LEFT JOIN ms_regions b ON a.`ms_regions_id`=b.id
 		LEFT JOIN ms_user_regions d ON a.`ms_regions_id`= d.`ms_regions_id`
 		WHERE d.ms_users_id='$ap_id_user' and a.`ms_regions_id`='$site_id';
 		")->result();
 	}
-	
-	function station_detail($id){ 
+
+	function station_detail($id)
+	{
 		return $this->db->query("
 		SELECT a.*, b.`site_name`
 		FROM `ms_stasiun` a 
@@ -25,7 +28,8 @@ class M_station extends CI_Model
 		")->row();
 	}
 
-	function region($ms_users_id){ 
+	function region($ms_users_id)
+	{
 		return $this->db->query("
 		SELECT b.id, b.site_name 
 		FROM ms_user_regions a
@@ -33,5 +37,4 @@ class M_station extends CI_Model
 		WHERE ms_users_id='$ms_users_id'
 		")->result();
 	}
-
 }

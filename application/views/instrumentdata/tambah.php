@@ -99,13 +99,16 @@
 									</div>
 								</div>
 								<div class="row">
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 										<label class="form-label" for="longitude">Longitude</label>
-										<input type="text" class="form-control" id="longitude" name="longitude">
+										<input type="text" class="form-control" id="longitude" name="longitude" placeholder="Masukan Longitude atau Koordinate X">
 									</div>
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 										<label class="form-label" for="latitude">Latitude</label>
-										<input type="text" class="form-control" id="latitude" name="latitude">
+										<input type="text" class="form-control" id="latitude" name="latitude" placeholder="Masukan Longitude atau Koordinate Y">
+									</div>
+									<div class="col-md-4" id="convertKoor">
+
 									</div>
 								</div>
 
@@ -296,7 +299,8 @@
 				<form id="formProdukEdit" method="POST" enctype='multipart/form-data'>
 					<input type="text" class="form-control" id="idTemptEdit" name="idTemptEdit" hidden>
 					<div class="modal-body">
-						<div class="row">
+						<input class="form-control" name="modal_type" id="modal_type_edit" hidden>
+						<!-- <div class="row">
 							<div class="form-group col-md-6">
 								<label class="form-label" for="modal_type_edit">Instrument Type</label>
 								<select class="form-control" name="modal_type" id="modal_type_edit" onchange="getNameType(this, 'edit');">
@@ -306,7 +310,7 @@
 									<?php } ?>
 								</select>
 							</div>
-						</div>
+						</div> -->
 						<div id="modal_vwp_edit" style="display: none;">
 							<div class="row">
 								<div class="form-group col-md-12">
@@ -364,6 +368,8 @@
 	<script src="<?= base_url() ?>assets/js/plugins/feather.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/customizer.js"></script>
 	<script src="<?= base_url() ?>assets/js/plugins/choices.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			// var multipleCancelButton = new Choices('#modal_sensor_create', {
@@ -482,16 +488,40 @@
 						$('#latitude').prop('readonly', false);
 						$('#longitude').prop('readonly', false);
 						$("#form_vwp").show();
+						$("#convertKoor").html('<button type="button" id="convertButton" class="btn btn-sm btn-primary" style="margin-top: 35px;">Convert Coordinates</button>');
 					} else {
 						$('#latitude').prop('readonly', true);
 						$('#longitude').prop('readonly', true);
 						$("#form_vwp").hide();
+						$("#convertKoor").empty();
 					}
 				}
 			};
 			xhttp.open("GET", "<?php echo base_url('InstrumentData/getNameType'); ?>" + '?kode=' + idtype, true);
 			xhttp.send();
 		});
+
+		$(document).on("click", "#convertButton", function() {
+			// Ambil nilai Easting dan Northing dari input
+			var easting = parseFloat($("#longitude").val());
+			var northing = parseFloat($("#latitude").val());
+
+			var lonlat = convertUTMToLongLat(easting, northing, 51);
+			// Tampilkan hasil konversi pada input longitude dan latitude
+			$("#longitude").val(lonlat[0]);
+			$("#latitude").val(lonlat[1]);
+		});
+
+		function convertUTMToLongLat(utmX, utmY, utmZone) {
+			// Definisikan proyeksi UTM dan WGS84 (longlat)
+			var utmProjection = '+proj=utm +zone=' + utmZone + ' +ellps=WGS84 +datum=WGS84 +units=m +no_defs';
+			var longLatProjection = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
+
+			// Transformasikan koordinat UTM ke Longlat
+			var utmCoords = proj4(utmProjection, longLatProjection, [utmX, utmY]);
+
+			return utmCoords;
+		}
 
 		$("#ms_stasiun_id").change(function() {
 			document.getElementById('latitude').value = "";
@@ -606,13 +636,14 @@
 			e.preventDefault();
 
 			var action = 'edit';
+			// var modal_type = $('#modal_type_create').val()
 			var modal_type = $('#modal_type_' + action).val()
 
-			if (!modal_type) {
-				// alert('Instrument type is required');
-				notiftoast('Instrument type is required');
-				return
-			}
+			// if (!modal_type) {
+			// 	// alert('Instrument type is required');
+			// 	notiftoast('Instrument type is required');
+			// 	return
+			// }
 
 			var isJenisSensorValid = validateJenisSensor('edit');
 
@@ -698,16 +729,17 @@
 				if (this.readyState == 4 && this.status == 200) {
 					var action = 'edit';
 					var type = JSON.parse(xhttp.responseText).type;
-					var html_type = "<option>--Pilih Instrument Type--</option>";
-					var modal_type_edit = document.getElementById('modal_type_' + action);
-					if (type.length > 0) {
-						for (x = 0; x < type.length; x++) {
-							html_type += '<option value=' + type[x].id + ' ' + type[x].pilih + '>' + type[x].name + '</option>';
-						}
-					} else {
-						html_type = '<option>--Tidak Ada Data--</option>';
-					}
-					modal_type_edit.innerHTML = html_type;
+					// var html_type = "<option>--Pilih Instrument Type--</option>";
+					// var modal_type_edit = document.getElementById('modal_type_' + action);
+					// if (type.length > 0) {
+					// 	for (x = 0; x < type.length; x++) {
+					// 		html_type += '<option value=' + type[x].id + ' ' + type[x].pilih + '>' + type[x].name + '</option>';
+					// 	}
+					// } else {
+					// 	html_type = '<option>--Tidak Ada Data--</option>';
+					// }
+					// console.log(modal_type_edit);
+					// modal_type_edit.innerHTML = html_type;
 
 					//modal parameter
 					var modal_parameter = document.getElementById('modal_parameter_' + action);
@@ -739,7 +771,7 @@
 			};
 			xhttp.open("GET", "<?php echo base_url('InstrumentData/detailTempKoefisien'); ?>" + '?id=' + id, true);
 			xhttp.send();
-
+			$('#modal_type_edit').val($('#tr_instrument_type_id').val())
 			$('#exampleModalEdit').modal('show');
 		};
 	</script>

@@ -143,7 +143,7 @@ class Data extends MY_Controller
 				$kt = "";
 			}
 
-			$query = $db_site->query("SELECT id FROM data  WHERE kode_instrument = '$kode_instrument' AND {$kt} {$ddt}");
+			$query = $db_site->query("SELECT id FROM data  WHERE kode_instrument = '$kode_instrument' {$kt} {$ddt}");
 			$result = $query->result();
 			if (!empty($result)) {
 				foreach ($result as $row) {
@@ -281,7 +281,6 @@ class Data extends MY_Controller
 			$data = array();
 			$data["data_mentah"] = $data_mentah;
 			$data["instrument_id"] = $instrument_id;
-
 			$hasil = $this->hitung_data($data);
 			if (!$hasil) {
 				throw new Exception("Formula belum tersedia");
@@ -315,288 +314,23 @@ class Data extends MY_Controller
 											t1.tr_koefisien_id,
 											t1.jenis_sensor_jadi,
 											t2.jenis_sensor nama_sensor,
-											t2.var_name kode_sensor_jadi
+											t2.var_name kode_sensor_jadi,
+											t2.unit_sensor
 										 FROM tr_koefisien_sensor_non_vwp t1
 										 INNER JOIN  sys_jenis_sensor t2 ON t1.jenis_sensor_jadi = t2.id
 										 WHERE t1.tr_instrument_id = {$data['instrument_id']}
 										 AND t1.jenis_sensor_jadi != 0
+										 ORDER BY t1.id ASC
 										 ");
 			$data_jadi = $query->result();
 			// pre($data_jadi);
-			$hasil = [];
-			switch ($type_instrument_name) {
-				case "Pressure":
-					foreach ($data_jadi as $row) {
-						$action = $this->pressure($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				case "Ultrasonic":
-					foreach ($data_jadi as $row) {
-						$action = $this->ultrasonic($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				case "Hall Effect":
-					foreach ($data_jadi as $row) {
-						$action = $this->hall_effect($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				case "Standard":
-					foreach ($data_jadi as $row) {
-						$action = $this->standard($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				case "Tipping Bucket":
-					foreach ($data_jadi as $row) {
-						$action = $this->tipping_bucket($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				case "Open Stand Pipe":
-					foreach ($data_jadi as $row) {
-						$action = $this->open_stand_pipe($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				case "Seismograph":
-					foreach ($data_jadi as $row) {
-						$action = $this->seismograph($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				case "Accelerograph":
-					foreach ($data_jadi as $row) {
-						$action = $this->accelerograph($row, $data["data_mentah"], $koefisien);
-						if (!$action) {
-							throw new Exception();
-						}
-						$hasil[] = $action;
-					}
-					break;
-				default:
-					throw new Exception();
-			}
 
+			$hasil = formula($type_instrument_name, $data_jadi, $data, $koefisien);
+
+			if (!$hasil) {
+				throw new Exception();
+			}
 			return $hasil;
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function pressure($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "tinggi_muka_air":
-					$hitung = (($data_mentah["ketinggian_air"] / 100) + 0) + $koefisien["elevasi_sensor"];
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "debit_rembesan":
-					$hitung = $koefisien["konstanta_v"] * pow(($data_mentah["ketinggian_air"] / 100) + 0, 2.5) * 1000;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				default:
-					throw new Exception();
-			}
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function ultrasonic($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "tinggi_muka_air":
-					$hitung = $koefisien["elevasi_sensor"] - (($data_mentah["ketinggian_air"] / 100) + 0);
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "status_siaga":
-					if (($data_mentah["status_siaga"]) >= 4) {
-						$hitung = "-";
-					} elseif (($data_mentah["status_siaga"]) < 4 and ($data_mentah["status_siaga"]) >= 3) {
-						$hitung = "Normal";
-					} elseif (($data_mentah["status_siaga"]) < 3 and ($data_mentah["status_siaga"]) >= 2) {
-						$hitung = "Waspada";
-					} elseif (($data_mentah["status_siaga"]) < 2 and ($data_mentah["status_siaga"]) >= 1) {
-						$hitung = "Siaga";
-					} elseif (($data_mentah["status_siaga"]) < 1) {
-						$hitung = "Awas";
-					}
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "evaporation":
-					$hitung = $koefisien["elevasi_sensor"] - (($data_mentah["ketinggian_air"] / 100) + 0);
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				default:
-					throw new Exception();
-			}
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function hall_effect($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "wind_direction":
-					$arah_mata_angin = $data_mentah["derajat_arah_angin"] + 0;
-
-					if ($arah_mata_angin > 337.5 || $arah_mata_angin < 22.5) {
-						$arah_angin = "Utara";
-					} elseif ($arah_mata_angin >= 22.5 && $arah_mata_angin < 67.5) {
-						$arah_angin = "Timur Laut";
-					} elseif ($arah_mata_angin >= 67.5 && $arah_mata_angin < 112.5) {
-						$arah_angin = "Timur";
-					} elseif ($arah_mata_angin >= 112.5 && $arah_mata_angin < 157.5) {
-						$arah_angin = "Tenggara";
-					} elseif ($arah_mata_angin >= 157.5 && $arah_mata_angin < 202.5) {
-						$arah_angin = "Selatan";
-					} elseif ($arah_mata_angin >= 202.5 && $arah_mata_angin < 247.5) {
-						$arah_angin = "Barat Daya";
-					} elseif ($arah_mata_angin >= 247.5 && $arah_mata_angin < 292.5) {
-						$arah_angin = "Barat";
-					} elseif ($arah_mata_angin >= 292.5 && $arah_mata_angin < 337.5) {
-						$arah_angin = "Barat Laut";
-					}
-
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $arah_angin];
-					break;
-				default:
-					throw new Exception();
-			}
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function standard($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "wind_speed":
-					$hitung = $data_mentah["wind_speed"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "wind_direction":
-					$hitung = $data_mentah["wind_direction"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "air_temperature":
-					$hitung = $data_mentah["air_temperature"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "air_humidity":
-					$hitung = $data_mentah["air_humidity"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "air_pressure":
-					$hitung = $data_mentah["air_pressure"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "solar_radiation":
-					$hitung = $data_mentah["solar_radiation"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				case "kedalaman_air":
-					$hitung = $data_mentah["kedalaman_air"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				default:
-					throw new Exception();
-			}
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function tipping_bucket($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "rainfall":
-					$hitung = ($data_mentah["knock"] + 0) * $koefisien["resolusi_sensor"];
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-
-				default:
-					throw new Exception();
-			}
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function open_stand_pipe($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "tinggi_muka_air":
-					$hitung = $koefisien["elevasi_top_pipa"] - ($data_mentah["kedalaman_air"] + 0);
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-
-				default:
-					throw new Exception();
-			}
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function seismograph($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "seismometer":
-					$hitung = $data_mentah["seismometer"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				default:
-					throw new Exception();
-			}
-		} catch (Exception $e) {
-			return false;
-		}
-	}
-
-	public function accelerograph($data_jadi, $data_mentah, $koefisien)
-	{
-		try {
-			switch ($data_jadi->kode_sensor_jadi) {
-				case "accelerometer":
-					$hitung = $data_mentah["accelerometer"] + 0;
-					return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor, 'hasil' => $hitung];
-					break;
-				default:
-					throw new Exception();
-			}
 		} catch (Exception $e) {
 			return false;
 		}

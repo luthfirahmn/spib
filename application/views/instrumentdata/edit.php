@@ -41,7 +41,7 @@
 									<a href="<?= base_url() ?>">Home</a>
 								</li>
 								<li class="breadcrumb-item">
-									<a href="<?= base_url('Instrument') ?>">Instrument</a>
+									<a href="<?= base_url('InstrumentData') ?>">Instrument</a>
 								</li>
 								<li class="breadcrumb-item" aria-current="page">edit</li>
 							</ul>
@@ -106,13 +106,16 @@
 									</div>
 								</div>
 								<div class="row">
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 										<label class="form-label" for="longitude">Longitude</label>
-										<input type="text" class="form-control" id="longitude" name="longitude" value="<?= $detail['instrument']->longitude ?>" <?= ($detail['instrument']->type == 'VWP') ? 'readonly' : '' ?>>
+										<input type="text" class="form-control" id="longitude" name="longitude" placeholder="Masukan Longitude atau Koordinate X" value="<?= $detail['instrument']->longitude ?>" <?= ($detail['instrument']->type == 'NON_VWP') ? 'readonly' : '' ?>>
 									</div>
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 										<label class="form-label" for="latitude">Latitude</label>
-										<input type="text" class="form-control" id="latitude" name="latitude" value="<?= $detail['instrument']->latitude ?>" <?= ($detail['instrument']->type == 'VWP') ? 'readonly' : '' ?>>
+										<input type="text" class="form-control" id="latitude" name="latitude" placeholder="Masukan Longitude atau Koordinate Y" value="<?= $detail['instrument']->latitude ?>" <?= ($detail['instrument']->type == 'NON_VWP') ? 'readonly' : '' ?>>
+									</div>
+									<div class="col-md-4" id="convertKoor">
+
 									</div>
 								</div>
 
@@ -168,27 +171,27 @@
 									<div class="row">
 										<div class="form-group col-md-6">
 											<label class="form-label" for="elevasi_puncak">Elevasi Puncak</label>
-											<input type="number" class="form-control" id="elevasi_puncak" name="elevasi_puncak" value="<?= isset($detail['instalasi']->elevasi_puncak) ? $detail['instalasi']->elevasi_puncak : "" ?>">
+											<input type="number" step="0.00001" class="form-control" id="elevasi_puncak" name="elevasi_puncak" value="<?= isset($detail['instalasi']->elevasi_puncak) ? $detail['instalasi']->elevasi_puncak : "" ?>">
 										</div>
 										<div class="form-group col-md-6">
 											<label class="form-label" for="elevasi_permukaan_saat_ini">Elevasi Permukaan Saat Ini</label>
-											<input type="number" class="form-control" id="elevasi_permukaan_saat_ini" name="elevasi_permukaan_saat_ini" value="<?= isset($detail['instalasi']->elevasi_permukaan_saat_ini) ? $detail['instalasi']->elevasi_permukaan_saat_ini : "" ?>">
+											<input type="number" step="0.00001" class="form-control" id="elevasi_permukaan_saat_ini" name="elevasi_permukaan_saat_ini" value="<?= isset($detail['instalasi']->elevasi_permukaan_saat_ini) ? $detail['instalasi']->elevasi_permukaan_saat_ini : "" ?>">
 										</div>
 									</div>
 									<div class="row">
 										<div class="form-group col-md-6">
 											<label class="form-label" for="elevasi_sensor">Elevasi Sensor</label>
-											<input type="number" class="form-control" id="elevasi_sensor" name="elevasi_sensor" value="<?= isset($detail['instalasi']->elevasi_sensor) ? $detail['instalasi']->elevasi_sensor : "" ?>">
+											<input type="number" step="0.00001" class="form-control" id="elevasi_sensor" name="elevasi_sensor" value="<?= isset($detail['instalasi']->elevasi_sensor) ? $detail['instalasi']->elevasi_sensor : "" ?>">
 										</div>
 										<div class="form-group col-md-6">
 											<label class="form-label" for="elevasi_ground_water_level">Elevasi Ground Water Level</label>
-											<input type="number" class="form-control" id="elevasi_ground_water_level" name="elevasi_ground_water_level" value="<?= isset($detail['instalasi']->elevasi_ground_water_level) ? $detail['instalasi']->elevasi_ground_water_level : "" ?>">
+											<input type="number" step="0.00001" class="form-control" id="elevasi_ground_water_level" name="elevasi_ground_water_level" value="<?= isset($detail['instalasi']->elevasi_ground_water_level) ? $detail['instalasi']->elevasi_ground_water_level : "" ?>">
 										</div>
 									</div>
 									<div class="row">
 										<div class="form-group col-md-6">
 											<label class="form-label" for="kedalaman_sensor">Kedalaman Sensor</label>
-											<input type="number" class="form-control" id="kedalaman_sensor" name="kedalaman_sensor" value="<?= isset($detail['instalasi']->elevasi_kedalaman_sensor) ? $detail['instalasi']->elevasi_kedalaman_sensor : "" ?>">
+											<input type="number" step="0.00001" class="form-control" id="kedalaman_sensor" name="kedalaman_sensor" value="<?= isset($detail['instalasi']->kedalaman_sensor) ? $detail['instalasi']->kedalaman_sensor : "" ?>">
 										</div>
 									</div>
 
@@ -239,6 +242,7 @@
 				<form id="formProduk" method="POST" enctype='multipart/form-data'>
 					<div id="formBodyCreateOriginal">
 						<div class="modal-body" id="formBodyCreate">
+							<input class="form-control" name="modal_type" id="modal_type_create" hidden>
 							<!-- <div class="row">
 								<div class="form-group col-md-6">
 									<label class="form-label" for="modal_type_create">Instrument Type</label>
@@ -312,7 +316,8 @@
 				<form id="formProdukEdit" method="POST" enctype='multipart/form-data'>
 					<input type="text" class="form-control" id="idTemptEdit" name="idTemptEdit" hidden>
 					<div class="modal-body">
-						<div class="row">
+						<input class="form-control" name="modal_type" id="modal_type_edit" hidden>
+						<!-- <div class="row">
 							<div class="form-group col-md-6">
 								<label class="form-label" for="modal_type_edit">Instrument Type</label>
 								<select class="form-control" name="modal_type" id="modal_type_edit" onchange="getNameType(this, 'edit');">
@@ -322,8 +327,8 @@
 									<?php } ?>
 								</select>
 							</div>
-						</div>
-						<div id="modal_vwp_edit" style="display: none;">
+						</div> -->
+						<!-- <div id="modal_vwp_edit" style="display: none;">
 							<div class="row">
 								<div class="form-group col-md-12">
 									<label class="form-label" for="modal_sensor_edit">Jenis Sensor</label>
@@ -331,12 +336,15 @@
 									</select>
 								</div>
 							</div>
-						</div>
+						</div> -->
 						<div id="modal_nonvwp_edit" style="display: none;">
 							<div class="row">
 								<div class="form-group col-md-12">
 									<label class="form-label" for="modal_data_mentah_edit">Jenis Sensor Data Mentah</label>
 									<select class="form-control" name="modal_data_mentah[]" id="modal_data_mentah_edit" placeholder="This is a placeholder" multiple>
+										<?php foreach ($sensor as $sns2) { ?>
+											<option value="<?= $sns2->id ?>"><?= $sns2->nama_sensor ?></option>
+										<?php } ?>
 									</select>
 								</div>
 							</div>
@@ -344,6 +352,10 @@
 								<div class="form-group col-md-12">
 									<label class="form-label" for="modal_data_jadi_edit">Jenis Sensor Data Jadi</label>
 									<select class="form-control" name="modal_data_jadi[]" id="modal_data_jadi_edit" placeholder="This is a placeholder" multiple>
+
+										<?php foreach ($sensor as $sns3) { ?>
+											<option value="<?= $sns3->id ?>"><?= $sns3->nama_sensor ?></option>
+										<?php } ?>
 									</select>
 								</div>
 							</div>
@@ -379,11 +391,12 @@
 	<script src="<?= base_url() ?>assets/js/plugins/feather.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/customizer.js"></script>
 	<script src="<?= base_url() ?>assets/js/plugins/choices.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
-			var multipleCancelButton = new Choices('#modal_sensor_create', {
-				removeItemButton: true
-			});
+			// var multipleCancelButton = new Choices('#modal_sensor_create', {
+			// 	removeItemButton: true
+			// });
 
 			var multipleCancelButton = new Choices('#modal_data_mentah_create', {
 				removeItemButton: true
@@ -404,10 +417,10 @@
 	</script>
 	<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
 	<script>
-		var choices = new Choices('#modal_sensor_edit', {
-			removeItemButton: true,
-			uniqueItemText: true
-		});
+		// var choices = new Choices('#modal_sensor_edit', {
+		// 	removeItemButton: true,
+		// 	uniqueItemText: true
+		// });
 
 		var choicesJadi = new Choices('#modal_data_jadi_edit', {
 			removeItemButton: true,
@@ -421,6 +434,9 @@
 
 		//tambah koefisien
 		function tambahTempKoefisien() {
+			var instrument_type_create = document.getElementById('tr_instrument_type_id');
+			getNameType(instrument_type_create, 'create');
+			document.getElementById('modal_type_create').value = instrument_type_create.value;
 			$('#exampleModal').modal('show');
 		};
 
@@ -430,9 +446,9 @@
 			var myClone = originalModal.clone();
 			$('#formBodyCreateOriginal').append(myClone);
 
-			var multipleCancelButton = new Choices('#modal_sensor_create', {
-				removeItemButton: true
-			});
+			// var multipleCancelButton = new Choices('#modal_sensor_create', {
+			// 	removeItemButton: true
+			// });
 
 			var multipleCancelButton = new Choices('#modal_data_mentah_create', {
 				removeItemButton: true
@@ -502,16 +518,40 @@
 						$('#latitude').prop('readonly', false);
 						$('#longitude').prop('readonly', false);
 						$("#form_vwp").show();
+						$("#convertKoor").html('<button type="button" id="convertButton" class="btn btn-sm btn-primary" style="margin-top: 35px;">Convert Coordinates</button>');
 					} else {
 						$('#latitude').prop('readonly', true);
 						$('#longitude').prop('readonly', true);
 						$("#form_vwp").hide();
+						$("#convertKoor").empty();
 					}
 				}
 			};
 			xhttp.open("GET", "<?php echo base_url('InstrumentData/getNameType'); ?>" + '?kode=' + idtype, true);
 			xhttp.send();
 		});
+
+		$(document).on("click", "#convertButton", function() {
+			// Ambil nilai Easting dan Northing dari input
+			var easting = parseFloat($("#longitude").val());
+			var northing = parseFloat($("#latitude").val());
+
+			var lonlat = convertUTMToLongLat(easting, northing, 51);
+			// Tampilkan hasil konversi pada input longitude dan latitude
+			$("#longitude").val(lonlat[0]);
+			$("#latitude").val(lonlat[1]);
+		});
+
+		function convertUTMToLongLat(utmX, utmY, utmZone) {
+			// Definisikan proyeksi UTM dan WGS84 (longlat)
+			var utmProjection = '+proj=utm +zone=' + utmZone + ' +ellps=WGS84 +datum=WGS84 +units=m +no_defs';
+			var longLatProjection = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
+
+			// Transformasikan koordinat UTM ke Longlat
+			var utmCoords = proj4(utmProjection, longLatProjection, [utmX, utmY]);
+
+			return utmCoords;
+		}
 
 		$("#ms_stasiun_id").change(function() {
 
@@ -547,14 +587,15 @@
 		}
 
 		function validateJenisSensor(action) {
-			if ($('#modal_vwp_' + action).is(':visible')) {
-				if ($('#modal_sensor_' + action).val().length === 0) {
-					notiftoast('Jenis sensor is required');
+			// if ($('#modal_vwp_' + action).is(':visible')) {
+			// 	if ($('#modal_sensor_' + action).val().length === 0) {
+			// 		notiftoast('Jenis sensor is required');
 
 
-					return false;
-				}
-			} else if ($('#modal_nonvwp_' + action).is(':visible')) {
+			// 		return false;
+			// 	}
+			// } else
+			if ($('#modal_nonvwp_' + action).is(':visible')) {
 				if ($('#modal_data_mentah_' + action).val().length === 0) {
 					notiftoast('Jenis sensor data mentah is required');
 					return false;
@@ -627,11 +668,11 @@
 			var action = 'edit';
 			var modal_type = $('#modal_type_' + action).val()
 
-			if (!modal_type) {
-				// alert('Instrument type is required');
-				notiftoast('Instrument type is required');
-				return
-			}
+			// if (!modal_type) {
+			// 	// alert('Instrument type is required');
+			// 	notiftoast('Instrument type is required');
+			// 	return
+			// }
 
 			var isJenisSensorValid = validateJenisSensor('edit');
 
@@ -701,8 +742,8 @@
 
 		//edit koefisien
 		function editTempKoefisien(id) {
-			choices.removeActiveItems();
-			choices.setChoiceByValue("");
+			// choices.removeActiveItems();
+			// choices.setChoiceByValue("");
 
 			choicesJadi.removeActiveItems();
 			choicesJadi.setChoiceByValue("");
@@ -716,19 +757,20 @@
 				if (this.readyState == 4 && this.status == 200) {
 					var action = 'edit';
 					var type = JSON.parse(xhttp.responseText).type;
-					var html_type = "<option>--Pilih Instrument Type--</option>";
-					var modal_type_edit = document.getElementById('modal_type_' + action);
-					if (type.length > 0) {
-						for (x = 0; x < type.length; x++) {
-							html_type += '<option value=' + type[x].id + ' ' + type[x].pilih + '>' + type[x].name + '</option>';
-						}
-					} else {
-						html_type = '<option>--Tidak Ada Data--</option>';
-					}
-					modal_type_edit.innerHTML = html_type;
+					// var html_type = "<option>--Pilih Instrument Type--</option>";
+					// var modal_type_edit = document.getElementById('modal_type_' + action);
+					// if (type.length > 0) {
+					// 	for (x = 0; x < type.length; x++) {
+					// 		html_type += '<option value=' + type[x].id + ' ' + type[x].pilih + '>' + type[x].name + '</option>';
+					// 	}
+					// } else {
+					// 	html_type = '<option>--Tidak Ada Data--</option>';
+					// }
+					// modal_type_edit.innerHTML = html_type;
 
 					//modal parameter
 					var modal_parameter = document.getElementById('modal_parameter_' + action);
+
 					var tabel_parameter = JSON.parse(xhttp.responseText).tabel_parameter;
 
 					modal_parameter.innerHTML = tabel_parameter;
@@ -736,29 +778,37 @@
 
 
 					var nama_type = JSON.parse(xhttp.responseText).temp_koefisien.type;
-					if (nama_type == 'VWP') {
 
-						choices.setChoices(JSON.parse(xhttp.responseText).nama_sensor, 'value', 'label', true);
+					choicesJadi.setChoices(JSON.parse(xhttp.responseText).jenis_sensor_jadi, 'value', 'label', true);
 
-						$("#modal_vwp_" + action).show();
-						$("#modal_nonvwp_" + action).hide();
-					} else if (nama_type == 'NON_VWP') {
-						choicesJadi.setChoices(JSON.parse(xhttp.responseText).jenis_sensor_jadi, 'value', 'label', true);
+					choicesMentah.setChoices(JSON.parse(xhttp.responseText).jenis_sensor_mentah, 'value', 'label', true);
 
-						choicesMentah.setChoices(JSON.parse(xhttp.responseText).jenis_sensor_mentah, 'value', 'label', true);
+					$("#modal_nonvwp_" + action).show();
 
-						$("#modal_vwp_" + action).hide();
-						$("#modal_nonvwp_" + action).show();
-					} else {
-						$("#modal_vwp_" + action).hide();
-						$("#modal_nonvwp_" + action).hide();
-					}
+					// if (nama_type == 'VWP') {
+
+					// 	choices.setChoices(JSON.parse(xhttp.responseText).nama_sensor, 'value', 'label', true);
+
+					// 	$("#modal_vwp_" + action).show();
+					// 	$("#modal_nonvwp_" + action).hide();
+					// } else if (nama_type == 'NON_VWP') {
+					// 	choicesJadi.setChoices(JSON.parse(xhttp.responseText).jenis_sensor_jadi, 'value', 'label', true);
+
+					// 	choicesMentah.setChoices(JSON.parse(xhttp.responseText).jenis_sensor_mentah, 'value', 'label', true);
+
+					// 	$("#modal_vwp_" + action).hide();
+					// 	$("#modal_nonvwp_" + action).show();
+					// } else {
+					// 	$("#modal_vwp_" + action).hide();
+					// 	$("#modal_nonvwp_" + action).hide();
+					// }
 
 				}
 			};
 			xhttp.open("GET", "<?php echo base_url('InstrumentData/detailTempKoefisien'); ?>" + '?id=' + id, true);
 			xhttp.send();
 
+			$('#modal_type_edit').val($('#tr_instrument_type_id').val())
 			$('#exampleModalEdit').modal('show');
 		};
 	</script>
@@ -770,17 +820,17 @@
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
 					var nama_type = JSON.parse(xhttp.responseText).type;
-
-					if (nama_type == 'VWP') {
-						$("#modal_vwp_" + action).show();
-						$("#modal_nonvwp_" + action).hide();
-					} else if (nama_type == 'NON_VWP') {
-						$("#modal_vwp_" + action).hide();
-						$("#modal_nonvwp_" + action).show();
-					} else {
-						$("#modal_vwp_" + action).hide();
-						$("#modal_nonvwp_" + action).hide();
-					}
+					$("#modal_nonvwp_" + action).show();
+					// if (nama_type == 'VWP') {
+					// 	$("#modal_vwp_" + action).show();
+					// 	$("#modal_nonvwp_" + action).hide();
+					// } else if (nama_type == 'NON_VWP') {
+					// 	$("#modal_vwp_" + action).hide();
+					// 	$("#modal_nonvwp_" + action).show();
+					// } else {
+					// 	$("#modal_vwp_" + action).hide();
+					// 	$("#modal_nonvwp_" + action).hide();
+					// }
 				}
 			};
 			xhttp.open("GET", "<?php echo base_url('InstrumentData/getNameType'); ?>" + '?kode=' + idtype, true);

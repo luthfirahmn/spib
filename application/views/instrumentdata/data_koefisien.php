@@ -28,21 +28,33 @@
 			<tbody class="">
 				<tr>
 					<td>
-						<?php
 
-						$parameter = json_decode($koe['parameter']);
+						<table border="0">
+							<tbody>
+								<?php
 
-						foreach ($parameter as $key => $value) {
-							echo $key . ":" . $value . "<br>";
-						}
-
-						?>
+								$parameter = json_decode($koe['parameter']);
+								foreach ($parameter as $key => $value) : ?>
+									<tr>
+										<td><?php echo $key; ?></td>
+										<td><?php echo $value; ?></td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
 					</td>
 					<td>
 						<?php
 						foreach ($koe['jenis_sensor_mentah'] as $sns2) {
 							if (!empty($sns2->jenis_sensor)) {
-								echo $sns2->jenis_sensor . '</br>';
+								$jenis_sensor = $sns2->jenis_sensor;
+								// Cek apakah terdapat tanda kurung buka (
+								if (strpos($jenis_sensor, '(') !== false) {
+									// Tambahkan spasi di belakang tanda kurung buka
+									$jenis_sensor = str_replace('(', '  (', $jenis_sensor);
+								}
+
+								echo $jenis_sensor  . '</br>';
 							}
 						}
 						?>
@@ -51,7 +63,14 @@
 						<?php
 						foreach ($koe['jenis_sensor_jadi'] as $sns1) {
 							if (!empty($sns1->jenis_sensor)) {
-								echo $sns1->jenis_sensor . '</br>';
+								$jenis_sensor = $sns1->jenis_sensor;
+								// Cek apakah terdapat tanda kurung buka (
+								if (strpos($jenis_sensor, '(') !== false) {
+									// Tambahkan spasi di belakang tanda kurung buka
+									$jenis_sensor = str_replace('(', '  (', $jenis_sensor);
+								}
+
+								echo $jenis_sensor  . '</br>';
 							}
 						}
 						?>

@@ -11,16 +11,21 @@ class Dashboard extends MY_Controller
 		$this->load->database();
 	}
 
-	public function index()
+	public function index($region_id = null)
 	{
 		$roles_id = $this->session->userdata('roles_id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Data');
 		$data['region'] = $this->M_data->region($ap_id_user);
-
-		$all_data = $this->get_all_data($data['region'][0]->id);
+		if ($region_id == null) {
+			$region_id = $data['region'][0]->id;
+		} else {
+			$region_id = $region_id;
+		}
+		$all_data = $this->get_all_data($region_id);
 		// pre($all_data);
 		if ($all_data) {
+			$data['nama_region'] = $all_data['nama_region'];
 			$data['awlr'] = $all_data['awlr'];
 			$data['klimatologi'] = $all_data['klimatologi'];
 		}
@@ -67,7 +72,7 @@ class Dashboard extends MY_Controller
 
 			$query = $this->db->query("SELECT t1.*
 										FROM ms_stasiun t1
-										WHERE nama_stasiun NOT LIKE '%AWLR%'
+										WHERE stasiun_type = 'KLIMATOLOGI'
 										AND t1.ms_regions_id = {$region_id}
 										ORDER BY 
 										CASE WHEN t1.stasiun_type LIKE '%NON_VWP%' THEN 0 ELSE 1 END,
@@ -76,23 +81,36 @@ class Dashboard extends MY_Controller
 			$data['klimatologi'] = $query->result();
 			foreach ($data['klimatologi'] as $key => $row) {
 				$query = $this->db->query("SELECT t3.jenis_sensor, t3.unit_sensor, t3.icon, t1.kode_instrument,
-				(SELECT SUM(ts2.data_jadi) as total  FROM  " . $db_site->database . ".data ts1 
-				LEFT JOIN " . $db_site->database . ".data_value ts2 ON ts1.id = ts2.data_id
-				WHERE ts1.kode_instrument = t1.kode_instrument
-				AND ts2.data_jadi != 0
-				GROUP BY ts2.data_id
-				ORDER BY ts1.tanggal,ts1.jam DESC LIMIT 1) nilai
-				FROM  tr_instrument t1 
-				LEFT JOIN tr_koefisien_sensor_non_vwp t2 ON t2.tr_instrument_id = t1.id
-				LEFT JOIN sys_jenis_sensor t3 ON t3.id = t2.jenis_sensor_jadi
-				WHERE t1.ms_stasiun_id = '$row->id'
-				AND t2.jenis_sensor_jadi != 0
-			 ");
+					(SELECT SUM(ts2.data_jadi) as total  FROM  " . $db_site->database . ".data ts1 
+					LEFT JOIN " . $db_site->database . ".data_value ts2 ON ts1.id = ts2.data_id
+					WHERE ts1.kode_instrument = t1.kode_instrument
+					AND ts2.data_jadi != 0
+					GROUP BY ts2.data_id
+					ORDER BY ts1.tanggal,ts1.jam DESC LIMIT 1) nilai
+					FROM  tr_instrument t1 
+					LEFT JOIN tr_koefisien_sensor_non_vwp t2 ON t2.tr_instrument_id = t1.id
+					LEFT JOIN sys_jenis_sensor t3 ON t3.id = t2.jenis_sensor_jadi
+					WHERE t1.ms_stasiun_id = '$row->id'
+					AND t2.jenis_sensor_jadi != 0
+				 ");
 
 				$result = $query->result();
 				$data['klimatologi'][$key]->details = $result;
-			}
 
+				// $query = $this->db->query("
+				// SELECT *
+				// FROM 
+				// tr_instrument t3
+				// INNER JOIN " . $db_site->database . ".data t1 ON t3.kode_instrument = t1.kode_instrument
+				// INNER JOIN " . $db_site->database . ".data_value t2 ON t1.id = t2.data_id
+				// INNER JOIN sys_jenis_sensor t4 ON t4.id = t2.sensor_id
+				// WHERE t2.data_jadi != ''
+				// AND  t3.ms_stasiun_id = '$row->id'
+				// ORDER BY t1.tanggal DESC, t1.jam DESC
+				// ");
+				// $result = $query->result();
+			}
+			$data['nama_region'] = $this->db->get_where("ms_regions", ['id' => $region_id])->row();
 
 			return $data;
 		} catch (Exception $e) {

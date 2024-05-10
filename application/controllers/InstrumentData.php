@@ -6,6 +6,7 @@ class InstrumentData extends MY_Controller
 	{
 		parent::__construct();
 		$this->load->model('Data_model');
+		$this->load->model('M_data');
 		$this->load->model('M_instrumentData');
 		$this->load->model('M_akses');
 		$this->load->dbutil();
@@ -18,6 +19,7 @@ class InstrumentData extends MY_Controller
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'InstrumentData');
 		$data['instrument'] = $this->M_instrumentData->instrument($ap_id_user);
+		$data['region'] = $this->M_data->region($ap_id_user);
 		$this->load->view('instrumentdata/index', $data);
 	}
 
@@ -92,6 +94,7 @@ class InstrumentData extends MY_Controller
 		$jenis_sensor_jadi	 	= $this->input->post('modal_data_jadi');
 
 		$tr_instrument_type_id 	= $this->input->post('modal_type');
+		// pre($tr_instrument_type_id);
 		$parameter = $this->M_instrumentData->parameter($tr_instrument_type_id);
 
 		$opt = array();
@@ -102,7 +105,7 @@ class InstrumentData extends MY_Controller
 			}
 		}
 
-
+		// print_r($opt);
 		$data_parameter = json_encode($opt);
 
 		$data = array(

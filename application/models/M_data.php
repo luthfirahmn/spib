@@ -97,9 +97,10 @@ class M_data extends CI_Model
 				")->result_array();
 
 				foreach ($sensor as $row) {
-					if (is_numeric($row['val_sensor'])) {
+					if (is_numeric((float)$row['val_sensor'])) {
 
-						$hitung = $row['val_sensor'] - $perubahan;
+						$hit = $row['val_sensor'] - $perubahan;
+						$hitung = number_format($hit, 3);
 						$trend = ($hitung > 0) ? 'naik' : 'turun';
 						$data[$key][$row['jenis_sensor']] = $row['val_sensor'];
 						if ($download) {

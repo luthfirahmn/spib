@@ -124,21 +124,22 @@ class M_instrumentData extends CI_Model
 
 	function edit_temp($data, $jenis_sensor, $jenis_sensor_mentah, $jenis_sensor_jadi, $id)
 	{
+		// print_r($data);
 		$this->db->trans_begin();
 		$this->db->delete('temp_sensor', array('id_temp_koefisien' => $id));
 		$this->db->update('temp_koefisien', $data, array('id' => $id));
 
 		$id_temp_koefisien = $id;
 
-		if ($jenis_sensor <> '') {
-			for ($i = 0; $i < sizeof($jenis_sensor); $i++) {
-				$detail = array(
-					'id_temp_koefisien' => $id_temp_koefisien,
-					'jenis_sensor' 		=> $jenis_sensor[$i]
-				);
-				$this->db->insert('temp_sensor', $detail);
-			}
-		}
+		// if ($jenis_sensor <> '') {
+		// 	for ($i = 0; $i < sizeof($jenis_sensor); $i++) {
+		// 		$detail = array(
+		// 			'id_temp_koefisien' => $id_temp_koefisien,
+		// 			'jenis_sensor' 		=> $jenis_sensor[$i]
+		// 		);
+		// 		$this->db->insert('temp_sensor', $detail);
+		// 	}
+		// }
 
 		if ($jenis_sensor_mentah <> '') {
 			for ($i = 0; $i < sizeof($jenis_sensor_mentah); $i++) {
@@ -236,6 +237,8 @@ class M_instrumentData extends CI_Model
 				'parameter'				=> $rec->parameter
 			);
 		}
+
+		// pre($temp_item);
 
 		return $temp_item;
 	}
