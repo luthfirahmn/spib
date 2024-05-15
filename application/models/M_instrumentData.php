@@ -215,6 +215,7 @@ class M_instrumentData extends CI_Model
 			FROM temp_sensor a
 			LEFT JOIN `sys_jenis_sensor` b ON a.`jenis_sensor_mentah`=b.`id`
 			WHERE a.`id_temp_koefisien`='$rec->id' AND a.`jenis_sensor_mentah` is NOT NULL
+			ORDER BY a.id ASC
 			")->result();
 
 			$jenis_sensor_jadi = $this->db->query("
@@ -222,6 +223,7 @@ class M_instrumentData extends CI_Model
 			FROM temp_sensor a
 			LEFT JOIN `sys_jenis_sensor` b ON a.`jenis_sensor_jadi`=b.`id`
 			WHERE a.`id_temp_koefisien`='$rec->id' AND a.`jenis_sensor_jadi` is NOT NULL
+			ORDER BY a.id ASC
 			")->result();
 
 			$temp_item[] = array(
@@ -432,18 +434,44 @@ class M_instrumentData extends CI_Model
 		SELECT a.id, CONCAT(a.jenis_sensor, '(',a.unit_sensor,')') AS nama_sensor,
 		COALESCE (
 		(
-			SELECT 'selected' FROM `temp_sensor` WHERE `jenis_sensor_mentah`=a.id AND `id_temp_koefisien`='$id' LIMIT 1
+			SELECT 'selected' FROM `temp_sensor` WHERE `jenis_sensor_mentah`=a.id AND `id_temp_koefisien`='$id' ORDER BY id ASC LIMIT 1
 		), '') AS pilih
 		FROM sys_jenis_sensor a
+		ORDER BY 
+		(
+			SELECT 
+				id 
+			FROM 
+				`temp_sensor` 
+			WHERE 
+				`jenis_sensor_mentah` = a.id 
+				AND `id_temp_koefisien` = '$id' 
+			ORDER BY 
+				id ASC 
+			LIMIT 1
+		) ASC;
 		")->result();
 
 		$jenis_sensor_jadi = $this->db->query("
 		SELECT a.id, CONCAT(a.jenis_sensor, '(',a.unit_sensor,')') AS nama_sensor,
 		COALESCE (
 		(
-			SELECT 'selected' FROM `temp_sensor` WHERE `jenis_sensor_jadi`=a.id AND `id_temp_koefisien`='$id' LIMIT 1
+			SELECT 'selected' FROM `temp_sensor` WHERE `jenis_sensor_jadi`=a.id AND `id_temp_koefisien`='$id' ORDER BY id ASC LIMIT 1
 		), '') AS pilih
 		FROM sys_jenis_sensor a
+		ORDER BY 
+		(
+			SELECT 
+				id 
+			FROM 
+				`temp_sensor` 
+			WHERE 
+				`jenis_sensor_jadi` = a.id 
+				AND `id_temp_koefisien` = '$id' 
+			ORDER BY 
+				id ASC 
+			LIMIT 1
+		) ASC;
 		")->result();
 
 		$type = $this->db->query("
@@ -538,6 +566,7 @@ class M_instrumentData extends CI_Model
 		FROM temp_sensor a 
 		LEFT JOIN temp_koefisien c ON a.id_temp_koefisien=c.id 
 		WHERE c.ap_id_user='$ap_id_user' AND a.`jenis_sensor_mentah` IS NOT NULL
+		ORDER BY a.id ASC
 		");
 
 		$this->db->query("
@@ -546,6 +575,7 @@ class M_instrumentData extends CI_Model
 		FROM temp_sensor a 
 		LEFT JOIN temp_koefisien c ON a.id_temp_koefisien=c.id 
 		WHERE c.ap_id_user='$ap_id_user' AND a.`jenis_sensor_jadi` IS NOT NULL
+		ORDER BY a.id ASC
 		");
 
 		$tr_instrument_sensor['tr_instrument_id'] = $tr_instrument_id;

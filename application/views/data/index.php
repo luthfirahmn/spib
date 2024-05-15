@@ -13,6 +13,7 @@
     <link rel="icon" href="https://berrydashboard.io/bootstrap/default/assets/images/favicon.svg" type="image/x-icon" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" id="main-font-link" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/tabler-icons.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/feather.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/fontawesome.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/material.css" />
@@ -142,7 +143,7 @@
 
 
                             <div class="table-responsive">
-                                <table class="table" id="pc-dt-simple">
+                                <table class="table table-striped" style="width:100%" id="pc-dt-simple">
 
                                 </table>
                             </div>
@@ -306,8 +307,10 @@
     <script src="<?= base_url() ?>assets/js/pcoded.js"></script>
     <script src="<?= base_url() ?>assets/js/plugins/feather.min.js"></script>
     <script src="<?= base_url() ?>assets/js/customizer.js"></script>
-    <script src="<?= base_url() ?>assets/js/plugins/simple-datatables.js"></script>
+    <!-- <script src="<?= base_url() ?>assets/js/plugins/simple-datatables.js"></script> -->
     <script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.js"></script>
     <script src="
 	https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
@@ -420,8 +423,15 @@
             });
         })
 
-
         function Createtable() {
+
+
+            if ($.fn.DataTable.isDataTable('#pc-dt-simple')) {
+                $('#pc-dt-simple').empty();
+                $('#pc-dt-simple').DataTable().destroy();
+                $('#pc-dt-simple').empty();
+            }
+
             var instrument_id = $("#instrument").val();
             var ms_regions_id = $("#ms_regions_id").val();
             var keterangan = $("#keterangan").val();
@@ -429,8 +439,9 @@
             var tanggal = $("#tanggal").val();
 
             $.ajax({
-                url: "<?php echo base_url('Data/list'); ?>",
+                url: "<?php echo base_url('Data/column'); ?>",
                 type: "POST",
+                dataType: "json",
                 data: {
                     instrument_id: instrument_id,
                     ms_regions_id: ms_regions_id,
@@ -438,56 +449,85 @@
                     tanggal: tanggal,
                     waktu: waktu,
                 },
-                dataType: "json",
                 success: function(response) {
-                    console.log(response);
+                    var columns = response;
+                    if (columns != "") {
 
-                    if (response.recordsTotal > 0) {
-                        var columns = response.columns;
-                        var data = response.data;
-
-                        var thead = "<thead><tr>";
-                        columns.forEach(function(column) {
-                            thead += "<th>" + column + "</th>";
+                        var tableColumns = columns.map(function(columnName) {
+                            return {
+                                data: columnName,
+                                title: columnName
+                            };
                         });
-                        thead += "</tr></thead>";
-                        $("#pc-dt-simple").html(thead);
-
-                        var tbody = "<tbody>";
-                        data.forEach(function(row) {
-                            tbody += "<tr>";
-                            columns.forEach(function(column) {
-                                tbody += "<td>" + row[column] + "</td>";
-                            });
-                            tbody += "</tr>";
-                        });
-                        tbody += "</tbody>";
-                        $("#pc-dt-simple").append(tbody);
-
-                        var config = {
-                            "processing": true,
-                            "serverSide": true,
-                            "order": [
-                                [0, "desc"]
+                        new DataTable("#pc-dt-simple", {
+                            scrollY: true,
+                            responsive: false,
+                            lengthChange: false,
+                            autoWidth: false,
+                            serverSide: true,
+                            processing: true,
+                            paging: true,
+                            searching: {
+                                regex: true,
+                            },
+                            lengthMenu: [
+                                [10, 25, 50, 100, -1],
+                                [10, 25, 50, 100, "All"],
                             ],
-                            "lengthMenu": [
-                                [10, 25, 50, -1],
-                                [10, 25, 50, "All"]
-                            ]
-                        };
+                            columnDefs: [{
+                                    orderable: false,
+                                    searchable: false,
+                                    targets: 0,
+                                },
+                                {
+                                    width: "100px",
+                                    targets: 0,
+                                },
+                            ],
+                            dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                            pageLength: 10,
+                            ajax: {
+                                url: "<?php echo base_url('Data/list'); ?>",
+                                type: "POST",
+                                data: {
+                                    instrument_id: instrument_id,
+                                    ms_regions_id: ms_regions_id,
+                                    keterangan: keterangan,
+                                    tanggal: tanggal,
+                                    waktu: waktu,
+                                },
+                                dataType: "json",
+                                dataSrc: function(data) {
+                                    return data.data.length > 0 ? data.data : null;
+                                },
+                            },
+                            columns: tableColumns,
+                            language: {
+                                emptyTable: "Tidak ada data yang tersedia",
+                            },
+                        });
 
-                        var datatable = new simpleDatatables.DataTable("#pc-dt-simple",
-                            config);
+
                     } else {
                         $("#pc-dt-simple").html(
                             "<thead><tr><th style='text-align: center;'>Tidak ada data</th></tr></thead>"
                         );
                     }
+
                 },
                 error: function(xhr, status, error) {
                     console.error("Error:", error);
-                }
+                },
             });
+
+
+        }
+
+
+
+
+        function reload_table() {
+            $('#pc-dt-simple').ajax.reload()
         }
 
         $("#instrument").change(function() {
@@ -495,6 +535,7 @@
         });
 
         $("#keterangan").change(function() {
+
             Createtable()
         });
 

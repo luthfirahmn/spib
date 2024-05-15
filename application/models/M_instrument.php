@@ -43,7 +43,7 @@ class M_instrument extends CI_Model
 		")->result();
 	}
 
-	function region_detail($tr_instrument_type_id)
+	function region_detail($tr_instrument_type_id, $ms_users_id)
 	{
 		return $this->db->query("
 		SELECT a.id, a.`site_name`, 
@@ -52,6 +52,7 @@ class M_instrument extends CI_Model
 			SELECT ms_regions_id FROM `tr_instrument_tp_region` WHERE `ms_regions_id`=a.id AND `tr_instrument_type_id`='$tr_instrument_type_id'
 		), '99') AS pilih
 		FROM `ms_regions` a
+		WHERE a.id IN (SELECT ms_regions_id FROM ms_user_regions WHERE ms_users_id ='$ms_users_id')
 		")->result();
 	}
 
@@ -81,10 +82,11 @@ class M_instrument extends CI_Model
 		return $this->db->trans_status();
 	}
 
-	function edit($site, $id)
+	function edit($site, $body, $id)
 	{
 		$this->db->trans_begin();
-
+		$this->db->where('id', $id);
+		$this->db->update('tr_instrument_type', $body);
 		for ($i = 0; $i < sizeof($site); $i++) {
 			$query = $this->db->query("SELECT id FROM tr_instrument_tp_region WHERE ms_regions_id = {$site[$i]} AND tr_instrument_type_id={$id}");
 			$count_res = $query->num_rows();

@@ -23,6 +23,28 @@ class Data extends MY_Controller
 		$this->load->view('data/index', $data);
 	}
 
+
+	public function column()
+	{
+
+		$site_id = $this->input->post("ms_regions_id");
+		$instrument_id = $this->input->post("instrument_id");
+		$keterangan = $this->input->post("keterangan");
+		$tanggal = $this->input->post("tanggal");
+		$waktu = $this->input->post("waktu");
+
+		$db_site = $this->change_connection($site_id);
+
+		$data = $this->M_data->get_column($db_site, $instrument_id, $keterangan, $tanggal, $waktu, 1, 1);
+
+		if (empty($data['data'])) {
+			$columns = "";
+		} else {
+			$columns = array_keys((array) reset($data['data']));
+		}
+
+		echo json_encode($columns);
+	}
 	public function list()
 	{
 		$site_id = $this->input->post("ms_regions_id");
@@ -33,20 +55,17 @@ class Data extends MY_Controller
 
 		$db_site = $this->change_connection($site_id);
 
-		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu);
+		$length = $this->input->post("length");
+		$start = $this->input->post("start");
 
-		if (empty($data)) {
-			$columns = "";
-		} else {
-
-			$columns = array_keys((array) reset($data));
-		}
+		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $start, $length);
+		// pre($data);
+		// pre($data);
 		$result = array(
-			// "draw" => $_POST['draw'],
-			"recordsTotal" => count($data),
-			"recordsFiltered" => count($data),
-			"columns" => $columns,
-			"data" => $data
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $data['recordsTotal'],
+			"recordsFiltered" => $data['recordsFiltered'],
+			"data" => $data['data']
 		);
 
 		// Output the response as JSON
@@ -66,7 +85,7 @@ class Data extends MY_Controller
 		$db_site = $this->change_connection($site_id);
 
 		// Ambil data dari model berdasarkan parameter yang diberikan
-		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $download = 1);
+		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, 1, -1, $download = 1);
 
 		// Load library PHPExcel
 		$this->load->library('PHPExcel');
@@ -88,14 +107,14 @@ class Data extends MY_Controller
 		$sheet = $objPHPExcel->getActiveSheet();
 
 		// Tambahkan header
-		$columns = array_keys((array) reset($data));
+		$columns = array_keys((array) reset($data['data']));
 		foreach ($columns as $key => $column) {
 			$sheet->setCellValueByColumnAndRow($key, 1, $column);
 		}
 
 		// Tambahkan data
 		$row = 2;
-		foreach ($data as $item) {
+		foreach ($data['data'] as $item) {
 			$col = 0;
 			foreach ($item as $value) {
 				$sheet->setCellValueByColumnAndRow($col, $row, $value);

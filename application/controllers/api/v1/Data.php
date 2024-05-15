@@ -84,7 +84,7 @@ class Data extends REST_Controller
 
             $koefisien_arr = $this->db->get_where("tr_koefisien", array(
                 'tr_instrument_id' => $get_instrument->id,
-                'tr_instrument_type_id' => $get_instrument->tr_instrument_type_id
+                // 'tr_instrument_type_id' => $get_instrument->tr_instrument_type_id
             ))->row();
 
             if (!$koefisien_arr) {

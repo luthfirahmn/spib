@@ -104,6 +104,13 @@ class Sensor extends MY_Controller
 		$ImageName       = $_FILES['file']['name'];
 		$ImageType       = $_FILES['file']['type'];
 
+		$body = array();
+
+		$body['ms_regions_id'] =  1;
+		$body['jenis_sensor'] =  $this->input->post('jenis_sensor');
+		$body['unit_sensor'] = $this->input->post('unit_sensor');
+		$body['var_name'] =  $this->input->post('var_name');
+
 		if (!empty($fileupload)) {
 			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
 			$ImageExt       = str_replace('.', '', $ImageExt); // Extension
@@ -112,21 +119,13 @@ class Sensor extends MY_Controller
 
 			move_uploaded_file($_FILES["file"]["tmp_name"], $temp . $NewImageName); // Menyimpan file
 
-			$foto = $NewImageName;
-		} else {
-			$foto = '';
+			$body['foto'] = $NewImageName;
 		}
 
 		$id 	= $this->input->post('id');
 		$site 	= $this->input->post('ms_regions_id');
 
-		$body = array(
-			'ms_regions_id' => '1',
-			'jenis_sensor' 	=> $this->input->post('jenis_sensor'),
-			'unit_sensor'	=> $this->input->post('unit_sensor'),
-			'var_name'		=> $this->input->post('var_name'),
-			'icon'			=> $foto
-		);
+
 
 		$this->db->trans_begin();
 		$this->db->delete('sys_jenis_sensor_region', array('sys_jenis_sensor_id' => $id));
@@ -168,7 +167,7 @@ class Sensor extends MY_Controller
 		if ($status) {
 			$this->session->set_flashdata('warning', 'Sukses!');
 		} else {
-			$this->session->set_flashdata('warning', 'Gagal!');
+			$this->session->set_flashdata('warning', 'Gagal, Ada instrument yang terdaftar di sensor ini!');
 		}
 
 		redirect('Sensor');

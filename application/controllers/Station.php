@@ -1,8 +1,9 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-class Station extends MY_Controller 
+defined('BASEPATH') or exit('No direct script access allowed');
+class Station extends MY_Controller
 {
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
 		$this->load->model('Data_model');
 		$this->load->model('M_station');
@@ -10,13 +11,14 @@ class Station extends MY_Controller
 		$this->load->dbutil();
 		$this->load->database();
 	}
-	
-	public function index(){
+
+	public function index()
+	{
 		$roles_id = $this->session->userdata('roles_id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
-		$data['hak_akses']=$this->M_akses->hak_akses($roles_id,'Station');
+		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Station');
 		//$data['station']=$this->M_station->station($ap_id_user);
-		$data['region']=$this->M_station->region($ap_id_user);
+		$data['region'] = $this->M_station->region($ap_id_user);
 		$this->load->view('station/index', $data);
 	}
 
@@ -26,46 +28,48 @@ class Station extends MY_Controller
 		$site_id 		= $this->input->post("ms_regions_id");
 		$roles_id 		= $this->session->userdata('roles_id');
 		$data['station'] = $this->M_station->station($ap_id_user, $site_id);
-		$data['hak_akses']=$this->M_akses->hak_akses($roles_id,'Station');
+		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Station');
 
-		$list=array(
-			'rc'		=>'00',
-			'err_desc'	=>'Sukses',
+		$list = array(
+			'rc'		=> '00',
+			'err_desc'	=> 'Sukses',
 			'tabel'		=> $this->load->view('station/tabel', $data, true)
 		);
 
 		echo json_encode($list);
 	}
 
-	public function tambah(){
+	public function tambah()
+	{
 		$ap_id_user = $this->session->userdata('ap_id_user');
-		$data['region']=$this->M_station->region($ap_id_user);
+		$data['region'] = $this->M_station->region($ap_id_user);
 		$this->load->view('station/tambah', $data);
 	}
 
-	
-	public function tambah_proses(){
-		$temp = FCPATH.'/assets/upload/station/';
-		
+
+	public function tambah_proses()
+	{
+		$temp = FCPATH . '/assets/upload/station/';
+
 		$nama_file       = $this->input->post('nama_stasiun');
 		$fileupload      = $_FILES['foto']['tmp_name'];
 		$ImageName       = $_FILES['foto']['name'];
 		$ImageType       = $_FILES['foto']['type'];
-		
-		if (!empty($fileupload)){
+
+		if (!empty($fileupload)) {
 			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
-			$ImageExt       = str_replace('.','',$ImageExt); // Extension
+			$ImageExt       = str_replace('.', '', $ImageExt); // Extension
 			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
-			$NewImageName   = str_replace(' ', '', $nama_file.'.'.$ImageExt);
-		
-			move_uploaded_file($_FILES["foto"]["tmp_name"], $temp.$NewImageName); // Menyimpan file
-		
-			$foto=$NewImageName;
+			$NewImageName   = str_replace(' ', '', $nama_file . '.' . $ImageExt);
+
+			move_uploaded_file($_FILES["foto"]["tmp_name"], $temp . $NewImageName); // Menyimpan file
+
+			$foto = $NewImageName;
 		} else {
-			$foto='';
+			$foto = '';
 		}
 
-		$body=array(
+		$body = array(
 			'ms_regions_id' 		=> $this->input->post('ms_regions_id'),
 			'nama_stasiun' 			=> $this->input->post('nama_stasiun'),
 			'foto'					=> $foto,
@@ -80,50 +84,31 @@ class Station extends MY_Controller
 			'elevasi'				=> $this->input->post('elevasi')
 		);
 
-		$status=$this->db->insert('ms_stasiun', $body);
-		if($status){
+		$status = $this->db->insert('ms_stasiun', $body);
+		if ($status) {
 			$this->session->set_flashdata('success', 'Sukses!');
-		}else{
+		} else {
 			$this->session->set_flashdata('warning', 'Gagal!');
 		}
 		redirect('Station');
 	}
 
-	public function edit(){
+	public function edit()
+	{
 		$id = $this->input->get('id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$ap_id_user = $this->session->userdata('ap_id_user');
-		$data['region']=$this->M_station->region($ap_id_user);
-		$data['station']=$this->M_station->station_detail($id);
+		$data['region'] = $this->M_station->region($ap_id_user);
+		$data['station'] = $this->M_station->station_detail($id);
 		$this->load->view('station/edit', $data);
 	}
 
-	public function edit_proses(){
-		$temp = FCPATH.'/assets/upload/station/';
-		
-		$nama_file       = $this->input->post('nama_stasiun');
-		$fileupload      = $_FILES['foto']['tmp_name'];
-		$ImageName       = $_FILES['foto']['name'];
-		$ImageType       = $_FILES['foto']['type'];
-		
-		if (!empty($fileupload)){
-			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
-			$ImageExt       = str_replace('.','',$ImageExt); // Extension
-			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
-			$NewImageName   = str_replace(' ', '', $nama_file.'.'.$ImageExt);
+	public function edit_proses()
+	{
 
-			if(file_exists($temp.$NewImageName)) {
-				unlink($temp.$NewImageName); //remove the file
-			}
-			move_uploaded_file($_FILES["foto"]["tmp_name"], $temp.$NewImageName); // Menyimpan file
-		
-			$foto=$NewImageName;
-		} else {
-			$foto='';
-		}
+		$id = $this->input->post('id');
+		$body = array(
 
-		$id=$this->input->post('id');
-		$body=array(
 			'ms_regions_id' 		=> $this->input->post('ms_regions_id'),
 			'nama_stasiun' 			=> $this->input->post('nama_stasiun'),
 			'wilayah_sungai'		=> $this->input->post('wilayah_sungai'),
@@ -137,26 +122,51 @@ class Station extends MY_Controller
 			'elevasi'				=> $this->input->post('elevasi')
 		);
 
+		$temp = FCPATH . '/assets/upload/station/';
+
+		$nama_file       = $this->input->post('nama_stasiun');
+		$fileupload      = $_FILES['foto']['tmp_name'];
+		$ImageName       = $_FILES['foto']['name'];
+		$ImageType       = $_FILES['foto']['type'];
+
+		if (!empty($fileupload)) {
+			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
+			$ImageExt       = str_replace('.', '', $ImageExt); // Extension
+			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
+			$NewImageName   = str_replace(' ', '', $nama_file . '.' . $ImageExt);
+
+			if (file_exists($temp . $NewImageName)) {
+				unlink($temp . $NewImageName); //remove the file
+			}
+			move_uploaded_file($_FILES["foto"]["tmp_name"], $temp . $NewImageName); // Menyimpan file
+
+			$foto = $NewImageName;
+			$body['foto'] = $foto;
+		}
+
+
+
+
 		$this->db->where('id', $id);
-		$status=$this->db->update('ms_stasiun', $body);
-		if($status){
+		$status = $this->db->update('ms_stasiun', $body);
+		if ($status) {
 			$this->session->set_flashdata('warning', 'Sukses!');
-		}else{
+		} else {
 			$this->session->set_flashdata('warning', 'Gagal!');
 		}
 		redirect('Station');
 	}
 
-	function hapus(){
+	function hapus()
+	{
 		$id = $this->input->get('id');
-		$status=$this->db->delete('ms_stasiun', array('id' => $id));;
-		if($status){
+		$status = $this->db->delete('ms_stasiun', array('id' => $id));;
+		if ($status) {
 			$this->session->set_flashdata('warning', 'Sukses!');
-		}else{
+		} else {
 			$this->session->set_flashdata('warning', 'Gagal!');
 		}
-		
+
 		redirect('Station');
 	}
-
 }

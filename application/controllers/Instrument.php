@@ -55,7 +55,7 @@ class Instrument extends MY_Controller
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['instrument'] = $this->M_instrument->instrument_detail($id);
 		$data['type'] = $this->M_instrument->type();
-		$data['region'] = $this->M_instrument->region_detail($id);
+		$data['region'] = $this->M_instrument->region_detail($id, $ap_id_user);
 		$this->load->view('instrument/edit', $data);
 	}
 
@@ -63,7 +63,11 @@ class Instrument extends MY_Controller
 	{
 		$id = $this->input->post('id');
 		$site = $this->input->post('ms_regions_id');
-		$status = $this->M_instrument->edit($site, $id);
+		$body = array(
+			'name' 	=> $this->input->post('name'),
+			'type'	=> $this->input->post('type')
+		);
+		$status = $this->M_instrument->edit($site, $body, $id);
 
 		if ($status) {
 			$this->session->set_flashdata('warning', 'Sukses!');

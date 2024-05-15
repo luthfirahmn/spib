@@ -31,7 +31,8 @@ class M_data extends CI_Model
 		return json_encode(array('result' => $query->result()));
 	}
 
-	function list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $download = 0)
+
+	function get_column($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $download = 0)
 	{
 		$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $instrument_id))->row()->kode_instrument;
 
@@ -51,27 +52,118 @@ class M_data extends CI_Model
 		} else {
 			$kt = "";
 		}
+
 		$query = $db_site->query("
 						SELECT t1.id, t1.kode_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
 						FROM data t1
 						WHERE t1.kode_instrument = '$kode_instrument'
 						{$kt}
 						{$ddt}
-						ORDER BY t1.tanggal ASC, t1.jam ASC
+						LIMIT 1
 		");
+
 		$data = $query->result_array();
+
 		if (!empty($data)) {
 
-			$perubahan = 0;
-			$trend = null;
+			$no = 1;
 			foreach ($data as $key => $value) {
 
+
+
+				$data[$key]['Data Mentah'] = '';
+
+				$sensor = $db_site->query("
+					SELECT t2.sensor_id, t3.jenis_sensor, t3.unit_sensor, t2.data_jadi as val_sensor
+					FROM data_value t2
+					LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
+					WHERE t2.data_id = '" . $value['id'] . "'
+					AND t2.data_jadi != ''
+				")->result_array();
+
+				foreach ($sensor as $row) {
+					$replace_val_sensor = str_replace(',', '', $row['val_sensor']);
+
+					$is_zero  = $replace_val_sensor == 0 ? true : false;
+
+					$float_val_sensor = (float)$replace_val_sensor;
+
+					if ($float_val_sensor === 0 && $is_zero === false) {
+						$data[$key]['Status'] = '';
+					} else {
+						$index_jenis_sensor = $row['jenis_sensor'] . ' (' . $row['unit_sensor'] . ')';
+						$data[$key][$index_jenis_sensor] = $row['val_sensor'];
+						if ($download) {
+							$data[$key]['Perubahan ' . $index_jenis_sensor] = '';
+						} else {
+							$data[$key]['Perubahan ' . $index_jenis_sensor] = '';
+						}
+					}
+				}
+
+				$no++;
+			}
+
+			return ['data' => $data];
+		} else {
+			return ['data' => $data];
+		}
+	}
+
+	function list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $start, $length, $download = 0)
+	{
+		$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $instrument_id))->row()->kode_instrument;
+
+		if (!empty($tanggal)) {
+			if ($waktu == 'jam') {
+				$ddt = "AND t1.tanggal = '$tanggal'";
+			} else {
+				$ddt = "AND DATE_FORMAT(t1.tanggal, '%Y-%m') = '$tanggal'";
+			}
+		} else {
+			$ddt = "";
+		}
+
+
+		if (!empty($keterangan)) {
+			$kt = "AND t1.keterangan = '$keterangan'";
+		} else {
+			$kt = "";
+		}
+
+		$query = $db_site->query("
+						SELECT t1.id, t1.kode_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
+						FROM data t1
+						WHERE t1.kode_instrument = '$kode_instrument'
+						{$kt}
+						{$ddt}
+						ORDER BY t1.tanggal DESC, t1.jam DESC, t1.id DESC
+						" . ($length != -1 ? "LIMIT $start, $length" : "") . "
+		");
+
+		$data = $query->result_array();
+		$recordsTotal = $query->num_rows();
+
+		$query = $db_site->query("
+				SELECT t1.id, t1.kode_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
+				FROM data t1
+				WHERE t1.kode_instrument = '$kode_instrument'
+				{$kt}
+				{$ddt}
+				ORDER BY t1.tanggal DESC, t1.jam DESC, t1.id DESC
+		");
+
+		$recordsFiltered = $query->num_rows();
+
+		if (!empty($data)) {
+
+			foreach ($data as $key => $value) {
 				$data_mentah = $db_site->query("
 					SELECT t3.jenis_sensor, t3.unit_sensor, t2.data_primer as val_sensor
 					FROM data_value t2
 					LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
 					WHERE t2.data_id = '" . $value['id'] . "'
-					AND t2.data_primer != 0
+					AND t2.data_jadi = ''
 				")->result();
 				$data_mentah_arr = [];
 				foreach ($data_mentah as $row) {
@@ -87,9 +179,8 @@ class M_data extends CI_Model
 
 				$data[$key]['Data Mentah'] = $data_mentah_str;
 
-
 				$sensor = $db_site->query("
-					SELECT t3.jenis_sensor, t3.unit_sensor, t2.data_jadi as val_sensor
+					SELECT t2.sensor_id, t3.jenis_sensor, t3.unit_sensor, t2.data_jadi as val_sensor
 					FROM data_value t2
 					LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
 					WHERE t2.data_id = '" . $value['id'] . "'
@@ -97,35 +188,73 @@ class M_data extends CI_Model
 				")->result_array();
 
 				foreach ($sensor as $row) {
-					if (is_numeric((float)$row['val_sensor'])) {
+					$data_id_before = isset($data[$key + 1]['id']) ? $data[$key + 1]['id'] : 't1.id';
+					$query = $db_site->query("
+						SELECT id, 
+						(
+							SELECT t2.data_jadi as val_sensor
+							FROM data_value t2
+							WHERE t2.data_id = t1.id
+							AND t2.sensor_id = {$row['sensor_id']}
+							LIMIT 1
+						) val_sensor
+							FROM data t1
+							WHERE t1.kode_instrument = '$kode_instrument'
+							AND t1.id = {$data_id_before}
+						
+						
+					");
+					// AND t1.id != {$value['id']}
+					$data_before = $query->row();
 
-						$hit = $row['val_sensor'] - $perubahan;
+					$replace_val_sensor = str_replace(',', '', $row['val_sensor']);
+
+					$is_zero  = $replace_val_sensor == 0 ? true : false;
+
+					$float_val_sensor = (float)$replace_val_sensor;
+
+					if ($float_val_sensor === 0 && $is_zero === false) {
+						$data[$key]['Status'] = $replace_val_sensor;
+					} else {
+						// $val_before = isset($data_before->val_sensor) ? $data_before->val_sensor : 0;
+						$replace_val_before = str_replace(',', '', $data_before->val_sensor);
+						$hit = $float_val_sensor - (float)$replace_val_before;
 						$hitung = number_format($hit, 3);
 						$trend = ($hitung > 0) ? 'naik' : 'turun';
-						$data[$key][$row['jenis_sensor']] = $row['val_sensor'];
+						if ($hitung > 0) {
+							$trend = 'naik';
+						} else if ($hitung < 0) {
+							$trend = 'turun';
+						} else {
+							$trend = '';
+						}
+						$index_jenis_sensor = $row['jenis_sensor'] . ' (' . $row['unit_sensor'] . ')';
+						$data[$key][$index_jenis_sensor] = $row['val_sensor'];
 						if ($download) {
 							if ($trend == 'naik') {
-								$data[$key]['Perubahan ' . $row['jenis_sensor']] = 'Naik (+' . $hitung . ')';
+								$data[$key]['Perubahan ' . $index_jenis_sensor] = 'Naik (+' . $hitung . ')';
+							} else if ($trend == 'turun') {
+								$data[$key]['Perubahan ' . $index_jenis_sensor] = 'Turun (-' . $hitung . ')';
 							} else {
-								$data[$key]['Perubahan ' . $row['jenis_sensor']] = 'Turun (-' . $hitung . ')';
+								$data[$key]['Perubahan ' . $index_jenis_sensor] = '0';
 							}
 						} else {
 
 							if ($trend == 'naik') {
-								$data[$key]['Perubahan ' . $row['jenis_sensor']] = '<i class="ti ti-arrow-up-circle text-red-700 "></i><span class="text-red-700 text-sm align-middle"> +' . $hitung . '</span>';
+								$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrow-up-circle text-red-700 "></i><span class="text-red-700 text-sm align-middle"> +' . $hitung . '</span>';
+							} else if ($trend == 'turun') {
+								$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrow-down-circle text-green-700 "></i><span class="text-green-700 text-sm align-middle"> -' . $hitung . '</span>';
 							} else {
-								$data[$key]['Perubahan ' . $row['jenis_sensor']] = '<i class="ti ti-arrow-down-circle text-green-700 "></i><span class="text-green-700 text-sm align-middle"> -' . $hitung . '</span>';
+								$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrows-sort text-yellow-700"></i><span class="text-yellow-700 text-sm align-middle"> 0</span>';
 							}
 						}
-						$perubahan =  $row['val_sensor'];
-					} else {
-						$data[$key]['Status'] = $row['val_sensor'];
 					}
 				}
 			}
-			return $data;
+			// pre($data);
+			return ['data' => $data, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered];
 		} else {
-			return [];
+			return ['data' => $data, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered];
 		}
 	}
 
