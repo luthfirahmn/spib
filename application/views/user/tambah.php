@@ -2,7 +2,7 @@
 <html lang="en">
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/forms/form2_choices.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:42:46 GMT -->
 	<head>
-		<title>Choices | Berry Bootstrap 5 Admin Template</title>
+		<title>User</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
