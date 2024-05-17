@@ -91,7 +91,7 @@
 										<thead>
 											<tr>
 												<th>Site</th>
-												<th>Nama Instrument</th>
+												<th>Jenis Instrument</th>
 												<th>Type</th>
 												<th>Parameter</th>
 												<th>Action</th>
