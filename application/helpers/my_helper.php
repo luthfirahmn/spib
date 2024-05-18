@@ -45,7 +45,6 @@ function formula($type_instrument_name, $data_jadi, $data, $koefisien)
         foreach ($data_jadi as $row) {
             $data_mentah = $data["data_mentah"];
 
-
             $action = $function_name($row, $data_mentah, $koefisien, $data_tambahan);
             if (!$action) {
                 throw new Exception();
@@ -255,6 +254,14 @@ function standard($data_jadi, $data_mentah, $koefisien)
                 break;
             case "ketinggian_air":
                 $hitung = (float)$data_mentah["ketinggian_air"] + $kalibrasi;
+                return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
+                break;
+            case "tinggi_muka_air":
+                $hitung = (float)$data_mentah["tinggi_muka_air"] + $kalibrasi;
+                return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
+                break;
+            case "rainfall":
+                $hitung = (float)$data_mentah["rainfall"] + $kalibrasi;
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             case "accelerometer":

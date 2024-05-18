@@ -122,14 +122,14 @@ class Data extends MY_Controller
 			}
 			$row++;
 		}
-
-
+		$site_name = $this->db->get_where('ms_regions', ['id' => $site_id])->row()->site_name;
+		$filename = $site_name . '_' . $data['data'][0]['kode_instrument'] . '_' . $data['data'][0]['nama_instrument'];
 		// Save Excel file to a temporary location
-		$tempFilePath = FCPATH . 'assets/temp/report_data.xlsx';
+		$tempFilePath = FCPATH . 'assets/temp/' . $filename . '.xlsx';
 		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 		$objWriter->save($tempFilePath);
 		// Return the path to the Excel file
-		echo base_url('assets/temp/report_data.xlsx');
+		echo base_url('assets/temp/' . $filename . '.xlsx');
 	}
 
 
@@ -148,16 +148,16 @@ class Data extends MY_Controller
 			$db_site->trans_start();
 			if (!empty($tanggal)) {
 				if ($waktu == 'jam') {
-					$ddt = "AND t1.tanggal = '$tanggal'";
+					$ddt = "AND tanggal = '$tanggal'";
 				} else {
-					$ddt = "AND DATE_FORMAT(t1.tanggal, '%Y-%m') = '$tanggal'";
+					$ddt = "AND DATE_FORMAT(tanggal, '%Y-%m') = '$tanggal'";
 				}
 			} else {
 				$ddt = "";
 			}
 
 			if (!empty($keterangan)) {
-				$kt = "AND t1.keterangan = '$keterangan'";
+				$kt = "AND keterangan = '$keterangan'";
 			} else {
 				$kt = "";
 			}

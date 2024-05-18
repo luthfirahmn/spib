@@ -131,7 +131,8 @@
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label class="form-label" for="date">Periode</label>
-                                    <input type="date" class="form-control" id="tanggal" name="tanggal">
+                                    <input type="date" class="form-control" id="tanggal" name="tanggal" value="<?php date_default_timezone_set('Asia/Jakarta');
+                                                                                                                echo date('Y-m-d'); ?>">
                                 </div>
                                 <!-- <div class="form-group col-md-2" style="margin-top:2rem">
                                     <button type="button" class="btn btn-info d-inline-flex" id="tombol_cari">
@@ -437,7 +438,6 @@
             var keterangan = $("#keterangan").val();
             var waktu = $("#waktu").val();
             var tanggal = $("#tanggal").val();
-
             $.ajax({
                 url: "<?php echo base_url('Data/column'); ?>",
                 type: "POST",
@@ -453,12 +453,20 @@
                     var columns = response;
                     if (columns != "") {
 
-                        var tableColumns = columns.map(function(columnName) {
-                            return {
-                                data: columnName,
-                                title: columnName
-                            };
+                        var tableColumns = columns.map(function(columnName, index) {
+                            if (index === 0) {
+                                return {
+                                    data: "id", // Assuming the `No` column in the returned data contains the numbering
+                                    title: 'No'
+                                };
+                            } else {
+                                return {
+                                    data: columnName,
+                                    title: columnName
+                                };
+                            }
                         });
+
                         new DataTable("#pc-dt-simple", {
                             scrollY: true,
                             responsive: false,
