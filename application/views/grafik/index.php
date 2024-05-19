@@ -66,12 +66,24 @@
                                     <label class="form-label" for="stasiun">Stasiun</label>
                                     <select class="form-control" name="stasiun" id="stasiun">
                                         <option>--Pilih Stasiun--</option>
+                                        <?php foreach ($station as $row) { ?>
+                                            <option value="<?= $row->lookup_code ?>"><?= $row->lookup_name ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label class="form-label" for="stasiun">Elevasi</label>
+                                    <select class="form-control" name="elevasi" id="elevasi">
+                                        <option value="" selected>Pilih Elevasi</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label class="form-label" for="instrument">Instrument</label>
-                                    <select class="form-control" name="instrument" id="instrument">
-                                        <option>--Pilih Instrument--</option>
+                                    <label class="form-label" for="stasiun">Status</label>
+                                    <select class="form-control" name="status" id="status">
+                                        <option value="" selected>Pilih Status</option>
+                                        <option value="1">Konstruksi</option>
+                                        <option value="2">Pasca Konstruksi</option>
                                     </select>
                                 </div>
                             </div>
@@ -137,28 +149,15 @@
         $("#stasiun").change(function() {
             var ms_stasiun_id = $(this).val();
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var result = JSON.parse(xhttp.responseText).result;
-                    var html = '<option value="">--- Pilih Stasiun ---</option>';
-                    var instrument = document.getElementById('instrument');
 
-                    if (result.length > 0) {
-                        for (i = 0; i < result.length; i++) {
-                            html += '<option value=' + result[i].id + '>' + result[i].nama_instrument +
-                                '</option>';
-                        }
-                    } else {
-                        html = '<option value="">--Tidak Ada Data--</option>';
-                    }
+            $.ajax({
+                url: "<?php echo base_url('Grafik/getStasiunChange'); ?>" + '?ms_stasiun_id=' + ms_stasiun_id,
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
 
-                    instrument.innerHTML = html;
                 }
-            };
-            xhttp.open("GET", "<?php echo base_url('Data/instrument'); ?>" + '?ms_stasiun_id=' + ms_stasiun_id,
-                true);
-            xhttp.send();
+            })
         });
 
         $("#instrument").change(function() {

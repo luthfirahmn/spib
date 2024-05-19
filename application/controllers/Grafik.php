@@ -21,6 +21,7 @@ class Grafik extends MY_Controller
         $data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Grafik');
         //$data['station'] = $this->M_grafik->grafik($ap_id_user);
         $data['region'] = $this->M_grafik->region($ap_id_user);
+        // $data['station'] = $this->db->get_where('ms_lookup_values', ['lookup_config' => 'STASIUN_TYPE'])->result();
         $this->load->view('grafik/index', $data);
     }
 
@@ -62,6 +63,26 @@ class Grafik extends MY_Controller
 
         // Outputkan data yang telah dikelompokkan
         echo json_encode($grouped_data);
+    }
+
+    public function getStasiunChange()
+    {
+        $ms_stasiun_id  = $this->input->get('ms_stasiun_id');
+        $query = $this->db->query("SELECT * FROM ms_stasiun WHERE id = {$ms_stasiun_id}");
+        $stasiun = $query->result();
+
+        foreach ($stasiun as $row) {
+            switch ($row->stasiun_type) {
+                case  'Geologi':
+                    $data['status'] = true;
+                    $data['elevasi'] = true;
+                    $data['elevasi_data'] = true;
+                    break;
+                default:
+            }
+        }
+
+        echo $this->M_data->instrument($ms_stasiun_id);
     }
 
     public function change_connection($id_regions)

@@ -141,158 +141,31 @@
                 </div>
             </div>
 
-            <div class="row">
-                <?php
-                if (isset($klimatologi)) {
-                    foreach ($awlr as $row) { ?>
+            <?php
+            foreach ($station as $index => $row) {
 
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header px-3 py-2">
-                                    <h5 class="mb-0">
-                                        Stasiun <?= $row->nama_stasiun ?>
-                                    </h5>
-                                </div>
-                                <div>
-                                    <div class="card-body">
-                                        <div class="row ">
-                                            <div class="col-md-4">
-                                                <div class="card bg-gray-100">
-                                                    <div class="card-header px-3 py-2 font-semibold">
-                                                        Animasi Tinggi Muka Air
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="col">
-                                                            <div class="text-with-dashed-line position-absolute font-semibold">
-                                                                Elevasi Splitway
-                                                            </div>
-                                                        </div>
-                                                        <div class="col">
-                                                            <div class="text-with-dashed-line position-absolute mt-5 font-semibold">
-                                                                Elevasi Tranducer
-                                                            </div>
-                                                        </div>
-                                                        <div class="Ocean">
-                                                            <?php
-
-                                                            $kali = isset($row->details[0]->nilai) ? $row->details[0]->nilai : 0;
-                                                            if ($kali < 1) {
-
-                                                                $level_air = 200;
-                                                            } else {
-                                                                $level_air = $kali * 100;
-                                                            }
-                                                            ?>
-                                                            <svg class="Wave" viewBox="0 0 12960 <?= $level_air ?>">
-
-                                                                <path d="M9720,320C8100,320,8100,0,6480,0S4860,320,3240,320,1620,0,0,0V1120H12960V0C11340,0,11340,320,9720,320Z">
-
-                                                                    <animate dur="5s" repeatCount="indefinite" attributeName="d" values="
-              M9720,320C8100,320,8100,0,6480,0S4860,320,3240,320,1620,0,0,0V1120H12960V0C11340,0,11340,320,9720,320Z;
-              M9720,0C8100,0,8100,319,6480,319S4860,0,3240,0,1620,320,0,320v800H12960V320C11340,320,11340,0,9720,0Z;
-              M9720,320C8100,320,8100,0,6480,0S4860,320,3240,320,1620,0,0,0V1120H12960V0C11340,0,11340,320,9720,320Z
-            " />
-
-                                                                </path>
-
-                                                            </svg>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="card bg-gray-100">
-                                                    <div class="card-header px-3 py-2 font-semibold">
-                                                        Elevasi Muka Air Waduk
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <h1 class="">
-                                                            <?= isset($row->details[0]->nilai) ? $row->details[0]->nilai : 0 ?>
-                                                            <span><?= $row->details[0]->unit_sensor ?> </span>
-                                                        </h1>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="card bg-gray-100">
-                                                    <div class="card-header px-3 py-2 font-semibold">
-                                                        Status Kesiagaan
-                                                    </div>
-                                                    <div class="card-body d-flex justify-content-center px-1">
-                                                        <?php
-                                                        if ($row->details[0]->nilai <  $row->elev_siaga3) {
-                                                            echo '<h1 class="">NORMAL</h1>';
-                                                        } elseif ($row->details[0]->nilai >=  $row->elev_siaga3 and $row->details[0]->nilai <  $row->elev_siaga2) {
-                                                            echo '<h1 class="text-green-900">SIAGA</h1>';
-                                                        } elseif ($row->details[0]->nilai >=  $row->elev_siaga2 and $row->details[0]->nilai <  $row->elev_siaga1) {
-                                                            echo '<h1 class="text-yellow-900">WASPADA</h1>';
-                                                        } elseif ($row->details[0]->nilai >=  $row->elev_siaga3) {
-                                                            echo '<h1 class="text-red-900">AWAS</h1>';
-                                                        }
-                                                        ?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="card bg-gray-100">
-                                                    <div class="card-header px-3 py-2 font-semibold">
-                                                        Data Elevasi
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <table>
-                                                            <tr>
-                                                                <td>Elevasi Tranducer</td>
-                                                                <td>: <?= $row->elev_tanggul_utama ?> m</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Elevasi Pelimpah</td>
-                                                                <td>: <?= $row->elev_pelimpah ?> m</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Elevasi Siaga</td>
-                                                                <td>: <?= $row->elev_siaga3 ?> m</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Elevasi Waspada</td>
-                                                                <td>: <?= $row->elev_siaga2 ?> m</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Elevasi Awas</td>
-                                                                <td>: <?= $row->elev_siaga1 ?> m</td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                <?php }
-                } ?>
-                <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+            ?>
+                <h5 class="mb-2">STASIUN <?= $index ?></h5>
+                <div id="carouselExample<?= $index ?>" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <?php
                         $firstStasiun = true;
-                        foreach ($klimatologi as $row) {
+                        foreach ($row as $indexDetailStasiun => $detailStasiun) {
                         ?>
                             <div class="carousel-item <?= $firstStasiun ? 'active' : '' ?>">
-                                <h5 class="mb-2"><?= $row->nama_stasiun ?></h5>
+                                <!-- <h5 class="mb-2">STASIUN <?= $indexDetailStasiun ?></h5> -->
                                 <div class="row">
                                     <?php
-                                    foreach ($row->details as $details) {
+                                    foreach ($detailStasiun as $details) {
                                     ?>
                                         <div class="col-md-2">
                                             <div class="card">
                                                 <div class="card-body py-1 px-2 d-flex align-items-center">
                                                     <img width="30" height="30" src="<?= base_url('assets/upload/sensor/') . $details->icon ?>" alt="Gambar" class="me-2 order-1">
                                                     <div class="order-2">
-                                                        <span class="text-sm"><?= $details->jenis_sensor ?></span>
+                                                        <span class="text-sm"><?= $details->instrument ?></span>
                                                         <br> <!-- Untuk line break -->
-                                                        <span class="text-sm font-semibold"><?= isset($details->nilai) ? $details->nilai : 0 ?><?= $details->unit_sensor ?></span>
+                                                        <span class="text-sm font-semibold"><?= isset($details->value) ? $details->value : 0 ?></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -307,20 +180,22 @@
                         }
                         ?>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample<?= $index ?>" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample<?= $index ?>" data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
-                    </button>
+                    </button> -->
                 </div>
+            <?php
+            }
+            ?>
 
 
-
-            </div>
         </div>
+    </div>
     </div>
     </div>
 
