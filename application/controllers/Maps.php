@@ -18,6 +18,7 @@ class Maps extends MY_Controller
         $ap_id_user = $this->session->userdata('ap_id_user');
         $data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Maps');
         $data['station'] = $this->M_maps->station($ap_id_user);
+        $data['controller'] = 'Maps';
         $this->load->view('maps/index', $data);
     }
 }

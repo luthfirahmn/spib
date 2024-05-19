@@ -18,8 +18,25 @@ class Dokumen extends MY_Controller
 		$roles_id = $this->session->userdata('roles_id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Dokumen');
-		$data['dokumen'] = $this->M_dokumen->dokumen($ap_id_user);
+		$data['region'] = $this->M_dokumen->region($ap_id_user);
 		$this->load->view('dokumen/index', $data);
+	}
+
+	public function list()
+	{
+		$ap_id_user 	= $this->session->userdata('ap_id_user');
+		$site_id 		= $this->input->post("ms_regions_id");
+		$roles_id 		= $this->session->userdata('roles_id');
+		$data['dokumen'] = $this->M_dokumen->dokumen($ap_id_user, $site_id);
+		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Sensor');
+
+		$list = array(
+			'rc'		=> '00',
+			'err_desc'	=> 'Sukses',
+			'tabel'		=> $this->load->view('dokumen/tabel', $data, true)
+		);
+
+		echo json_encode($list);
 	}
 
 	public function tambah()

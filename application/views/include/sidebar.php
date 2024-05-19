@@ -2,8 +2,14 @@
 $menu = $this->session->userdata('menu');
 $submenu = $this->session->userdata('submenu');
 
+if(isset($controller)){
+	$map=$controller;
+}else{
+	$map='';
+}
+
 ?>
-<nav class="pc-sidebar">
+<nav class="pc-sidebar <?= ($map=='Maps')?'pc-sidebar-hide':''?>">
 	<div class="navbar-wrapper">
 		<div class="m-header">
 			<a href="index-2.html" class="b-brand">

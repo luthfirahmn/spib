@@ -5,14 +5,14 @@ class M_dokumen extends CI_Model
 		parent::__construct();
 	}
 
-	function dokumen($ap_id_user){ 
+	function dokumen($ap_id_user, $site_id){ 
 		return $this->db->query("
 		SELECT a.*, b.`site_name`, c.`lookup_name` AS jenis 
 		FROM `ms_documentations` a 
 		LEFT JOIN ms_regions b ON a.`ms_regions_id`=b.id
 		LEFT JOIN `ms_lookup_values` c ON a.`category_id`=c.`lookup_code`
 		LEFT JOIN ms_user_regions d ON a.`ms_regions_id`= d.`ms_regions_id`
-		WHERE d.ms_users_id='$ap_id_user';
+		WHERE d.ms_users_id='$ap_id_user' AND b.id='$site_id';
 		")->result();
 	}
 
