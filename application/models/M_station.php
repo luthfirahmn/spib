@@ -37,4 +37,11 @@ class M_station extends CI_Model
 		WHERE ms_users_id='$ms_users_id'
 		")->result();
 	}
+	
+	function stasiun_type()
+	{
+		return $this->db->query("
+		select * from ms_lookup_values where lookup_config='STASIUN_TYPE'
+		")->result();
+	}
 }

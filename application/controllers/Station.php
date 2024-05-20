@@ -43,6 +43,7 @@ class Station extends MY_Controller
 	{
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['region'] = $this->M_station->region($ap_id_user);
+		$data['stasiun_type'] = $this->M_station->stasiun_type();
 		$this->load->view('station/tambah', $data);
 	}
 
@@ -81,6 +82,7 @@ class Station extends MY_Controller
 			'kontak_gsm'			=> $this->input->post('kontak_gsm'),
 			'alamat_ip'				=> $this->input->post('alamat_ip'),
 			'tahun_pembuatan'		=> $this->input->post('tahun_pembuatan'),
+			'stasiun_type'			=> $this->input->post('stasiun_type'),
 			'elevasi'				=> $this->input->post('elevasi')
 		);
 
@@ -100,6 +102,7 @@ class Station extends MY_Controller
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['region'] = $this->M_station->region($ap_id_user);
 		$data['station'] = $this->M_station->station_detail($id);
+		$data['stasiun_type'] = $this->M_station->stasiun_type();
 		$this->load->view('station/edit', $data);
 	}
 
@@ -119,6 +122,7 @@ class Station extends MY_Controller
 			'kontak_gsm'			=> $this->input->post('kontak_gsm'),
 			'alamat_ip'				=> $this->input->post('alamat_ip'),
 			'tahun_pembuatan'		=> $this->input->post('tahun_pembuatan'),
+			'stasiun_type'			=> $this->input->post('stasiun_type'),
 			'elevasi'				=> $this->input->post('elevasi')
 		);
 
