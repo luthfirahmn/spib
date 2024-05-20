@@ -11,7 +11,7 @@
 				<th>Jumlah Instrument</th>
 				<th>Jenis Komunikasi</th>
 				<th>GSM/IP</th>
-				<th>Foto</th>
+				<th>Layout</th>
 				<th>Action</th>
 			</tr>
 		</thead>
