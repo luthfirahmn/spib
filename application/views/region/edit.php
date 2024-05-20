@@ -119,6 +119,7 @@
 											</div>
 											<button type="button" id="test_koneksi" class="btn btn-warning mb-3">Test Connection</button>
 											<button type="submit" class="btn btn-primary mb-3">Submit</button>
+											<a href="<?= base_url('Region')?>" type="button" class="btn btn-danger mb-3">Cancel</a>
 										</form>
 									</div>
 								</div>
