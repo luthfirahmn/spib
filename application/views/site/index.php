@@ -87,6 +87,7 @@
 											<tr>
 												<th>Site</th>
 												<th>Nama Konfigurasi</th>
+												<th>Foto</th>
 												<th>Action</th>
 											</tr>
 										</thead>
@@ -95,6 +96,11 @@
 											<tr>
 												<td><?= $rec->nama_site?></td>
 												<td><?= $rec->site_name?></td>
+												<td>
+													<div class="d-inline-block align-middle" bis_skin_checked="1">
+														<img src="<?= base_url('assets/upload/sensor/' . $rec->foto) ?>" alt="image" class="img-radius wid-40 align-top m-r-15" onClick="viewImage('<?= $rec->foto ?>')">
+													</div>
+												</td>
 												<td>
 													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 														<div class="btn-group" role="group">
@@ -158,7 +164,11 @@
 
 
 	
-
+		<!-- The Modal -->
+		<div id="myModal" class="modal">
+			<span class="close" onClick="closeImage()">&times;</span>
+			<img class="modal-content" id="img01" onClick="closeImage()">
+		</div>
 
 		<footer class="pc-footer">
 			<div class="footer-wrapper container-fluid">
@@ -277,6 +287,25 @@
 				row.parentNode.removeChild(row);
 			}
 		</script>
+
+
+
+		<link rel="stylesheet" href="<?= base_url() ?>assets/imageupload/preview.css" />
+		<script>
+			function viewImage(foto) {
+				var modal = document.getElementById("myModal");
+				var modalImg = document.getElementById("img01");
+				modal.style.display = "block";
+				modalImg.src = "<?= base_url('assets/upload/station/') ?>" + foto;
+
+			}
+
+			function closeImage() {
+				var modal = document.getElementById("myModal");
+				modal.style.display = "none";
+			}
+		</script>
+
 	</body>
 	<!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 </html>

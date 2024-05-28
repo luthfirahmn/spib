@@ -128,6 +128,16 @@
 										<input type="number" step=".001" class="form-control" id="elevasi" name="elevasi" value="<?= $station->elevasi?>" required>
 									</div>
 									<div class="form-group col-md-6">
+										<label class="form-label" for="file">Stasiun Type</label>
+										<select class="form-control" name="stasiun_type" id="stasiun_type">
+											<?php foreach($stasiun_type as $stasiun_type){?>
+											<option value="<?= $stasiun_type->lookup_name ?>" <?=($stasiun_type->lookup_name == $station->stasiun_type) ? 'selected' :'';?>><?= $stasiun_type->lookup_name ?></option>
+											<?php } ?>
+										</select>
+									</div>
+								</div>
+								<div class="row">
+									<div class="form-group col-md-6">
 										<label class="form-label" for="file">Foto</label>
 										<input type="file" id="file" name="foto" accept="image/*" hidden>
 										<div class="img-area" data-img="">
@@ -139,6 +149,7 @@
 										<button type="button" class="select-image">Select Foto</button>
 									</div>
 								</div>
+								<a href="<?= base_url('Station')?>" type="button" class="btn btn-danger">Cancel</a>
 								<button type="submit" class="btn btn-primary">Submit</button>
 							</div>
 							

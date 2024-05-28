@@ -1,7 +1,7 @@
 <?php class M_site extends CI_Model{ 
 
 	function site($ap_id_user){ 
-      return $this->db->query("SELECT a.`ms_users_id`, a.`ms_regions_id`, b.id, b.`site_name`, c.`site_name` AS nama_site
+      return $this->db->query("SELECT a.`ms_users_id`, a.`ms_regions_id`, b.id, b.`site_name`, c.`site_name` AS nama_site, b.foto
 	  FROM `ms_user_regions` a
 	  LEFT JOIN ms_sites b ON a.`ms_regions_id`=b.`ms_regions_id`
 	  LEFT JOIN `ms_regions` c ON a.`ms_regions_id`=c.id

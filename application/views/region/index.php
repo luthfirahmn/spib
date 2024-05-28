@@ -72,7 +72,7 @@
 												<td><?= $rec->site_name ?></td>
 												<td><?= $rec->database_host ?></td>
 												<td><?= $rec->database_username ?></td>
-												<td></td>
+												<td><?= $rec->qty_user ?></td>
 												<td>
 													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 														<div class="btn-group" role="group">
