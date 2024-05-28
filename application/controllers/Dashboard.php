@@ -39,16 +39,15 @@ class Dashboard extends MY_Controller
 			$db_site = $this->change_connection($region_id);
 			$stations = $this->get_stations_with_instruments($region_id);
 			$latest_data = $this->get_latest_data_values($db_site);
-
 			$data_by_instrument = array();
 			foreach ($latest_data as $data) {
 				$data_by_instrument[$data->kode_instrument] = (object) [
 					'icon' => $data->icon,
 					'instrument' => $data->nama_instrument,
-					'value' => $data->data_jadi . ' ' . $data->unit_sensor
+					'value' => $data->data_jadi . ' ' . $data->unit_sensor,
+					'last_update' => date('d M Y H:i', strtotime($data->tanggal . ' ' . $data->jam))
 				];
 			}
-
 			$organized_data = array();
 			foreach ($stations as $type => $station_list) {
 				$organized_data[$type] = array();
@@ -79,10 +78,12 @@ class Dashboard extends MY_Controller
 
 	public function get_stations_with_instruments($region_id)
 	{
-		$this->db->select('ms_stasiun.stasiun_type, ms_stasiun.nama_stasiun, tr_instrument.kode_instrument, tr_instrument.nama_instrument');
+		// Select the required columns
+		$this->db->select('ms_stasiun.stasiun_type, ms_stasiun.nama_stasiun, tr_instrument.kode_instrument, tr_instrument.nama_instrument, tr_instrument.tr_instrument_type_id');
 		$this->db->from('ms_stasiun');
-		$this->db->join('tr_instrument', 'ms_stasiun.id = tr_instrument.ms_stasiun_id', 'left');
+		$this->db->join('tr_instrument', 'ms_stasiun.id = tr_instrument.ms_stasiun_id', 'inner');
 		$this->db->where('ms_stasiun.ms_regions_id', $region_id); // Add region filter
+		$this->db->order_by("FIELD(ms_stasiun.stasiun_type, 'KLIMATOLOGI', 'HIDROLOGI', 'EWS', 'GEOLOGI', 'SEISMOLOGI')");
 		$query = $this->db->get();
 
 		$result = $query->result();
@@ -98,20 +99,40 @@ class Dashboard extends MY_Controller
 				$stations[$row->stasiun_type][$row->nama_stasiun][$row->kode_instrument] = $row->nama_instrument;
 			}
 		}
+
+		// Sort instruments by tr_instrument_type_id for GEOLOGI stations
+		if (isset($stations['GEOLOGI'])) {
+			foreach ($stations['GEOLOGI'] as $station_name => &$instruments) {
+				uasort($instruments, function ($a, $b) use ($result) {
+					$a_id = null;
+					$b_id = null;
+					foreach ($result as $row) {
+						if ($row->nama_instrument == $a) {
+							$a_id = $row->tr_instrument_type_id;
+						}
+						if ($row->nama_instrument == $b) {
+							$b_id = $row->tr_instrument_type_id;
+						}
+					}
+					return $a_id <=> $b_id;
+				});
+			}
+		}
 		return $stations;
 	}
 
 	public function get_latest_data_values($db_site)
 	{
-		$sql = "  SELECT t1.kode_instrument, t1.data_jadi, t1.icon, t1.unit_sensor,  t1.nama_instrument
+		$sql = "  SELECT t1.kode_instrument, t1.data_jadi, t1.icon, t1.unit_sensor,  t1.nama_instrument, t1.jam, t1.tanggal
         FROM (
-            SELECT data.kode_instrument, data_value.data_jadi,sys_jenis_sensor.icon, sys_jenis_sensor.unit_sensor,   tr_instrument.nama_instrument,
+            SELECT data.kode_instrument, data_value.data_jadi,sys_jenis_sensor.icon, sys_jenis_sensor.unit_sensor,   tr_instrument.nama_instrument, data.jam, data.tanggal,
                    ROW_NUMBER() OVER (PARTITION BY data.kode_instrument ORDER BY data.tanggal DESC, data.jam DESC) as rn
             FROM " . $db_site->database . ".data
-            JOIN " . $db_site->database . ".data_value ON data.id = data_value.data_id
-            JOIN sys_jenis_sensor ON data_value.sensor_id = sys_jenis_sensor.id
-			JOIN tr_instrument ON data.kode_instrument = tr_instrument.kode_instrument
-            WHERE data_value.data_jadi != ''
+            INNER JOIN " . $db_site->database . ".data_value ON data.id = data_value.data_id
+            INNER JOIN sys_jenis_sensor ON data_value.sensor_id = sys_jenis_sensor.id
+			INNER JOIN tr_instrument ON data.kode_instrument = tr_instrument.kode_instrument
+            WHERE data_value.data_jadi != '' AND data_value.data_primer = 0
+			AND data.keterangan = 'OTOMATIS'
         ) t1
         WHERE t1.rn = 1";
 		$query = $this->db->query($sql);

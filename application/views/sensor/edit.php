@@ -3,14 +3,14 @@
 <!-- Mirrored from berrydashboard.io/bootstrap/default/forms/form2_flu-uppy.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:17 GMT -->
 
 <head>
-	<title>Uppy File Upload | Berry Bootstrap 5 Admin Template</title>
+	<title>SPIB</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="description" content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
 	<meta name="keywords" content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
 	<meta name="author" content="CodedThemes" />
-	<link rel="icon" href="https://berrydashboard.io/bootstrap/default/assets/images/favicon.svg" type="image/x-icon" />
+	<link rel="icon" href="<?= base_url() . 'assets/logo_simetri.png' ?>" type="image/x-icon" />
 	<link rel="stylesheet" href="<?= base_url() ?>assets/css/plugins/uppy.min.css" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" id="main-font-link" />
 	<link rel="stylesheet" href="<?= base_url() ?>assets/fonts/tabler-icons.min.css" />

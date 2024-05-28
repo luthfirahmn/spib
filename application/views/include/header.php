@@ -6,18 +6,17 @@ $jabatan = $this->session->userdata('jabatan');
 
 ?>
 <style>
-.header-logo {
-    font-size: 36px;
-    float: left;
-}
+    .header-logo {
+        font-size: 36px;
+        float: left;
+    }
 </style>
 <header class="pc-header">
     <div class="m-header">
         <div class="header-logo">
             <!-- <img src="<?= base_url() . 'assets/upload/' . $list_region_user[0]->logo_site ?>" alt=""
                 class="logo logo-lg" style="width: 40px;" /> -->
-                <img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt=""
-                class="logo logo-lg" style="width: 40px;" />
+            <img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt="" class="logo logo-lg" style="width: 40px;" />
         </div>
 
         <!-- <h4 style="padding-top: 10px;"><?= $list_region_user[0]->site_name ?></h4> -->
@@ -36,38 +35,40 @@ $jabatan = $this->session->userdata('jabatan');
                         <i class="ti ti-menu-2"></i>
                     </a>
                 </li>
-                <li class="dropdown pc-h-item d-inline-flex d-md-none">
-                    <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown"
-                        href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                        <i class="ti ti-search"></i>
-                    </a>
-                    <div class="dropdown-menu pc-h-dropdown drp-search">
-                        <form class="px-3">
-                            <div class="form-group mb-0 d-flex align-items-center">
-                                <i data-feather="search"></i>
-                                <input type="search" class="form-control border-0 shadow-none"
-                                    placeholder="Search here. . ." />
-                            </div>
-                        </form>
-                    </div>
-                </li>
-                <li class="pc-h-item d-none d-md-inline-flex">
-                    <form class="header-search">
-                        <i data-feather="search" class="icon-search"></i>
-                        <input type="search" class="form-control" placeholder="Search here. . ." />
-                        <button class="btn btn-light-secondary btn-search">
-                            <i class="ti ti-adjustments-horizontal"></i>
-                        </button>
-                    </form>
-                </li>
             </ul>
         </div>
         <div class="ms-auto">
+            <a href="#" class="bg-light rounded p-1">
+                <i class="ti ti-clock"></i>
+                <span id="local-day"></span>,
+                <span id="local-date"></span> -
+                <span id="local-time"></span>
+            </a>
+            <script>
+                function updateLocalTime() {
+                    var now = new Date();
+                    var localTime = now.toLocaleTimeString();
+                    var optionsDate = {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    };
+                    var optionsDay = {
+                        weekday: 'long'
+                    };
+                    var localDate = now.toLocaleDateString('id-ID', optionsDate);
+                    var localDay = now.toLocaleDateString('id-ID', optionsDay);
+                    document.getElementById('local-time').textContent = localTime;
+                    document.getElementById('local-date').textContent = localDate;
+                    document.getElementById('local-day').textContent = localDay;
+                }
+                setInterval(updateLocalTime, 1000);
+                updateLocalTime();
+            </script>
             <ul class="list-unstyled">
 
                 <li class="dropdown pc-h-item header-user-profile">
-                    <a class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
-                        href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                    <a class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                         <img src="<?= base_url() ?>assets/upload/<?= $foto ?>" class="user-avtar" />
                         <span>
                             <i class="ti ti-settings"></i>
@@ -79,8 +80,7 @@ $jabatan = $this->session->userdata('jabatan');
                             </h4>
                             <p class="text-muted"><?= $jabatan ?></p>
                             <hr />
-                            <div class="profile-notification-scroll position-relative"
-                                style="max-height: calc(100vh - 280px)">
+                            <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 280px)">
 
                                 <a href="<?= base_url('Secure/logout') ?>" class="dropdown-item">
                                     <i class="ti ti-logout"></i>

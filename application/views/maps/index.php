@@ -7,15 +7,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description"
-        content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
-    <meta name="keywords"
-        content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
+    <meta name="description" content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
+    <meta name="keywords" content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
     <meta name="author" content="CodedThemes" />
-    <link rel="icon" href="https://berrydashboard.io/bootstrap/default/assets/images/favicon.svg" type="image/x-icon" />
+    <link rel="icon" href="<?= base_url() . 'assets/logo_simetri.png' ?>" type="image/x-icon" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/plugins/uppy.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap"
-        id="main-font-link" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" id="main-font-link" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/tabler-icons.min.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/feather.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/fontawesome.css" />
@@ -42,7 +39,7 @@
     <?php $this->load->view('include/sidebar.php'); ?>
     <section class="pc-container">
         <div class="pc-content">
-            <div class="page-header">
+            <!-- <div class="page-header">
                 <div class="page-block">
                     <div class="row align-items-center">
                         <div class="col-md-12">
@@ -57,16 +54,15 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
 
                         <div class="card-body">
-                            <form action="<?= base_url('Station/tambah_proses') ?>" method="post"
-                                enctype="multipart/form-data">
+                            <form action="<?= base_url('Station/tambah_proses') ?>" method="post" enctype="multipart/form-data">
                                 <div class="row">
-                                    <div id="mapid" style="width: 100%; height: 500px;"></div>
+                                    <div id="mapid" style="width: 100%; height: 100vh;"></div>
                                 </div>
 
                         </div>
@@ -97,37 +93,37 @@
 
     <script src="<?= base_url() ?>assets/js/customizer.js"></script>
     <script type="text/javascript">
-    var mymap = L.map('mapid').setView([-0.789275, 113.921327], 5);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(mymap);
-    var marker;
-    <?php
+        var mymap = L.map('mapid').setView([-0.789275, 113.921327], 5);
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(mymap);
+        var marker;
+        <?php
         $colors = array('blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'gray', 'black', 'red');
         $i = 0;
         foreach ($station as $stasiun) :
         ?>
-    marker = new L.marker([<?= $stasiun->latitude ?>, <?= $stasiun->longitude ?>], {
-        icon: new L.Icon({
-            iconUrl: 'https://maps.google.com/mapfiles/ms/micons/<?= $colors[$i] ?>.png'
-        })
-    }).addTo(mymap).on('click', function(e) {
+            marker = new L.marker([<?= $stasiun->latitude ?>, <?= $stasiun->longitude ?>], {
+                icon: new L.Icon({
+                    iconUrl: 'https://maps.google.com/mapfiles/ms/micons/<?= $colors[$i] ?>.png'
+                })
+            }).addTo(mymap).on('click', function(e) {
 
-        var popupContent =
-            '<img id="stationImage" src="<?= base_url('assets/upload/station/') . $stasiun->foto ?>" style="width: 100%;">';
-        popupContent += '<p style="margin-top: 10px;">Nama Site: <?= $stasiun->site_name ?></p>';
-        popupContent += '<p style="margin-top: 10px;">Nama Stasiun: <?= $stasiun->nama_stasiun ?></p>';
-        popupContent += '<a href="#"><p style="margin-top: 10px;">Koordinat: <?= $stasiun->longitude." ".$stasiun->latitude ?></p></a>';
-        popupContent += '<a href="#" type="button" class="btn btn-light-primary mb-3">Detail</a>';
+                var popupContent =
+                    '<img id="stationImage" src="<?= base_url('assets/upload/station/') . $stasiun->foto ?>" style="width: 100%;">';
+                popupContent += '<p style="margin-top: 10px;">Nama Site: <?= $stasiun->site_name ?></p>';
+                popupContent += '<p style="margin-top: 10px;">Nama Stasiun: <?= $stasiun->nama_stasiun ?></p>';
+                popupContent += '<a href="#"><p style="margin-top: 10px;">Koordinat: <?= $stasiun->longitude . " " . $stasiun->latitude ?></p></a>';
+                popupContent += '<a href="#" type="button" class="btn btn-light-primary mb-3">Detail</a>';
 
-        var popup = L.popup()
-            .setLatLng(e.latlng)
-            .setContent(popupContent)
-            .openOn(mymap);
+                var popup = L.popup()
+                    .setLatLng(e.latlng)
+                    .setContent(popupContent)
+                    .openOn(mymap);
 
 
-    });
-    <?php
+            });
+        <?php
             $i = ($i + 1) % count($colors);
         endforeach; ?>
     </script>

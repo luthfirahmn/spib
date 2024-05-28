@@ -48,7 +48,7 @@ class M_data extends CI_Model
 			}
 
 			$query = $db_site->query("
-						SELECT t1.id, t1.kode_instrument, (SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument) nama_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
+						SELECT t1.id, t1.kode_instrument, (SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument LIMIT 1) nama_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
 						FROM data t1
 						WHERE t1.kode_instrument = '$kode_instrument'
 						{$kt}
@@ -113,7 +113,7 @@ class M_data extends CI_Model
 
 			$query = $db_site->query("
 						SELECT t1.id, t1.kode_instrument, 
-						(SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument) nama_instrument, t1.tanggal, t1.keterangan, 'Data Mentah'
+						(SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument LIMIT 1) nama_instrument, t1.tanggal, t1.keterangan, 'Data Mentah'
 						FROM data t1
 						WHERE t1.kode_instrument = '$kode_instrument'
 						{$kt}
@@ -184,7 +184,7 @@ class M_data extends CI_Model
 			}
 
 			$query = $db_site->query("
-						SELECT t1.id, t1.kode_instrument, (SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument) nama_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
+						SELECT t1.id, t1.kode_instrument, (SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument LIMIT 1) nama_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
 						FROM data t1
 						WHERE t1.kode_instrument = '$kode_instrument'
 						{$kt}
@@ -325,7 +325,7 @@ class M_data extends CI_Model
 				SELECT 
 					DATE(t1.tanggal) as tanggal, 
 					t1.kode_instrument, 
-					(SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument) nama_instrument,
+					(SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument LIMIT 1) nama_instrument,
 					t1.keterangan, 
 					'Data Mentah' as data_mentah, 
 					AVG(t2.data_primer) as avg_data_primer

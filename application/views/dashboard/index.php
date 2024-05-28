@@ -10,7 +10,7 @@
     <meta name="description" content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
     <meta name="keywords" content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
     <meta name="author" content="CodedThemes" />
-    <link rel="icon" href="https://berrydashboard.io/bootstrap/default/assets/images/favicon.svg" type="image/x-icon" />
+    <link rel="icon" href="<?= base_url() . 'assets/logo_simetri.png' ?>" type="image/x-icon" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" id="main-font-link" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/tabler-icons.min.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/feather.css" />
@@ -110,7 +110,7 @@
     <?php $this->load->view('include/sidebar.php'); ?>
 
 
-    <div class="pc-container">
+    <div class="pc-container ">
         <div class="pc-content">
             <div class="d-flex justify-content-between">
                 <div>
@@ -128,78 +128,86 @@
                             <?php } ?>
                         </select>
                     </div>
-                    <div>
-                        <label>Set Interval</label>
-                        <select class="form-control" name="setInterval" id="setInterval">
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="30">30</option>
-                        </select>
-                    </div>
 
                 </div>
             </div>
+            <div class="carouselContent">
 
-            <?php
-            foreach ($station as $index => $row) {
+                <?php
+                foreach ($station as $index => $row) {
 
-            ?>
-                <h5 class="mb-2">STASIUN <?= $index ?></h5>
-                <div id="carouselExample<?= $index ?>" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <?php
-                        $firstStasiun = true;
-                        foreach ($row as $indexDetailStasiun => $detailStasiun) {
-                        ?>
-                            <div class="carousel-item <?= $firstStasiun ? 'active' : '' ?>">
-                                <!-- <h5 class="mb-2">STASIUN <?= $indexDetailStasiun ?></h5> -->
-                                <div class="row">
+                ?>
+                    <div class="card " style="margin-bottom: 5px;">
+                        <div class="card-body">
+                            <h5 class="mb-1">STASIUN <?= $index ?></h5>
+                            <div id="carouselExample<?= $index ?>" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                                <div class="carousel-indicators" style="margin-bottom: -0.5rem;">
                                     <?php
-                                    foreach ($detailStasiun as $details) {
+                                    $indicatorCount = count($row);
+                                    for ($i = 0; $i < $indicatorCount; $i++) {
                                     ?>
-                                        <div class="col-md-2">
-                                            <div class="card">
-                                                <div class="card-body py-1 px-2 d-flex align-items-center">
-                                                    <img width="30" height="30" src="<?= base_url('assets/upload/sensor/') . $details->icon ?>" alt="Gambar" class="me-2 order-1">
-                                                    <div class="order-2">
-                                                        <span class="text-sm"><?= $details->instrument ?></span>
-                                                        <br> <!-- Untuk line break -->
-                                                        <span class="text-sm font-semibold"><?= isset($details->value) ? $details->value : 0 ?></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <button type="button" data-bs-target="#carouselExample<?= $index ?>" data-bs-slide-to="<?= $i ?>" <?= $i === 0 ? 'class="active" aria-current="true"' : '' ?> aria-label="Slide <?= $i + 1 ?>"></button>
                                     <?php
                                     }
                                     ?>
                                 </div>
-                            </div>
-                        <?php
-                            $firstStasiun = false;
-                        }
-                        ?>
-                    </div>
-                    <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample<?= $index ?>" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample<?= $index ?>" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button> -->
-                </div>
-            <?php
-            }
-            ?>
+                                <div class="carousel-inner">
+                                    <?php
+                                    $firstStasiun = true;
+                                    foreach ($row as $indexDetailStasiun => $detailStasiun) {
+                                    ?>
+                                        <div class="carousel-item <?= $firstStasiun ? 'active' : '' ?>">
+                                            <!-- <h5 class="mb-2">STASIUN <?= $indexDetailStasiun ?></h5> -->
+                                            <div class="row">
+                                                <?php
+                                                foreach ($detailStasiun as $details) {
+                                                ?>
+                                                    <div class="col-md-2">
+                                                        <div class="card bg-light bg-gradient">
+                                                            <div class="card-body py-1 px-2 d-flex align-items-center">
+                                                                <img width="30" height="35" src="<?= base_url('assets/upload/sensor/') . $details->icon ?>" alt="Gambar" class="me-2 order-1">
+                                                                <div class="order-2">
+                                                                    <span class="text-sm"><?= $details->instrument ?></span>
+                                                                    <br> <!-- Untuk line break -->
+                                                                    <span class="text-sm font-semibold"><?= isset($details->value) ? $details->value : 0 ?></span>
+                                                                    <br>
+                                                                    <span class="fs-6 font-light"><i class="ti ti-clock"></i> <?= $details->last_update ?> </span>
 
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php
+                                                }
+                                                ?>
+                                            </div>
+                                        </div>
+                                    <?php
+                                        $firstStasiun = false;
+                                    }
+                                    ?>
+                                </div>
+                                <!-- <button class="carousel-control-next" type="button" data-bs-target="#carouselExample<?= $index ?>" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button> -->
+                            </div>
+                        </div>
+                    </div>
+                <?php
+                }
+                ?>
+
+            </div>
 
         </div>
-    </div>
-    </div>
+
+        <div class="mb-1">
+            <hr>
+        </div>
     </div>
 
-    <footer class="pc-footer">
+    <footer class="pc-footer ">
         <div class="footer-wrapper container-fluid">
 
         </div>
@@ -215,6 +223,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
+        function refreshContent() {
+            $("#carouselContent").load(window.location.href + " #carouselContent > *");
+        }
+
+        $(document).ready(function() {
+            setInterval(refreshContent, 60000); // Refresh every 60000 milliseconds (1 minute)
+        });
+        $(document).ready(function() {
+            document.body.style.zoom = 1.0
+            var scale = 'scale(1)';
+            document.body.style.webkitTransform = scale; // Chrome, Opera, Safari
+            document.body.style.msTransform = scale; // IE 9
+            document.body.style.transform = scale;
+        });
         $("#ms_regions_id").change(function() {
             var ms_regions_id = $(this).val();
 
