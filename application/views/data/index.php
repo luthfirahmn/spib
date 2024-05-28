@@ -10,7 +10,7 @@
     <meta name="description" content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
     <meta name="keywords" content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
     <meta name="author" content="CodedThemes" />
-    <link rel="icon" href="https://berrydashboard.io/bootstrap/default/assets/images/favicon.svg" type="image/x-icon" />
+    <link rel="icon" href="<?= base_url() . 'assets/logo_simetri.png' ?>" type="image/x-icon" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" id="main-font-link" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/fonts/tabler-icons.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.css" />
@@ -577,9 +577,10 @@
             var ms_regions_id = $("#ms_regions_id").val();
             var keterangan = $("#keterangan").val();
             var tanggal = $("#tanggal").val();
+            var waktu = $("#waktu").val();
 
             // Membangun parameter query
-            var query_params = "?instrument_id=" + instrument_id + "&ms_regions_id=" + ms_regions_id + "&keterangan=" + keterangan + "&tanggal=" + tanggal;
+            var query_params = "?instrument_id=" + instrument_id + "&ms_regions_id=" + ms_regions_id + "&keterangan=" + keterangan + "&tanggal=" + tanggal + "&waktu=" + waktu;
 
             // Mengirim permintaan AJAX untuk mengunduh data
             $.ajax({

@@ -77,15 +77,15 @@ class Data extends MY_Controller
 	{
 		$site_id = $this->input->get("ms_regions_id");
 		$instrument_id = $this->input->get("instrument_id");
-		$keterangan = $this->input->get("keterangan");
-		$tanggal = $this->input->get("tanggal");
-		$waktu = $this->input->post("waktu");
+		$keterangan = strval($this->input->get("keterangan"));
+		$tanggal = strval($this->input->get("tanggal"));
+		$waktu = strval($this->input->get("waktu"));
 
 		// Ganti koneksi database berdasarkan $site_id
 		$db_site = $this->change_connection($site_id);
 
 		// Ambil data dari model berdasarkan parameter yang diberikan
-		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, 1, -1, $download = 1);
+		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, 0, 10, $download = 1);
 
 		// Load library PHPExcel
 		$this->load->library('PHPExcel');
@@ -111,7 +111,6 @@ class Data extends MY_Controller
 		foreach ($columns as $key => $column) {
 			$sheet->setCellValueByColumnAndRow($key, 1, $column);
 		}
-
 		// Tambahkan data
 		$row = 2;
 		foreach ($data['data'] as $item) {
@@ -123,7 +122,7 @@ class Data extends MY_Controller
 			$row++;
 		}
 		$site_name = $this->db->get_where('ms_regions', ['id' => $site_id])->row()->site_name;
-		$filename = $site_name . '_' . $data['data'][0]['kode_instrument'] . '_' . $data['data'][0]['nama_instrument'];
+		$filename = $site_name . '_' . $data['data'][0]['kode_instrument'] . '_' . $data['data'][0]['nama_instrument'] . '_' . $tanggal;
 		// Save Excel file to a temporary location
 		$tempFilePath = FCPATH . 'assets/temp/' . $filename . '.xlsx';
 		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
