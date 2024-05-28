@@ -27,8 +27,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 //Setingan Database
 $config['database_host']    = 'localhost';
 $config['database_user']    = 'root';
-$config['database_pass']    = '';
-$config['database_name']    = 'devg9589_spib';
+$config['database_pass']    = 'root';
+$config['database_name']    = 'spib_master';
 
 //Setingan Base URL
 $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");

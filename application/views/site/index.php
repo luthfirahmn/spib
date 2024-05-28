@@ -88,52 +88,15 @@
 										<tr>
 											<th>Site</th>
 											<th>Nama Konfigurasi</th>
+											<th>Foto</th>
 											<th>Action</th>
 										</tr>
 									</thead>
 									<tbody>
 										<?php foreach ($site as $rec) { ?>
-				<div class="page-header">
-					<div class="page-block">
-						<div class="row align-items-center">
-							<div class="col-md-12">
-								<div class="page-header-title">
-									<h5 class="m-b-10">Site</h5>
-								</div>
-								<ul class="breadcrumb">
-									<li class="breadcrumb-item">
-										<a href="<?= base_url()?>">Home</a>
-									</li>
-									<li class="breadcrumb-item" aria-current="page">Site</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xl-12">
-						<div class="card">
-							<div class="card-header">
-								<h5>Data Site</h5>
-							</div>
-							<div class="card-body table-border-style">
-								<div class="table-responsive">
-									<table class="table" id="pc-dt-simple">
-										<thead>
-											<tr>
-												<th>Site</th>
-												<th>Nama Konfigurasi</th>
-												<th>Foto</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-										<tbody>
-											<?php foreach($site as $rec){?>
 											<tr>
 												<td><?= $rec->nama_site ?></td>
 												<td><?= $rec->site_name ?></td>
-												<td><?= $rec->nama_site?></td>
-												<td><?= $rec->site_name?></td>
 												<td>
 													<div class="d-inline-block align-middle" bis_skin_checked="1">
 														<img src="<?= base_url('assets/upload/sensor/' . $rec->foto) ?>" alt="image" class="img-radius wid-40 align-top m-r-15" onClick="viewImage('<?= $rec->foto ?>')">
@@ -202,13 +165,11 @@
 
 
 
-
-	
-		<!-- The Modal -->
-		<div id="myModal" class="modal">
-			<span class="close" onClick="closeImage()">&times;</span>
-			<img class="modal-content" id="img01" onClick="closeImage()">
-		</div>
+	<!-- The Modal -->
+	<div id="myModal" class="modal">
+		<span class="close" onClick="closeImage()">&times;</span>
+		<img class="modal-content" id="img01" onClick="closeImage()">
+	</div>
 
 	<footer class="pc-footer">
 		<div class="footer-wrapper container-fluid">
@@ -322,34 +283,26 @@
 			row.parentNode.removeChild(row);
 		}
 	</script>
+
+
+
+	<link rel="stylesheet" href="<?= base_url() ?>assets/imageupload/preview.css" />
+	<script>
+		function viewImage(foto) {
+			var modal = document.getElementById("myModal");
+			var modalImg = document.getElementById("img01");
+			modal.style.display = "block";
+			modalImg.src = "<?= base_url('assets/upload/station/') ?>" + foto;
+
+		}
+
+		function closeImage() {
+			var modal = document.getElementById("myModal");
+			modal.style.display = "none";
+		}
+	</script>
+
 </body>
 <!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 
-			function deleteRow(param)
-			{
-				var row = param.parentNode.parentNode;
-				row.parentNode.removeChild(row);
-			}
-		</script>
-
-
-
-		<link rel="stylesheet" href="<?= base_url() ?>assets/imageupload/preview.css" />
-		<script>
-			function viewImage(foto) {
-				var modal = document.getElementById("myModal");
-				var modalImg = document.getElementById("img01");
-				modal.style.display = "block";
-				modalImg.src = "<?= base_url('assets/upload/station/') ?>" + foto;
-
-			}
-
-			function closeImage() {
-				var modal = document.getElementById("myModal");
-				modal.style.display = "none";
-			}
-		</script>
-
-	</body>
-	<!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 </html>

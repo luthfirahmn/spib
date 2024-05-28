@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="description" content="Berry is made using Bootstrap 5 design framework. Download the free admin template & use it for your project." />
     <meta name="keywords" content="Berry, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template" />
-    <meta name="author" content="CodedThemes" />
+    <meta name="author" content="SPIB" />
     <link rel="icon" href="<?= base_url() . 'assets/logo_simetri.png' ?>" type="image/x-icon" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/plugins/uppy.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" id="main-font-link" />
