@@ -202,12 +202,8 @@
             <hr>
         </div>
     </div>
+    <?php $this->load->view('include/footer.php'); ?>
 
-    <footer class="pc-footer ">
-        <div class="footer-wrapper container-fluid">
-
-        </div>
-    </footer>
 
     <script src="<?= base_url() ?>assets/js/plugins/popper.min.js"></script>
     <script src="<?= base_url() ?>assets/js/plugins/simplebar.min.js"></script>

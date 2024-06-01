@@ -119,16 +119,7 @@
     </div>
 
 
-    <footer class="pc-footer">
-        <div class="footer-wrapper container-fluid">
-            <div class="row">
-                <div class="col my-1">
-                    <p class="m-0">Copyright &copy; <a href="#">SPIB</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php $this->load->view('include/footer.php'); ?>
 
     <script src="<?= base_url() ?>assets/js/plugins/popper.min.js"></script>
     <script src="<?= base_url() ?>assets/js/plugins/simplebar.min.js"></script>

@@ -175,16 +175,7 @@
 		<img class="modal-content" id="img01" onClick="closeImage()">
 	</div>
 
-	<footer class="pc-footer">
-		<div class="footer-wrapper container-fluid">
-			<div class="row">
-				<div class="col my-1">
-					<p class="m-0">Copyright &copy; <a href="#">Codedthemes</a>
-					</p>
-				</div>
-			</div>
-		</div>
-	</footer>
+	<?php $this->load->view('include/footer.php'); ?>
 
 	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">

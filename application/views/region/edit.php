@@ -132,17 +132,7 @@
 			</div>
 		</div>
 	</section>
-	<footer class="pc-footer">
-		<div class="footer-wrapper container-fluid">
-			<div class="row">
-				<div class="col my-1">
-					<p class="m-0">Copyright &copy; <a href="#">SPIB</a>
-					</p>
-				</div>
-
-			</div>
-		</div>
-	</footer>
+	<?php $this->load->view('include/footer.php'); ?>
 
 	<!-- Toast notifications -->
 	<div style="position: absolute; top: 20px; right: 20px;">
