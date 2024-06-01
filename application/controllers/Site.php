@@ -7,6 +7,7 @@ class Site extends MY_Controller
 		parent::__construct();
 		$this->load->model('Data_model');
 		$this->load->model('M_site');
+		$this->load->model('M_akses');
 		$this->load->dbutil();
 		$this->load->database();
 	}
@@ -14,6 +15,8 @@ class Site extends MY_Controller
 	public function index()
 	{
 		$ap_id_user 	= $this->session->userdata('ap_id_user');
+		$roles_id = $this->session->userdata('roles_id');
+		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'Site');
 		$data['site']	= $this->M_site->site($ap_id_user);
 		$this->load->view('site/index', $data);
 	}

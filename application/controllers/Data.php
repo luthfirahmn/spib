@@ -58,7 +58,7 @@ class Data extends MY_Controller
 		$length = $this->input->post("length");
 		$start = $this->input->post("start");
 
-		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $start, $length);
+		$data = $this->M_data->list($db_site, $site_id, $instrument_id, $keterangan, $tanggal, $waktu, $start, $length);
 		// pre($data);
 		// pre($data);
 		$result = array(
@@ -85,7 +85,7 @@ class Data extends MY_Controller
 		$db_site = $this->change_connection($site_id);
 
 		// Ambil data dari model berdasarkan parameter yang diberikan
-		$data = $this->M_data->list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, 0, 10, $download = 1);
+		$data = $this->M_data->list($db_site, $site_id, $instrument_id, $keterangan, $tanggal, $waktu, 0, 10, $download = 1);
 
 		// Load library PHPExcel
 		$this->load->library('PHPExcel');
@@ -144,10 +144,14 @@ class Data extends MY_Controller
 		try {
 			$db_site = $this->change_connection($ms_regions_id);
 
-			$db_site->trans_start();
+			// Start transaction
+			$db_site->trans_begin();
 			if (!empty($tanggal)) {
 				if ($waktu == 'jam') {
-					$ddt = "AND tanggal = '$tanggal'";
+					$start_datetime = $tanggal . ' 07:00:00';
+					$end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 07:00:00'));
+
+					$ddt = "AND CONCAT(t1.tanggal, ' ', t1.jam) >= '$start_datetime' AND CONCAT(t1.tanggal, ' ', t1.jam) < '$end_datetime'";
 				} else {
 					$ddt = "AND DATE_FORMAT(tanggal, '%Y-%m') = '$tanggal'";
 				}
@@ -161,32 +165,51 @@ class Data extends MY_Controller
 				$kt = "";
 			}
 
-			$query = $db_site->query("SELECT id FROM data  WHERE kode_instrument = '$kode_instrument' {$kt} {$ddt}");
+			$query = $db_site->query("SELECT id FROM data t1 WHERE kode_instrument = '$kode_instrument' {$kt} {$ddt}");
 			$result = $query->result();
-			if (!empty($result)) {
+			if (empty($result)) {
+				$response['error'] = true;
+				$response['message'] = 'Tidak ada data yang dihapus.';
+				echo json_encode($response);
+				die;
+			} else {
 				foreach ($result as $row) {
+					$delete_data_value = $db_site->query("DELETE FROM data_value WHERE data_id = '$row->id'");
+					if (!$delete_data_value) {
+						// Rollback transaction if deletion fails
+						$db_site->trans_rollback();
+						throw new Exception('Gagal menghapus data_value dengan data_id: ' . $row->id);
+					}
 
-					$db_site->query("DELETE FROM data_value WHERE data_id = '$row->id'");
-
-					$db_site->query("DELETE FROM data WHERE id = '$row->id'");
+					$delete_data = $db_site->query("DELETE FROM data WHERE id = '$row->id'");
+					if (!$delete_data) {
+						// Rollback transaction if deletion fails
+						$db_site->trans_rollback();
+						throw new Exception('Gagal menghapus data dengan id: ' . $row->id);
+					}
 				}
 			}
 
-			$db_site->trans_complete();
-
+			// Complete the transaction
 			if ($db_site->trans_status() === FALSE) {
+				// Rollback transaction if transaction status is false
+				$db_site->trans_rollback();
 				throw new Exception('Gagal menyelesaikan transaksi.');
 			}
 
+			// Commit transaction
+			$db_site->trans_commit();
+
 			$response['error'] = false;
 			$response['message'] = 'Data berhasil dihapus.';
+			echo json_encode($response);
 		} catch (Exception $e) {
 			$response['error'] = true;
 			$response['message'] = 'Terjadi kesalahan: ' . $e->getMessage();
+			echo json_encode($response);
 		}
-
-		echo json_encode($response);
 	}
+
 
 	public function instrument()
 	{
@@ -343,7 +366,7 @@ class Data extends MY_Controller
 			$data_jadi = $query->result();
 			// pre($data_jadi);
 
-			$hasil = formula($type_instrument_name, $data_jadi, $data, $koefisien);
+			$hasil = formula($type_instrument_name, $data_jadi, $data, $koefisien, 'MANUAL');
 
 			if (!$hasil) {
 				throw new Exception();

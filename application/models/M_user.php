@@ -174,7 +174,8 @@ class M_user extends CI_Model
 		SELECT a.* 
 		FROM ms_menus a
 		LEFT JOIN ms_accesscontrols b ON a.id=b.ms_menus_id
-		WHERE a.parent<>'0' AND b.ms_roles_id='$roles_id' AND b.view='1';
+		WHERE a.parent<>'0' AND b.ms_roles_id='$roles_id' AND b.view='1'
+		ORDER BY a.order ASC;
 		")->result();
 	}
 

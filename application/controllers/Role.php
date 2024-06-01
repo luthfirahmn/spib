@@ -1,22 +1,25 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-class Role extends MY_Controller 
+defined('BASEPATH') or exit('No direct script access allowed');
+class Role extends MY_Controller
 {
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
 		$this->load->model('Data_model');
 		$this->load->model('M_role');
 		$this->load->dbutil();
 		$this->load->database();
 	}
-	
-	public function index(){
-		$data['role']=$this->M_role->role();
-		$data['akses']=$this->M_role->accesscontrols('1');
+
+	public function index()
+	{
+		$data['role'] = $this->M_role->role();
+		$data['akses'] = $this->M_role->accesscontrols('1');
 		$this->load->view('role/index', $data);
 	}
 
-	public function edit_proses(){
+	public function edit_proses()
+	{
 		$ms_roles_id	= $this->input->post('ms_roles_id');
 		$akses			= $this->M_role->accesscontrols($ms_roles_id);
 		$view			= $this->input->post('view');
@@ -24,8 +27,8 @@ class Role extends MY_Controller
 		$update			= $this->input->post('update');
 		$delete			= $this->input->post('delete');
 
-		foreach($akses as $rec){
-			$body=array(
+		foreach ($akses as $rec) {
+			$body = array(
 				'view' 		=> (isset($view[$rec->id])) ? 1 : 0,
 				'insert' 	=> (isset($insert[$rec->id])) ? 1 : 0,
 				'update'	=> (isset($update[$rec->id])) ? 1 : 0,
@@ -35,17 +38,18 @@ class Role extends MY_Controller
 			$this->db->where('id', $rec->id);
 			$this->db->update('ms_accesscontrols', $body);
 		}
-		
+
 		redirect('Role');
 	}
 
-	public function detail(){
+	public function detail()
+	{
 		$ms_roles_id	= $this->input->post('ms_roles_id');
 		$data['akses']	= $this->M_role->accesscontrols($ms_roles_id);
 
-		$tagihan=array(
-			'rc'		=>'00',
-			'err_desc'	=>'Sukses',					
+		$tagihan = array(
+			'rc'		=> '00',
+			'err_desc'	=> 'Sukses',
 			'tabel'		=> $this->load->view('role/data', $data, true)
 		);
 
@@ -55,10 +59,11 @@ class Role extends MY_Controller
 	// public function tambah(){
 	// 	$this->load->view('region/tambah');
 	// }
-	
-	public function tambah_proses(){
+
+	public function tambah_proses()
+	{
 		$role_name 	= $this->input->post('nama_role');
-		$body=array(
+		$body = array(
 			'role_name' 	=> $role_name,
 			'status' 		=> $this->input->post('status'),
 			'created_by'	=> $this->session->userdata('ap_nama'),
@@ -67,13 +72,13 @@ class Role extends MY_Controller
 			'updated_at'	=> date("Y-m-d h:i:s")
 		);
 
-		$status=$this->M_role->simpan($body, $role_name);
-		if($status){
+		$status = $this->M_role->simpan($body, $role_name);
+		if ($status) {
 			$this->session->set_flashdata('success', 'Sukses!');
-		}else{
+		} else {
 			$this->session->set_flashdata('warning', 'Gagal!');
 		}
-		
+
 		redirect('Role');
 	}
 
@@ -83,7 +88,7 @@ class Role extends MY_Controller
 	// 	$this->load->view('region/edit', $data);
 	// }
 
-	
+
 
 	// function hapus(){
 	// 	$id = $this->input->get('id');

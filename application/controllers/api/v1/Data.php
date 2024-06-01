@@ -124,7 +124,7 @@ class Data extends REST_Controller
             $data = array();
             $data['data_mentah'] = $data_mentah;
 
-            $hasil = formula($type_instrument_name, $data_jadi, $data, $koefisien);
+            $hasil = formula($type_instrument_name, $data_jadi, $data, $koefisien, 'OTOMATIS');
             if (!$hasil) {
                 throw new Exception("Formula belum tersedia");
             }

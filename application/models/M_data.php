@@ -168,23 +168,30 @@ class M_data extends CI_Model
 		}
 	}
 
-	function list($db_site, $instrument_id, $keterangan, $tanggal, $waktu, $start, $length, $download = 0)
+	function list($db_site, $site_id, $instrument_id, $keterangan, $tanggal, $waktu, $start, $length, $download = 0)
 	{
 		$kode_instrument = $this->db->get_where("tr_instrument", array('id' => $instrument_id))->row()->kode_instrument;
 
+		if ($length >= 10) {
+			$length = $length + 1;
+		}
 
 		if ($waktu == 'jam') {
-			$ddt = "AND t1.tanggal = '$tanggal'
-					AND t1.jam LIKE '%:00:00'";
+			$start_datetime = $tanggal . ' 07:00:00';
+			$end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 07:00:00'));
+
+			$ddt = "AND CONCAT(t1.tanggal, ' ', t1.jam) >= '$start_datetime' AND CONCAT(t1.tanggal, ' ', t1.jam) < '$end_datetime'";
+
 
 			if (!empty($keterangan)) {
 				$kt = "AND t1.keterangan = '$keterangan'";
 			} else {
 				$kt = "";
 			}
-
 			$query = $db_site->query("
-						SELECT t1.id, t1.kode_instrument, (SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument LIMIT 1) nama_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
+						SELECT t1.id, t1.kode_instrument, 
+						(SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument AND ms_regions_id = {$site_id} LIMIT 1) nama_instrument, 
+						t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
 						FROM data t1
 						WHERE t1.kode_instrument = '$kode_instrument'
 						{$kt}
@@ -195,6 +202,9 @@ class M_data extends CI_Model
 
 			$data = $query->result_array();
 			$recordsTotal = $query->num_rows();
+			if ($recordsTotal >= 10) {
+				$recordsTotal = $recordsTotal - 1;
+			}
 
 			$query = $db_site->query("
 					SELECT t1.id, t1.kode_instrument, t1.tanggal, t1.jam, t1.keterangan, 'Data Mentah'
@@ -206,7 +216,9 @@ class M_data extends CI_Model
 			");
 
 			$recordsFiltered = $query->num_rows();
-
+			if ($recordsFiltered >= 10) {
+				$recordsFiltered = $recordsFiltered - 1;
+			}
 			if (!empty($data)) {
 				$index = $start + 1;
 				foreach ($data as $key => $value) {
@@ -240,7 +252,10 @@ class M_data extends CI_Model
 				")->result_array();
 
 					foreach ($sensor as $row) {
-						$data_id_before = isset($data[$key + 1]['id']) ? $data[$key + 1]['id'] : 't1.id';
+						$st = $tanggal . ' 06:00:00';
+						$dt = "AND CONCAT(t1.tanggal, ' ', t1.jam) >= '$st'";
+
+						$data_id_before = isset($data[$key + 1]['id']) ? 'AND t1.id = ' . $data[$key + 1]['id'] : $dt;
 						$query = $db_site->query("
 						SELECT id, 
 						(
@@ -253,7 +268,7 @@ class M_data extends CI_Model
 						) val_sensor
 							FROM data t1
 							WHERE t1.kode_instrument = '$kode_instrument'
-							AND t1.id = {$data_id_before}
+							{$data_id_before}
 						
 						
 					");
@@ -306,9 +321,16 @@ class M_data extends CI_Model
 
 					$data[$key]['id'] = $index++;
 				}
-				// pre($data);
+
+
+				if ($recordsTotal >= 10) {
+					array_pop($data);
+				}
 				return ['data' => $data, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered];
 			} else {
+				if ($recordsTotal >= 10) {
+					array_pop($data);
+				}
 				return ['data' => $data, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered];
 			}
 		} else {
@@ -325,12 +347,10 @@ class M_data extends CI_Model
 				SELECT 
 					DATE(t1.tanggal) as tanggal, 
 					t1.kode_instrument, 
-					(SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument LIMIT 1) nama_instrument,
+					(SELECT nama_instrument FROM " . $this->db->database . ".tr_instrument WHERE t1.kode_instrument = kode_instrument  AND ms_regions_id = {$site_id} LIMIT 1) nama_instrument,
 					t1.keterangan, 
-					'Data Mentah' as data_mentah, 
-					AVG(t2.data_primer) as avg_data_primer
+					'Data Mentah' as data_mentah
 				FROM data t1
-				LEFT JOIN data_value t2 ON t1.id = t2.data_id AND t2.data_jadi = ''
 				WHERE t1.kode_instrument = '$kode_instrument'
 				{$kt}
 				{$ddt}
@@ -345,14 +365,15 @@ class M_data extends CI_Model
 				FROM (
 					SELECT 1
 					FROM data t1
-					LEFT JOIN data_value t2 ON t1.id = t2.data_id AND t2.data_jadi = ''
 					WHERE t1.kode_instrument = '$kode_instrument'
 					{$kt}
 					{$ddt}
 					GROUP BY DATE(t1.tanggal), t1.kode_instrument, t1.keterangan
 				) as subquery
 			")->row()->total;
-
+			if ($recordsTotal >= 10) {
+				$recordsTotal = $recordsTotal - 1;
+			}
 			$query = $db_site->query("
 				SELECT 
 					DATE(t1.tanggal) as tanggal, 
@@ -360,7 +381,6 @@ class M_data extends CI_Model
 					t1.keterangan, 
 					'Data Mentah' as data_mentah
 				FROM data t1
-				LEFT JOIN data_value t2 ON t1.id = t2.data_id AND t2.data_jadi = ''
 				WHERE t1.kode_instrument = '$kode_instrument'
 				{$kt}
 				{$ddt}
@@ -369,7 +389,9 @@ class M_data extends CI_Model
 			");
 
 			$recordsFiltered = $query->num_rows();
-
+			if ($recordsFiltered >= 10) {
+				$recordsFiltered = $recordsFiltered - 1;
+			}
 			if (!empty($data)) {
 				$index = $start + 1;
 				foreach ($data as $key => $value) {
@@ -469,8 +491,14 @@ class M_data extends CI_Model
 
 					$data[$key]['id'] = $index++;
 				}
+				if ($recordsTotal >= 10) {
+					array_pop($data);
+				}
 				return ['data' => $data, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered];
 			} else {
+				if ($recordsTotal >= 10) {
+					array_pop($data);
+				}
 				return ['data' => $data, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered];
 			}
 		}

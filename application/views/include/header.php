@@ -20,7 +20,7 @@ $jabatan = $this->session->userdata('jabatan');
         </div>
 
         <!-- <h4 style="padding-top: 10px;"><?= $list_region_user[0]->site_name ?></h4> -->
-        <h4 style="padding-top: 10px;">Simetri View</h4>
+        <h4 style="padding-top: 10px;">SIMETRI VIEW</h4>
         <div class="pc-h-item">
             <a href="#" class="pc-head-link head-link-secondary m-0" id="sidebar-hide">
                 <i class="ti ti-menu-2"></i>
@@ -37,8 +37,8 @@ $jabatan = $this->session->userdata('jabatan');
                 </li>
             </ul>
         </div>
-        <div class="ms-auto">
-            <a href="#" class="bg-light rounded p-1">
+        <div class="ms-auto justify-content-center">
+            <a href="#" class="bg-light rounded p-1 fs-3 ">
                 <i class="ti ti-clock"></i>
                 <span id="local-day"></span>,
                 <span id="local-date"></span> -

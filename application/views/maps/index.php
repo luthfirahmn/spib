@@ -62,7 +62,7 @@
                         <div class="card-body">
                             <form action="<?= base_url('Station/tambah_proses') ?>" method="post" enctype="multipart/form-data">
                                 <div class="row">
-                                    <div id="mapid" style="width: 100%; height: 100vh;"></div>
+                                    <div id="mapid" style="width: 100%;  height: 75vh;"></div>
                                 </div>
 
                         </div>
@@ -73,17 +73,7 @@
             </div>
 
     </section>
-    <footer class="pc-footer">
-        <div class="footer-wrapper container-fluid">
-            <div class="row">
-                <div class="col my-1">
-                    <p class="m-0">Copyright &copy; <a href="#">SPIB</a>
-                    </p>
-                </div>
 
-            </div>
-        </div>
-    </footer>
     <script src="<?= base_url() ?>assets/js/plugins/popper.min.js"></script>
     <script src="<?= base_url() ?>assets/js/plugins/simplebar.min.js"></script>
     <script src="<?= base_url() ?>assets/js/plugins/bootstrap.min.js"></script>

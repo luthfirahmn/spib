@@ -126,13 +126,14 @@ class Dashboard extends MY_Controller
 		$sql = "  SELECT t1.kode_instrument, t1.data_jadi, t1.icon, t1.unit_sensor,  t1.nama_instrument, t1.jam, t1.tanggal
         FROM (
             SELECT data.kode_instrument, data_value.data_jadi,sys_jenis_sensor.icon, sys_jenis_sensor.unit_sensor,   tr_instrument.nama_instrument, data.jam, data.tanggal,
-                   ROW_NUMBER() OVER (PARTITION BY data.kode_instrument ORDER BY data.tanggal DESC, data.jam DESC) as rn
+                   ROW_NUMBER() OVER (PARTITION BY data.kode_instrument ORDER BY data.tanggal DESC, data.jam DESC, data_value.id DESC) as rn
             FROM " . $db_site->database . ".data
             INNER JOIN " . $db_site->database . ".data_value ON data.id = data_value.data_id
             INNER JOIN sys_jenis_sensor ON data_value.sensor_id = sys_jenis_sensor.id
 			INNER JOIN tr_instrument ON data.kode_instrument = tr_instrument.kode_instrument
             WHERE data_value.data_jadi != '' AND data_value.data_primer = 0
 			AND data.keterangan = 'OTOMATIS'
+			ORDER BY data_value.id DESC
         ) t1
         WHERE t1.rn = 1";
 		$query = $this->db->query($sql);

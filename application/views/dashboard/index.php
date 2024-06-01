@@ -118,17 +118,14 @@
                         <?= $nama_region->site_name ?>
                     </h3>
                 </div>
-                <div class="form-group d-flex">
-                    <div class="me-3">
-                        <label>Pilih Site</label>
-                        <select class="form-control" name="ms_regions_id" id="ms_regions_id">
-                            <option value="" selected disabled>Pilih Site</option>
-                            <?php foreach ($region as $reg) { ?>
-                                <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-
+                <div class="form-group d-flex align-items-center mb-2">
+                    <label class="form-label me-2 mb-0 w-50">Pilih Site</label>
+                    <select class="form-control" name="ms_regions_id" id="ms_regions_id">
+                        <option value="" selected disabled>Pilih Site</option>
+                        <?php foreach ($region as $reg) { ?>
+                            <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
             </div>
             <div class="carouselContent">
@@ -139,7 +136,6 @@
                 ?>
                     <div class="card " style="margin-bottom: 5px;">
                         <div class="card-body">
-                            <h5 class="mb-1">STASIUN <?= $index ?></h5>
                             <div id="carouselExample<?= $index ?>" class="carousel carousel-dark slide" data-bs-ride="carousel">
                                 <div class="carousel-indicators" style="margin-bottom: -0.5rem;">
                                     <?php
@@ -157,7 +153,7 @@
                                     foreach ($row as $indexDetailStasiun => $detailStasiun) {
                                     ?>
                                         <div class="carousel-item <?= $firstStasiun ? 'active' : '' ?>">
-                                            <!-- <h5 class="mb-2">STASIUN <?= $indexDetailStasiun ?></h5> -->
+                                            <h5 class="mb-2">STASIUN <?= $indexDetailStasiun ?></h5>
                                             <div class="row">
                                                 <?php
                                                 foreach ($detailStasiun as $details) {
@@ -165,7 +161,7 @@
                                                     <div class="col-md-2">
                                                         <div class="card bg-light bg-gradient">
                                                             <div class="card-body py-1 px-2 d-flex align-items-center">
-                                                                <img width="30" height="35" src="<?= base_url('assets/upload/sensor/') . $details->icon ?>" alt="Gambar" class="me-2 order-1">
+                                                                <img width="30" height="30" src="<?= base_url('assets/upload/sensor/') . $details->icon ?>" alt="Gambar" class="me-2 order-1">
                                                                 <div class="order-2">
                                                                     <span class="text-sm"><?= $details->instrument ?></span>
                                                                     <br> <!-- Untuk line break -->

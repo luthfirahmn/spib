@@ -54,27 +54,8 @@
 	</table>
 </div>
 
-<!-- The Modal -->
-<div id="myModal" class="modal">
-	<span class="close" onClick="closeImage()">&times;</span>
-	<img class="modal-content" id="img01" onClick="closeImage()">
-</div>
 
 
-
-<link rel="stylesheet" href="<?= base_url() ?>assets/imageupload/preview.css" />
-<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
 <script>
-	function viewImage(foto) {
-		var modal = document.getElementById("myModal");
-		var modalImg = document.getElementById("img01");
-		modal.style.display = "block";
-		modalImg.src = "<?= base_url('assets/upload/station/') ?>" + foto;
 
-	}
-
-	function closeImage() {
-		var modal = document.getElementById("myModal");
-		modal.style.display = "none";
-	}
 </script>

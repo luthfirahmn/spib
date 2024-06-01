@@ -89,7 +89,9 @@
 											<th>Site</th>
 											<th>Nama Konfigurasi</th>
 											<th>Foto</th>
-											<th>Action</th>
+											<?php if ($hak_akses->update == '1') { ?>
+												<th>Action</th>
+											<?php } ?>
 										</tr>
 									</thead>
 									<tbody>
@@ -99,19 +101,21 @@
 												<td><?= $rec->site_name ?></td>
 												<td>
 													<div class="d-inline-block align-middle" bis_skin_checked="1">
-														<img src="<?= base_url('assets/upload/sensor/' . $rec->foto) ?>" alt="image" class="img-radius wid-40 align-top m-r-15" onClick="viewImage('<?= $rec->foto ?>')">
+														<img src="<?= base_url('assets/upload/sensor/' . $rec->foto) ?>" alt="image" style="width:50px" onClick="viewImage('<?= $rec->foto ?>')">
 													</div>
 												</td>
-												<td>
-													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-														<div class="btn-group" role="group">
-															<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Action </button>
-															<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-																<a class="dropdown-item" href="<?= base_url('Site/detail?id=' . $rec->id . '&region=' . $rec->ms_regions_id) ?>"> <i class="ti ti-edit"></i> Detail</a>
+												<?php if ($hak_akses->update == '1') { ?>
+													<td>
+														<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+															<div class="btn-group" role="group">
+																<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Action </button>
+																<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+																	<a class="dropdown-item" href="<?= base_url('Site/detail?id=' . $rec->id . '&region=' . $rec->ms_regions_id) ?>"> <i class="ti ti-edit"></i> Detail</a>
+																</div>
 															</div>
 														</div>
-													</div>
-												</td>
+													</td>
+												<?php } ?>
 											</tr>
 										<?php } ?>
 									</tbody>
@@ -155,8 +159,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
 						<button type="submit" class="btn btn-primary">Simpan</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 					</div>
 				</form>
 			</div>
@@ -178,22 +182,23 @@
 					<p class="m-0">Copyright &copy; <a href="#">Codedthemes</a>
 					</p>
 				</div>
-				<div class="col-auto my-1">
-					<ul class="list-inline footer-link mb-0">
-						<li class="list-inline-item">
-							<a href="#">Home</a>
-						</li>
-						<li class="list-inline-item">
-							<a href="#">Privacy Policy</a>
-						</li>
-						<li class="list-inline-item">
-							<a href="#">Contact us</a>
-						</li>
-					</ul>
-				</div>
 			</div>
 		</div>
 	</footer>
+
+	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<img id="modalImage" width="100%" src="" class="img-fluid">
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script src="<?= base_url() ?>assets/js/plugins/popper.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/plugins/simplebar.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/plugins/bootstrap.min.js"></script>
@@ -285,16 +290,16 @@
 	</script>
 
 
-
-	<link rel="stylesheet" href="<?= base_url() ?>assets/imageupload/preview.css" />
 	<script>
 		function viewImage(foto) {
-			var modal = document.getElementById("myModal");
-			var modalImg = document.getElementById("img01");
-			modal.style.display = "block";
-			modalImg.src = "<?= base_url('assets/upload/station/') ?>" + foto;
+			var imageUrl = "<?= base_url('assets/upload/sensor/') ?>" + foto;
+			$('#modalImage').attr('src', imageUrl);
+
+			$('#imageModal').modal('show');
 
 		}
+
+
 
 		function closeImage() {
 			var modal = document.getElementById("myModal");

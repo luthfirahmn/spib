@@ -214,6 +214,7 @@
 
 								<hr>
 								<button type="submit" class="btn btn-primary">Submit</button>
+								<button type="button" class="btn btn-danger" onclick="history.back()">Cancel</button>
 						</div>
 
 						</form>
@@ -297,7 +298,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 						<button class="btn btn-primary" id="btn_update">Simpan</button>
 					</div>
 				</form>
@@ -365,7 +366,7 @@
 						<div id="modal_parameter_edit"></div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 						<button type="submit" class="btn btn-primary" id="btn_updateEdit">Simpan</button>
 					</div>
 				</form>

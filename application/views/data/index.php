@@ -70,21 +70,25 @@
 
                             <div class="d-flex flex-wrap gap-2" bis_skin_checked="1">
 
+                                <?php if ($hak_akses->insert == '1') { ?>
+                                    <button type="button" class="btn btn-outline-primary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                                        <i class="ti ti-plus"></i>Tambah
+                                    </button>
+                                <?php } ?>
+                                <?php if ($hak_akses->insert == '1') { ?>
+                                    <button type="button" class="btn btn-outline-secondary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalUpload">
+                                        <i class="ti ti-cloud-upload"></i>Upload
+                                    </button>
+                                <?php } ?>
 
-                                <button type="button" class="btn btn-outline-primary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                                    <i class="ti ti-plus"></i>Tambah
-                                </button>
-
-
-                                <button type="button" class="btn btn-outline-secondary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalUpload">
-                                    <i class="ti ti-cloud-upload"></i>Upload
-                                </button>
                                 <button type="button" class="btn btn-outline-success d-inline-flex" id="download_all">
                                     <i class="ti ti-download"></i>Download All
                                 </button>
-                                <button type="button" class="btn btn-outline-danger d-inline-flex" id="deleteAll">
-                                    <i class="ti ti-trash"></i>Delete All
-                                </button>
+                                <?php if ($hak_akses->delete == '1') { ?>
+                                    <button type="button" class="btn btn-outline-danger d-inline-flex" id="deleteAll">
+                                        <i class="ti ti-trash"></i>Delete All
+                                    </button>
+                                <?php } ?>
                             </div>
                             </br>
                             <div class="row">
@@ -320,6 +324,8 @@
             var ms_regions_id = $("#ms_regions_id").val();
             var keterangan = $("#keterangan").val();
             var tanggal = $("#tanggal").val();
+            var waktu = $("#waktu").val();
+
 
 
             Swal.fire({
@@ -338,7 +344,8 @@
                         instrument_id: instrument_id,
                         ms_regions_id: ms_regions_id,
                         tanggal: tanggal,
-                        keterangan: keterangan
+                        keterangan: keterangan,
+                        waktu: waktu,
                     };
 
                     $.ajax({

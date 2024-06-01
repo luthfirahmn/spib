@@ -53,7 +53,7 @@ class Dokumen extends MY_Controller
 	{
 		$config['upload_path']   = FCPATH . '/assets/upload/';
 		$config['allowed_types'] = 'gif|jpg|png|docx|pdf|xlsx|pptx';
-		$config['max_size']      = 1024;
+		$config['max_size']      = 5024;
 
 		$this->load->library('upload', $config);
 		if ($this->upload->do_upload('file')) {

@@ -99,6 +99,21 @@
 			</div>
 		</div>
 	</footer>
+
+	<!-- The Modal -->
+	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<img id="modalImage" width="100%" src="" class="img-fluid">
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script src="<?= base_url() ?>assets/js/plugins/popper.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/plugins/simplebar.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/plugins/bootstrap.min.js"></script>
@@ -134,6 +149,14 @@
 		$("#ms_regions_id").change(function() {
 			Createtable()
 		});
+
+		function viewImage(foto) {
+			var imageUrl = "<?= base_url('assets/upload/station/') ?>" + foto;
+			$('#modalImage').attr('src', imageUrl);
+
+			$('#imageModal').modal('show');
+
+		}
 	</script>
 </body>
 <!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
