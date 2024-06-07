@@ -91,15 +91,13 @@ class Site extends MY_Controller
 			'kecamatan'				=> $this->input->post('kecamatan'),
 			'kabupaten'				=> $this->input->post('kota'),
 			'provinsi'				=> $this->input->post('provinsi'),
-			'elev_tanggul_utama'	=> $this->input->post('elev_tanggul_utama'),
-			'elev_tanggul_pembantu'	=> $this->input->post('elev_tanggul_pembantu'),
-			'elev_pelimpah'			=> $this->input->post('elev_pelimpah'),
-			'elev_pelimpah_pembantu' => $this->input->post('elev_pelimpah_pembantu'),
-			'elev_normal'			=> $this->input->post('elev_normal'),
-			'elev_siaga3'			=> $this->input->post('elev_siaga3'),
-			'elev_siaga2'			=> $this->input->post('elev_siaga2'),
-			'elev_siaga1'			=> $this->input->post('elev_siaga1'),
-			'batas_kritis_vwp'		=> $this->input->post('batas_kritis_vwp'),
+			'elevasi_puncak'	=> $this->input->post('elevasi_puncak'),
+			'elevasi_spillway'	=> $this->input->post('elevasi_spillway'),
+			'elevasi_normal'			=> $this->input->post('elevasi_normal'),
+			'elevasi_waspada' => $this->input->post('elevasi_waspada'),
+			'elevasi_siaga'			=> $this->input->post('elevasi_siaga'),
+			'elevasi_awas'			=> $this->input->post('elevasi_awas'),
+			'elevasi_batas_kritis'			=> $this->input->post('elevasi_batas_kritis'),
 			'foto'					=> $foto
 		);
 
@@ -109,6 +107,24 @@ class Site extends MY_Controller
 
 	public function edit_proses()
 	{
+
+
+		$id = $this->input->post('idsite');
+		$body = array(
+			'site_name' 			=> $this->input->post('site_name'),
+			'desa' 					=> $this->input->post('kelurahan'),
+			'kecamatan'				=> $this->input->post('kecamatan'),
+			'kabupaten'				=> $this->input->post('kota'),
+			'provinsi'				=> $this->input->post('provinsi'),
+			'elevasi_puncak'	=> $this->input->post('elevasi_puncak'),
+			'elevasi_spillway'	=> $this->input->post('elevasi_spillway'),
+			'elevasi_normal'			=> $this->input->post('elevasi_normal'),
+			'elevasi_waspada' => $this->input->post('elevasi_waspada'),
+			'elevasi_siaga'			=> $this->input->post('elevasi_siaga'),
+			'elevasi_awas'			=> $this->input->post('elevasi_awas'),
+			'elevasi_batas_kritis'			=> $this->input->post('elevasi_batas_kritis')
+		);
+
 		$temp = FCPATH . '/assets/upload/sensor/';
 
 		$nama_file       = $this->input->post('site_name');
@@ -124,29 +140,8 @@ class Site extends MY_Controller
 
 			move_uploaded_file($_FILES["file"]["tmp_name"], $temp . $NewImageName); // Menyimpan file
 
-			$foto = $NewImageName;
-		} else {
-			$foto = '';
+			$body['foto'] = $NewImageName;
 		}
-
-		$id = $this->input->post('idsite');
-		$body = array(
-			'site_name' 			=> $this->input->post('site_name'),
-			'desa' 					=> $this->input->post('kelurahan'),
-			'kecamatan'				=> $this->input->post('kecamatan'),
-			'kabupaten'				=> $this->input->post('kota'),
-			'provinsi'				=> $this->input->post('provinsi'),
-			'elev_tanggul_utama'	=> $this->input->post('elev_tanggul_utama'),
-			'elev_tanggul_pembantu'	=> $this->input->post('elev_tanggul_pembantu'),
-			'elev_pelimpah'			=> $this->input->post('elev_pelimpah'),
-			'elev_pelimpah_pembantu' => $this->input->post('elev_pelimpah_pembantu'),
-			'elev_normal'			=> $this->input->post('elev_normal'),
-			'elev_siaga3'			=> $this->input->post('elev_siaga3'),
-			'elev_siaga2'			=> $this->input->post('elev_siaga2'),
-			'elev_siaga1'			=> $this->input->post('elev_siaga1'),
-			'batas_kritis_vwp'		=> $this->input->post('batas_kritis_vwp'),
-			'foto'					=> $foto
-		);
 
 		$this->db->where('id', $id);
 		$this->db->update('ms_sites', $body);

@@ -86,8 +86,8 @@
 								<table class="table" id="pc-dt-simple">
 									<thead>
 										<tr>
-											<th>Site</th>
-											<th>Nama Konfigurasi</th>
+											<th>Region Name</th>
+											<th>Site Name</th>
 											<th>Foto</th>
 											<?php if ($hak_akses->update == '1') { ?>
 												<th>Action</th>

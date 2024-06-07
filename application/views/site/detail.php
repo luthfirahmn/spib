@@ -56,13 +56,13 @@
 				<div class="col-sm-12">
 					<div class="card">
 						<div class="card-header">
-							<h5>Konfigurasi Data Bendungan</h5>
+							<h5>Konfigurasi Data Site</h5>
 						</div>
 						<div class="card-body">
 							<form action="<?= base_url('Site/edit_proses') ?>" method="post" enctype="multipart/form-data">
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="form-label" for="site_name">Nama</label>
+										<label class="form-label" for="site_name">Nama Site</label>
 										<input type="text" class="form-control" id="site_name" name="site_name" value="<?= $site->site_name ?>" required>
 										<input type="text" class="form-control" id="idsite" name="idsite" value="<?= $site->id ?>" hidden>
 									</div>
@@ -109,62 +109,58 @@
 								</div>
 								<div class="row">
 									<div class="form-group col-md-6">
-										<label class="form-label" for="elev_tanggul_utama">Elevasi Tanggul Utama</label>
-										<input type="number" step=".001" class="form-control" id="elev_tanggul_utama" name="elev_tanggul_utama" value="<?= $site->elev_tanggul_utama ?>" required>
+										<label class="form-label" for="elevasi_puncak">Elevasi Puncak</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_puncak" name="elevasi_puncak" value="<?= $site->elevasi_puncak ?>" required>
 									</div>
 									<div class="form-group col-md-6">
-										<label for="elev_tanggul_pembantu" class="form-label">Elevasi Tanggul Pembantu</label>
-										<input type="number" step=".001" class="form-control" id="elev_tanggul_pembantu" name="elev_tanggul_pembantu" value="<?= $site->elev_tanggul_pembantu ?>" required>
-									</div>
-								</div>
-								<div class="row">
-									<div class="form-group col-md-6">
-										<label class="form-label" for="elev_pelimpah">Elevasi Pelimpah</label>
-										<input type="number" step=".001" class="form-control" id="elev_pelimpah" name="elev_pelimpah" value="<?= $site->elev_pelimpah ?>" required>
-									</div>
-									<div class="form-group col-md-6">
-										<label for="elev_pelimpah_pembantu" class="form-label">Elevasi Pelimpah Pembantu</label>
-										<input type="number" step=".001" class="form-control" id="elev_pelimpah_pembantu" name="elev_pelimpah_pembantu" value="<?= $site->elev_pelimpah_pembantu ?>" required>
+										<label for="elevasi_spillway" class="form-label">Elevasi Spillway</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_spillway" name="elevasi_spillway" value="<?= $site->elevasi_spillway ?>" required>
 									</div>
 								</div>
 								<div class="row">
 									<div class="form-group col-md-6">
-										<label class="form-label" for="elev_normal">Elevasi Normal</label>
-										<input type="number" step=".001" class="form-control" id="elev_normal" name="elev_normal" value="<?= $site->elev_normal ?>" required>
+										<label class="form-label" for="elevasi_normal">Elevasi Normal</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_normal" name="elevasi_normal" value="<?= $site->elevasi_normal ?>" required>
 									</div>
 									<div class="form-group col-md-6">
-										<label for="elev_siaga1" class="form-label">Elevasi Siaga 1</label>
-										<input type="number" step=".001" class="form-control" id="elev_siaga1" name="elev_siaga1" value="<?= $site->elev_siaga1 ?>" required>
-									</div>
-								</div>
-								<div class="row">
-									<div class="form-group col-md-6">
-										<label class="form-label" for="elev_siaga2">Elevasi Siaga 2</label>
-										<input type="number" step=".001" class="form-control" id="elev_siaga2" name="elev_siaga2" value="<?= $site->elev_siaga2 ?>" required>
-									</div>
-									<div class="form-group col-md-6">
-										<label for="elev_siaga3" class="form-label">Elevasi Siaga 3</label>
-										<input type="number" step=".001" class="form-control" id="elev_siaga3" name="elev_siaga3" value="<?= $site->elev_siaga3 ?>" required>
+										<label for="elevasi_waspada" class="form-label">Elevasi Waspada</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_waspada" name="elevasi_waspada" value="<?= $site->elevasi_waspada ?>" required>
 									</div>
 								</div>
 								<div class="row">
 									<div class="form-group col-md-6">
-										<label class="form-label" for="batas_kritis_vwp">Batas kritis VWP</label>
-										<input type="number" step=".001" class="form-control" id="batas_kritis_vwp" name="batas_kritis_vwp" value="<?= $site->batas_kritis_vwp ?>" required>
+										<label class="form-label" for="elevasi_siaga">Elevasi Siaga</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_siaga" name="elevasi_siaga" value="<?= $site->elevasi_siaga ?>" required>
+									</div>
+									<div class="form-group col-md-6">
+										<label for="elevasi_awas" class="form-label">Elevasi Awas</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_awas" name="elevasi_awas" value="<?= $site->elevasi_awas ?>" required>
+									</div>
+								</div>
+								<div class="row">
+									<div class="form-group col-md-6">
+										<label class="form-label" for="elevasi_batas_kritis">Elevasi Batas Kritis</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_batas_kritis" name="elevasi_batas_kritis" value="<?= $site->elevasi_batas_kritis ?>" required>
 									</div>
 								</div>
 
 								<div class="row">
 									<div class="form-group col-md-6">
-										<label class="form-label" for="file">Foto Bendungan/Layout</label>
+										<label class="form-label" for="file">Foto/Layout</label>
 										<input type="file" id="file" name="file" accept="image/*" hidden>
 										<div class="img-area" data-img="">
 											<i class='bx bxs-cloud-upload icon'></i>
-											<h3>Upload Foto Bendungan/Layout</h3>
+											<h3>Upload Foto/Layout</h3>
 											<p>Image size must be less than <span>2MB</span></p>
 										</div>
-										<button type="button" class="select-image">Select Foto Bendungan/Layout</button>
+										<button type="button" class="select-image">Select Foto/Layout</button>
 									</div>
+
+									<div class="form-group col-md-4">
+										<label class="form-label" for="file">Preview</label><br>
+										<img src="<?= base_url('assets/upload/sensor/' . $site->foto) ?>" width="500">
+									</div>
+
 								</div>
 								<button type="submit" class="btn btn-primary">Submit</button>
 								<a href="<?= base_url('Site') ?>" type="button" class="btn btn-danger">Cancel</a>

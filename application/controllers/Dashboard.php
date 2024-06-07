@@ -36,9 +36,16 @@ class Dashboard extends MY_Controller
 	public function get_all_data($region_id)
 	{
 		try {
+			// Change database connection based on region_id
 			$db_site = $this->change_connection($region_id);
+
+			// Retrieve stations with instruments for the given region_id
 			$stations = $this->get_stations_with_instruments($region_id);
-			$latest_data = $this->get_latest_data_values($db_site);
+
+			// Fetch the latest data values from the database
+			$latest_data = $this->get_latest_data_values($db_site, $region_id);
+			// pre($latest_data);
+			// Organize the latest data by instrument code
 			$data_by_instrument = array();
 			foreach ($latest_data as $data) {
 				$data_by_instrument[$data->kode_instrument] = (object) [
@@ -50,11 +57,14 @@ class Dashboard extends MY_Controller
 			}
 			$organized_data = array();
 			foreach ($stations as $type => $station_list) {
-				$organized_data[$type] = array();
+
 				foreach ($station_list as $station => $instruments) {
+
 					$station_data = array();
 					foreach ($instruments as $kode_instrument => $nama_instrument) {
+
 						if (isset($data_by_instrument[$kode_instrument])) {
+
 							$station_data[] = $data_by_instrument[$kode_instrument];
 						}
 					}
@@ -62,19 +72,12 @@ class Dashboard extends MY_Controller
 						$organized_data[$type][$station] = $station_data;
 					}
 				}
-				if (empty($organized_data[$type])) {
-					unset($organized_data[$type]);
-				}
 			}
-
 			return $organized_data;
 		} catch (Exception $e) {
 			return false;
 		}
 	}
-
-
-
 
 	public function get_stations_with_instruments($region_id)
 	{
@@ -121,21 +124,24 @@ class Dashboard extends MY_Controller
 		return $stations;
 	}
 
-	public function get_latest_data_values($db_site)
+	public function get_latest_data_values($db_site, $region_id)
 	{
-		$sql = "  SELECT t1.kode_instrument, t1.data_jadi, t1.icon, t1.unit_sensor,  t1.nama_instrument, t1.jam, t1.tanggal
+		$sql = "SELECT t1.kode_instrument, t1.data_jadi, t2.icon, t2.unit_sensor,  t3.nama_instrument, t1.jam, t1.tanggal ,t1.sensor_id
         FROM (
-            SELECT data.kode_instrument, data_value.data_jadi,sys_jenis_sensor.icon, sys_jenis_sensor.unit_sensor,   tr_instrument.nama_instrument, data.jam, data.tanggal,
+            SELECT data.kode_instrument, data_value.data_jadi, data.jam, data.tanggal, data_value.sensor_id,
                    ROW_NUMBER() OVER (PARTITION BY data.kode_instrument ORDER BY data.tanggal DESC, data.jam DESC, data_value.id DESC) as rn
             FROM " . $db_site->database . ".data
             INNER JOIN " . $db_site->database . ".data_value ON data.id = data_value.data_id
-            INNER JOIN sys_jenis_sensor ON data_value.sensor_id = sys_jenis_sensor.id
-			INNER JOIN tr_instrument ON data.kode_instrument = tr_instrument.kode_instrument
+           
             WHERE data_value.data_jadi != '' AND data_value.data_primer = 0
 			AND data.keterangan = 'OTOMATIS'
-			ORDER BY data_value.id DESC
+			ORDER BY data_value.id DESC, data.tanggal DESC, data.jam DESC
         ) t1
+		INNER JOIN sys_jenis_sensor t2 ON t1.sensor_id = t2.id
+		INNER JOIN tr_instrument t3 ON t1.kode_instrument = t3.kode_instrument AND t3.ms_regions_id = {$region_id}
         WHERE t1.rn = 1";
+
+
 		$query = $this->db->query($sql);
 		return $query->result();
 	}

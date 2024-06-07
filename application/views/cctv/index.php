@@ -67,7 +67,6 @@
                                 <div class="form-group me-2">
                                     <label class="form-label" for="ms_regions_id"></label>
                                     <select class="form-control" name="ms_regions_id" id="ms_regions_id">
-                                        <option value="" selected>--- Pilih Site ---</option>
                                         <?php foreach ($region as $reg) { ?>
                                             <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                         <?php } ?>
@@ -101,7 +100,6 @@
                 <div class="modal-body">
                     <form id="formcctv">
                         <select class="form-control mb-3" name="add_regions_id" id="add_regions_id">
-                            <option value="" selected>--- Pilih Site ---</option>
                             <?php foreach ($region as $reg) { ?>
                                 <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                             <?php } ?>
@@ -140,9 +138,6 @@
     $(document).ready(function() {
         var region_id = $("#ms_regions_id").val();
         getData(region_id);
-
-
-
     });
 
     $("#ms_regions_id").on("change", function() {

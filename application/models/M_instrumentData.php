@@ -15,6 +15,12 @@ class M_instrumentData extends CI_Model
 			INNER JOIN `ms_stasiun` d ON a.`ms_stasiun_id`=d.id
 			INNER JOIN `ms_user_regions` e ON a.`ms_regions_id`=e.ms_regions_id
 			WHERE e.`ms_users_id`='$ap_id_user'
+			ORDER BY 
+		CASE 
+			WHEN b.id = 5 THEN 0 
+			ELSE 1
+		END,
+		b.id ASC
 		")->result();
 	}
 
@@ -59,6 +65,12 @@ class M_instrumentData extends CI_Model
 		FROM ms_user_regions a
 		INNER JOIN `ms_regions` b ON a.`ms_regions_id`=b.`id`
 		WHERE ms_users_id='$ms_users_id'
+		ORDER BY 
+		CASE 
+			WHEN b.id = 5 THEN 0 
+			ELSE 1
+		END,
+		b.id ASC
 		")->result();
 	}
 

@@ -6,8 +6,9 @@ $submenu = $this->session->userdata('submenu');
 <nav class="pc-sidebar">
 	<div class="navbar-wrapper">
 		<div class="m-header">
-			<a href="#" class="b-brand">
-				<img src="https://berrydashboard.io/bootstrap/default/assets/images/logo-dark.svg" alt="" class="logo logo-lg" />
+			<a href="#" class="b-brand fs-4">
+				<img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt="" class="logo logo-lg" width="35" />
+				SIMETRI VIEW
 			</a>
 		</div>
 		<div class="navbar-content">

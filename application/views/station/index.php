@@ -72,7 +72,6 @@
 								<div class="form-group col-md-4">
 									<label class="form-label" for="ms_regions_id">Site:</label>
 									<select class="form-control" name="ms_regions_id" id="ms_regions_id">
-										<option>--- Pilih Site ---</option>
 										<?php foreach ($region as $reg) { ?>
 											<option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
 										<?php } ?>
@@ -138,6 +137,10 @@
 		$("#ms_regions_id").change(function() {
 			Createtable()
 		});
+
+		$(document).ready(function() {
+			Createtable()
+		})
 
 		function viewImage(foto) {
 			var imageUrl = "<?= base_url('assets/upload/station/') ?>" + foto;

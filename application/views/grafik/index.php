@@ -60,10 +60,10 @@
                     <div class="card">
                         <div class="card-body">
                             <form id="form-filter">
-                                <div class="row">
+                                <div class="row" style="width: 100%;">
                                     <div class="form-group col-md-2">
                                         <select class="select2" name="ms_regions_id" id="ms_regions_id">
-                                            <option value="">Pilih Site</option>
+                                            <option value="">Select Region</option>
                                             <?php foreach ($region as $reg) { ?>
                                                 <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                             <?php } ?>
@@ -71,19 +71,19 @@
                                     </div>
 
                                     <div class="form-group col-md-2">
-                                        <select class="w-100" name="stasiun" id="stasiun">
-                                            <option value="">Pilih Stasiun</option>
+                                        <select class="select2" name="stasiun" id="stasiun">
+                                            <option value="">Select Station</option>
                                         </select>
                                     </div>
                                     <input type="hidden" id="stasiun_type" name="stasiun_type">
                                     <div class="form-group col-md-2">
                                         <select class="select2" name="elevasi" id="elevasi" disabled>
-                                            <option value="" selected>Pilih Elevasi</option>
+                                            <option value="" selected>Select Elevation</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-2">
                                         <select class="select2" name="status" id="status" disabled>
-                                            <option value="" selected>Pilih Status</option>
+                                            <option value="" selected>Select Status</option>
                                             <option value="1">Konstruksi</option>
                                             <option value="2">Pasca Konstruksi</option>
                                         </select>
@@ -100,11 +100,15 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-md-3 ">
-                                        <select class="select_data pb-5" name="select_data[]" id="select_data" multiple="multiple" style="width: 100%">
+                                    <div class="form-group col-md-2 ">
+                                        <select class="pilih_instrument pb-5" name="pilih_instrument" id="pilih_instrument" " style=" width: 100%">
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-3 ">
+                                    <div class="form-group col-md-2 ">
+                                        <select class="select_data pb-5" name="select_data" id="select_data" style="width: 100%">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2 ">
                                         <select class="select_data_tambah" name="data_tambah[]" id="data_tambah" multiple="multiple" style="width: 100%" disabled>
 
                                         </select>
@@ -170,12 +174,16 @@
         $(document).ready(function() {
             $(".select2").select2();
             $("#stasiun").select2();
+            $(".pilih_instrument").select2({
+                placeholder: "Select Instrument",
+                allowClear: true
+            });
             $(".select_data").select2({
-                placeholder: "Pilih Data",
+                placeholder: "Select Data",
                 allowClear: true
             });
             $(".select_data_tambah").select2({
-                placeholder: "Pilih Data Tambah",
+                placeholder: "Select Additional Data",
                 allowClear: true
             });
 
@@ -249,8 +257,6 @@
         }
 
         $("#stasiun").change(function() {
-
-
             var stasiun = $(this).val();
             var stasiun_type = $("#stasiun").select2().find(":selected").data("id");
             var regions_id = $("#ms_regions_id").val();
@@ -265,6 +271,7 @@
             $("#status").prop('disabled', true);
             $("#data_tambah").prop('disabled', true);
             $("#data_tambah").empty();
+            $("#pilih_instrument").empty();
             $("#select_data").empty();
 
             switch (stasiun_type) {
@@ -289,12 +296,42 @@
             }
 
             $.ajax({
-                url: "<?= base_url('Grafik/getDataJadi'); ?>",
+                url: "<?= base_url('Grafik/getInstrument'); ?>",
                 type: "GET",
                 dataType: "json",
                 data: {
                     stasiun: stasiun,
                     regions_id: regions_id,
+                },
+                success: function(response) {
+                    if (response.error !== false) {
+                        toastr.error(response.msg);
+                    }
+
+                    var options = '<option value="">Select Instrument</option>';
+                    $.each(response.data, function(index, item) {
+                        options += '<option value="' + item.id + '">' + item.nama_instrument +
+                            '</option>';
+                    });
+
+                    $("#pilih_instrument").html(options);
+
+                }
+
+            })
+        })
+
+        $("#pilih_instrument").change(function() {
+            var instrument_id = $("#pilih_instrument").val();
+
+            $("#select_data").empty();
+
+            $.ajax({
+                url: "<?= base_url('Grafik/getDataJadi'); ?>",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    instrument_id: instrument_id,
                 },
                 success: function(response) {
                     if (response.error !== false) {
@@ -313,6 +350,7 @@
 
             })
         })
+
 
         $("#status").change(function() {
             var id = $(this).val();
@@ -357,7 +395,7 @@
                     if ($('#stasiun').val() !== '') {
                         $('#nama_site_text').html('Grafik Stasiun ' + $('#stasiun option:selected').html())
                     }
-                    generateChart(response.data, response.periode)
+                    generateChart(response.data, response.periode, response.data_tambah)
                 },
                 complete: function() {
                     $("#loading").attr('style', 'display:none');
@@ -365,8 +403,8 @@
             })
         }
 
-        function generateSeries(data) {
-            return data.map(function(sensor) {
+        function generateSeries(data, data_tambah) {
+            var series = data.map(function(sensor) {
                 var namaSensor = sensor.nama_instrument + ' - ' + sensor.jenis_sensor;
                 var unitSensor = ' (' + sensor.unit_sensor + ')';
                 return {
@@ -376,6 +414,23 @@
                     })
                 };
             });
+
+            // Add data_tambah series if it exists
+            if (data_tambah && data_tambah.length > 0) {
+                data_tambah.forEach(function(sensor, index) {
+                    var namaSensor = sensor.nama_instrument + ' - ' + sensor.jenis_sensor;
+                    var unitSensor = ' (' + sensor.unit_sensor + ')';
+                    series.push({
+                        name: namaSensor + unitSensor,
+                        data: sensor.detail.map(function(detail) {
+                            return detail.data_jadi;
+                        }),
+                        yAxisIndex: 1
+                    });
+                });
+            }
+
+            return series;
         }
 
         function generateXAxis(data, periode) {
@@ -391,13 +446,49 @@
         }
         var chart;
 
-        function generateChart(data, periode) {
+        function generateChart(data, periode, data_tambah) {
+            var yAxisConfig = [{
+                title: {
+                    text: data[0].unit_sensor,
+                    style: {
+                        fontWeight: 'normal',
+                        fontSize: '16px'
+                    }
+                }
+            }];
+
+            // var isRainfall = data.some(function(sensor) {
+            //     return sensor.nama_instrument.toUpperCase() === "RAINFALL";
+            // });
+
+            if (data[0].nama_instrument.toUpperCase() === "RAINFALL") {
+                yAxisConfig[0].reversed = true;
+            }
+
+            if (data_tambah && data_tambah.length > 0) {
+                yAxisConfig.push({
+                    opposite: true,
+                    title: {
+                        text: data_tambah[0].unit_sensor,
+                        style: {
+                            fontWeight: 'normal',
+                            fontSize: '16px'
+                        }
+                    }
+                });
+                if (data_tambah[0].nama_instrument.toUpperCase() === "RAINFALL") {
+                    yAxisConfig[0].reversed = true;
+                }
+            }
+
+
+
             var options = {
                 chart: {
                     type: 'line',
                     height: 350
                 },
-                series: generateSeries(data),
+                series: generateSeries(data, data_tambah),
                 xaxis: {
                     categories: generateXAxis(data, periode),
                     title: {
@@ -405,18 +496,10 @@
                         style: {
                             fontWeight: 'normal',
                             fontSize: '16px'
-                        },
-                    }
-                },
-                yaxis: {
-                    title: {
-                        text: 'Unit',
-                        style: {
-                            fontWeight: 'normal',
-                            fontSize: '16px'
                         }
                     }
                 },
+                yaxis: yAxisConfig,
                 stroke: {
                     curve: 'smooth'
                 },
@@ -427,9 +510,11 @@
                     show: true,
                     onItemClick: {
                         toggleDataSeries: true
-                    }
+                    },
+                    showForSingleSeries: true
                 }
             };
+
             if (chart && chart.destroy) {
                 chart.destroy();
             }

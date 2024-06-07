@@ -121,9 +121,9 @@
                 <div class="form-group d-flex align-items-center mb-2">
                     <label class="form-label me-2 mb-0 w-50">Pilih Site</label>
                     <select class="form-control" name="ms_regions_id" id="ms_regions_id">
-                        <option value="" selected disabled>Pilih Site</option>
-                        <?php foreach ($region as $reg) { ?>
-                            <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+                        <?php
+                        foreach ($region as $reg) { ?>
+                            <option value="<?= $reg->id ?>" <?= $this->uri->segment(3) == $reg->id ? 'selected' : '' ?>><?= $reg->site_name ?></option>
                         <?php } ?>
                     </select>
                 </div>

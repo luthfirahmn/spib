@@ -63,25 +63,18 @@ function piezometer($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tam
 {
     try {
 
+        $koefisien['faktor_a'] = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
+        $koefisien['faktor_b'] = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
+        $koefisien['faktor_c'] = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
+        $koefisien['tct'] = isset($koefisien['tct']) ? (float)$koefisien['tct'] : 0;
+        $koefisien['kalibrasi_frekuensi'] = isset($koefisien['kalibrasi_frekuensi']) ? (float)$koefisien['kalibrasi_frekuensi'] : 0;
+        $koefisien['kalibrasi_suhu'] = isset($koefisien['kalibrasi_suhu']) ? (float)$koefisien['kalibrasi_suhu'] : 0;
+        $koefisien['t0'] = isset($koefisien['t0']) ? (float)$koefisien['t0'] : 0;
+        $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
+
         if ($data_type === 'MANUAL') {
-            $koefisien['faktor_a'] = 0;
-            $koefisien['faktor_b'] = 0;
-            $koefisien['faktor_c'] = 0;
-            $koefisien['tct'] = 0;
             $koefisien['kalibrasi_frekuensi'] = 0;
             $koefisien['kalibrasi_suhu'] = 0;
-            $koefisien['t0'] = 0;
-            $koefisien['elevasi_sensor'] = 0;
-        } else {
-            // Ensure all required coefficients are set
-            $koefisien['faktor_a'] = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
-            $koefisien['faktor_b'] = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
-            $koefisien['faktor_c'] = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
-            $koefisien['tct'] = isset($koefisien['tct']) ? (float)$koefisien['tct'] : 0;
-            $koefisien['kalibrasi_frekuensi'] = isset($koefisien['kalibrasi_frekuensi']) ? (float)$koefisien['kalibrasi_frekuensi'] : 0;
-            $koefisien['kalibrasi_suhu'] = isset($koefisien['kalibrasi_suhu']) ? (float)$koefisien['kalibrasi_suhu'] : 0;
-            $koefisien['t0'] = isset($koefisien['t0']) ? (float)$koefisien['t0'] : 0;
-            $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -127,25 +120,17 @@ function pressurecell($data_jadi, $data_mentah, $koefisien, $data_type, &$data_t
 
     try {
 
+        $koefisien['faktor_a'] = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
+        $koefisien['faktor_b'] = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
+        $koefisien['faktor_c'] = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
+        $koefisien['tct'] = isset($koefisien['tct']) ? (float)$koefisien['tct'] : 0;
+        $koefisien['kalibrasi_frekuensi'] = isset($koefisien['kalibrasi_frekuensi']) ? (float)$koefisien['kalibrasi_frekuensi'] : 0;
+        $koefisien['kalibrasi_suhu'] = isset($koefisien['kalibrasi_suhu']) ? (float)$koefisien['kalibrasi_suhu'] : 0;
+        $koefisien['t0'] = isset($koefisien['t0']) ? (float)$koefisien['t0'] : 0;
+        $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         if ($data_type === 'MANUAL') {
-            $koefisien['faktor_a'] = 0;
-            $koefisien['faktor_b'] = 0;
-            $koefisien['faktor_c'] = 0;
-            $koefisien['tct'] = 0;
             $koefisien['kalibrasi_frekuensi'] = 0;
             $koefisien['kalibrasi_suhu'] = 0;
-            $koefisien['t0'] = 0;
-            $koefisien['elevasi_sensor'] = 0;
-        } else {
-            // Ensure all required coefficients are set
-            $koefisien['faktor_a'] = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
-            $koefisien['faktor_b'] = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
-            $koefisien['faktor_c'] = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
-            $koefisien['tct'] = isset($koefisien['tct']) ? (float)$koefisien['tct'] : 0;
-            $koefisien['kalibrasi_frekuensi'] = isset($koefisien['kalibrasi_frekuensi']) ? (float)$koefisien['kalibrasi_frekuensi'] : 0;
-            $koefisien['kalibrasi_suhu'] = isset($koefisien['kalibrasi_suhu']) ? (float)$koefisien['kalibrasi_suhu'] : 0;
-            $koefisien['t0'] = isset($koefisien['t0']) ? (float)$koefisien['t0'] : 0;
-            $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -181,16 +166,13 @@ function pressurecell($data_jadi, $data_mentah, $koefisien, $data_type, &$data_t
 function pressureawlr($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
+
+        $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+        $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         // Check if data_type is MANUAL and set all coefficients to 0
         if ($data_type === 'MANUAL') {
             $koefisien['kalibrasi'] = 0;
-            $koefisien['elevasi_sensor'] = 0;
-        } else {
-            // Ensure all required coefficients are set
-            $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
-            $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         }
-
         switch ($data_jadi->kode_sensor_jadi) {
             case "tinggi_muka_air":
                 $hitung = (float)$data_mentah["ketinggian_air"] + $koefisien['kalibrasi'] + $koefisien['elevasi_sensor'];
@@ -211,14 +193,11 @@ function pressureawlr($data_jadi, $data_mentah, $koefisien, $data_type)
 function ultrasonicawlr($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
-        // Check if data_type is MANUAL and set all coefficients to 0
+
+        $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+        $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         if ($data_type === 'MANUAL') {
             $koefisien['kalibrasi'] = 0;
-            $koefisien['elevasi_sensor'] = 0;
-        } else {
-            // Ensure all required coefficients are set
-            $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
-            $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -242,14 +221,11 @@ function ultrasonicawlr($data_jadi, $data_mentah, $koefisien, $data_type)
 function ultrasonicevaporation($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
 {
     try {
-        // Check if data_type is MANUAL and set all coefficients to 0
+
+        $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+        $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         if ($data_type === 'MANUAL') {
             $koefisien['kalibrasi'] = 0;
-            $koefisien['elevasi_sensor'] = 0;
-        } else {
-            // Ensure all required coefficients are set
-            $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
-            $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -275,7 +251,23 @@ function ultrasonicevaporation($data_jadi, $data_mentah, $koefisien, $data_type,
                 // Ensure $data_tambahan['ketinggian_air_mm'] is set
                 $ketinggian_air_mm = isset($data_tambahan['ketinggian_air_mm']) ? $data_tambahan['ketinggian_air_mm'] : 0;
 
-                $hitung = $ketinggian_air_mm + (float)$data_sebelumnya;
+                $hitung = (float)$data_sebelumnya - $ketinggian_air_mm;
+
+                $data_tambahan['evaporation'] += $hitung;
+                return [
+                    'id_sensor' => $data_jadi->jenis_sensor_jadi,
+                    'nama_sensor' => $data_jadi->nama_sensor . ' (' . $data_jadi->unit_sensor . ')',
+                    'hasil' => number_format($hitung, 3)
+                ];
+                break;
+            case "total_evaporation":
+                $data_sebelumnya = cek_total_data($data_mentah['instrument_id'], 'evaporation');
+                if ($data_sebelumnya == 0) {
+                    $hitung = $data_tambahan['evaporation'];
+                } else {
+                    $hitung = (float)$data_tambahan['evaporation'] + (float)$data_sebelumnya;
+                }
+
                 return [
                     'id_sensor' => $data_jadi->jenis_sensor_jadi,
                     'nama_sensor' => $data_jadi->nama_sensor . ' (' . $data_jadi->unit_sensor . ')',
@@ -293,12 +285,11 @@ function ultrasonicevaporation($data_jadi, $data_mentah, $koefisien, $data_type,
 function hall_effect($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
-        // Check if data_type is MANUAL and set all coefficients to 0
+
+        $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+
         if ($data_type === 'MANUAL') {
             $koefisien['kalibrasi'] = 0;
-        } else {
-            // Ensure the required coefficient is set
-            $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -337,15 +328,15 @@ function hall_effect($data_jadi, $data_mentah, $koefisien, $data_type)
     }
 }
 
-function standard($data_jadi, $data_mentah, $koefisien, $data_type)
+function standard($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
 {
     try {
-        // Check if data_type is MANUAL and set all coefficients to 0
+
+
+        $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+
         if ($data_type === 'MANUAL') {
             $kalibrasi = 0;
-        } else {
-            // Ensure the required coefficient is set
-            $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -375,10 +366,15 @@ function standard($data_jadi, $data_mentah, $koefisien, $data_type)
                 break;
             case "rainfall":
                 $hitung = (float)$data_mentah["rainfall"] + $kalibrasi;
+                $data_tambahan['rainfall'] += $hitung;
                 break;
             case "total_rainfall":
-                $data_sebelumnya = (float)cek_data_sebelumnya($data_mentah['instrument_id'], 'rainfall');
-                $hitung = $data_sebelumnya + (float)$data_mentah["rainfall"];
+                $data_sebelumnya = cek_total_data($data_mentah['instrument_id'], 'rainfall');
+                if ($data_sebelumnya == 0) {
+                    $hitung = $data_tambahan['rainfall'];
+                } else {
+                    $hitung = $data_sebelumnya;
+                }
                 break;
             case "accelerometer":
                 $hitung = (float)$data_mentah["accelerometer"] + $kalibrasi;
@@ -423,13 +419,13 @@ function standard($data_jadi, $data_mentah, $koefisien, $data_type)
 function tipping_bucket($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
 {
     try {
+
+
+        $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+        $resolusi_sensor = isset($koefisien['resolusi_sensor']) ? (float)$koefisien['resolusi_sensor'] : 0;
+
         if ($data_type === 'MANUAL') {
             $kalibrasi = 0;
-            $resolusi_sensor = 0;
-        } else {
-            // Ensure the required coefficients are set
-            $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
-            $resolusi_sensor = isset($koefisien['resolusi_sensor']) ? (float)$koefisien['resolusi_sensor'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -445,9 +441,12 @@ function tipping_bucket($data_jadi, $data_mentah, $koefisien, $data_type, &$data
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             case "total_rainfall":
-
-                $data_sebelumnya =  (float)cek_data_sebelumnya($data_mentah['instrument_id'], 'total_rainfall');
-                $hitung =  $data_tambahan['rainfall'] + $data_sebelumnya;
+                $data_sebelumnya = cek_total_data($data_mentah['instrument_id'], 'rainfall');
+                if ($data_sebelumnya == 0) {
+                    $hitung = $data_tambahan['rainfall'];
+                } else {
+                    $hitung = $data_sebelumnya;
+                }
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             default:
@@ -463,13 +462,13 @@ function tipping_bucket($data_jadi, $data_mentah, $koefisien, $data_type, &$data
 function vnotch($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
 {
     try {
+
+
+        $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+        $konstanta_v = isset($koefisien['konstanta_v']) ? (float)$koefisien['konstanta_v'] : 0;
+
         if ($data_type === 'MANUAL') {
             $kalibrasi = 0;
-            $konstanta_v = 0;
-        } else {
-            // Ensure the required coefficients are set
-            $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
-            $konstanta_v = isset($koefisien['konstanta_v']) ? (float)$koefisien['konstanta_v'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -498,12 +497,13 @@ function vnotch($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambaha
 function open_stand_pipe($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
+
+
+        $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
+        $elevasi_top_pipa = isset($koefisien['elevasi_top_pipa']) ? (float)$koefisien['elevasi_top_pipa'] : 0;
+
         if ($data_type === 'MANUAL') {
             $kalibrasi = 0;
-            $elevasi_top_pipa = 0;
-        } else {
-            $kalibrasi = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
-            $elevasi_top_pipa = isset($koefisien['elevasi_top_pipa']) ? (float)$koefisien['elevasi_top_pipa'] : 0;
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -528,15 +528,9 @@ function open_stand_pipe($data_jadi, $data_mentah, $koefisien, $data_type)
 function thermometer($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
-        if ($data_type === 'MANUAL') {
-            $faktor_a = 0;
-            $faktor_b = 0;
-            $faktor_c = 0;
-        } else {
-            $faktor_a = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
-            $faktor_b = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
-            $faktor_c = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
-        }
+        $faktor_a = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
+        $faktor_b = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
+        $faktor_c = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "soil_temperature":
@@ -562,18 +556,9 @@ function thermometer($data_jadi, $data_mentah, $koefisien, $data_type)
 function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
 {
     try {
-        // Set default coefficients
-        $faktor_a = 0;
-        $faktor_b = 0;
-        $faktor_c = 0;
-
-        // Check if data_type is MANUAL and set coefficients accordingly
-        if ($data_type !== 'MANUAL') {
-            // Ensure the required coefficients are set
-            $faktor_a = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
-            $faktor_b = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
-            $faktor_c = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
-        }
+        $faktor_a = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
+        $faktor_b = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
+        $faktor_c = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "strain":
@@ -591,14 +576,19 @@ function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$
                 ];
                 break;
             case "delta_strain":
-                // Get previous strain data
-                $data_sebelumnya = str_replace(',', '.', cek_data_sebelumnya($data_mentah['instrument_id'], 'strain'));
-                // Get current strain data from data_tambahan
-                $strain = str_replace(',', '.', $data_tambahan['strain']);
-                // Calculate delta strain
-                $hitung = floatval($strain) - floatval($data_sebelumnya);
 
-                // Return sensor data
+                $data_sebelumnya = str_replace(',', '', cek_data_awal($data_mentah['instrument_id'], 'strain'));
+                $strain = str_replace(',', '', $data_tambahan['strain']);
+
+
+                // $data_sebelumnya = cek_data_awal($data_mentah['instrument_id'], 'strain');
+                // $strain = $data_tambahan['strain'];
+
+                $data_sebelumnya = floatval($data_sebelumnya);
+                $strain = floatval($strain);
+
+                $hitung = $strain - $data_sebelumnya;
+                // pre($hitung);
                 return [
                     'id_sensor' => $data_jadi->jenis_sensor_jadi,
                     'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
@@ -618,9 +608,9 @@ function tiltmeter($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
         // Set default coefficients to 0 if data type is MANUAL
-        $v0 = $data_type === 'MANUAL' ? 0 : (isset($koefisien['v0']) ? (float)$koefisien['v0'] : 0);
-        $offset = $data_type === 'MANUAL' ? 0 : (isset($koefisien['offset']) ? (float)$koefisien['offset'] : 0);
-        $sensitivity = $data_type === 'MANUAL' ? 0 : (isset($koefisien['sensitivity']) ? (float)$koefisien['sensitivity'] : 0);
+        $v0 = isset($koefisien['v0']) ? (float)$koefisien['v0'] : 0;
+        $offset = isset($koefisien['offset']) ? (float)$koefisien['offset'] : 0;
+        $sensitivity = isset($koefisien['sensitivity']) ? (float)$koefisien['sensitivity'] : 0;
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "sudut_kemiringan":
@@ -727,6 +717,98 @@ function seismometer($data_jadi, $data_mentah, $koefisien, $data_type)
 //==============================================
 
 
+function cek_total_data($instrument_id, $data_jadi_string)
+{
+    try {
+        $ci = &get_instance();
+        $instrument_data = $ci->db->get_where("tr_instrument", ['id' => $instrument_id])->row();
+        if (!$instrument_data) {
+            throw new Exception();
+        }
+
+        $jenis_sensor_jadi = $ci->db->get_where("sys_jenis_sensor", ['var_name' => $data_jadi_string])->row();
+        if (!$jenis_sensor_jadi) {
+            throw new Exception();
+        }
+
+        $db_site = change_connection($instrument_data->ms_regions_id);
+        // Step 1: Get the latest date
+        $latest_date_query = $db_site->query("SELECT MAX(t1.tanggal) as latest_date
+                                      FROM data t1
+                                      LEFT JOIN data_value t2 ON t1.id = t2.data_id
+                                      WHERE t1.kode_instrument = '{$instrument_data->kode_instrument}'
+                                      AND t2.sensor_id = {$jenis_sensor_jadi->id}
+                                      AND t2.data_primer = 0 AND t2.data_jadi != ''
+                                     ");
+        $latest_date_result = $latest_date_query->row();
+        $latest_date = $latest_date_result->latest_date;
+
+        // Step 2: Calculate the next day
+        $next_day = date('Y-m-d', strtotime($latest_date . ' +1 day'));
+
+        // Step 3: Sum all data from 01:00 AM of the latest date to 12:00 AM of the next day
+        $sum_query = $db_site->query("SELECT SUM(t2.data_jadi) as total_sum
+                              FROM data t1
+                              LEFT JOIN data_value t2 ON t1.id = t2.data_id
+                              WHERE t1.kode_instrument = '{$instrument_data->kode_instrument}'
+                              AND t2.sensor_id = {$jenis_sensor_jadi->id}
+                              AND t2.data_primer = 0 AND t2.data_jadi != ''
+                              AND (
+                                  (t1.tanggal = '{$latest_date}' AND t1.jam >= '01:00:00')
+                                  OR (t1.tanggal = '{$next_day}' AND t1.jam <= '00:00:00')
+                              )
+                             ");
+        $sum_result = $sum_query->row();
+        $total_sum = $sum_result->total_sum;
+
+
+        return $total_sum;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+
+
+function cek_data_awal($instrument_id, $data_jadi_string)
+{
+    try {
+        $ci = &get_instance();
+        $instrument_data = $ci->db->get_where("tr_instrument", ['id' => $instrument_id])->row();
+        if (!$instrument_data) {
+            throw new Exception();
+        }
+
+        $jenis_sensor_jadi = $ci->db->get_where("sys_jenis_sensor", ['var_name' => $data_jadi_string])->row();
+        if (!$jenis_sensor_jadi) {
+            throw new Exception();
+        }
+
+        $db_site = change_connection($instrument_data->ms_regions_id);
+
+        $query = $db_site->query("SELECT t2.data_jadi, t1.jam
+                                FROM data t1
+                                LEFT JOIN data_value t2 ON t1.id = t2.data_id
+                                WHERE t1.kode_instrument = '{$instrument_data->kode_instrument}'
+                                AND t2.sensor_id = {$jenis_sensor_jadi->id}
+                                AND t2.data_primer = 0 AND t2.data_jadi != ''
+                                ORDER BY t1.tanggal ASC, t1.jam ASC
+                                LIMIT 1
+                                    ");
+        $result = $query->row();
+
+        if ($result) {
+            return $result->data_jadi;
+        } else {
+            return 0;
+        }
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+
+
 function cek_data_sebelumnya($instrument_id, $data_jadi_string)
 {
     try {
@@ -755,24 +837,32 @@ function cek_data_sebelumnya($instrument_id, $data_jadi_string)
         $result = $query->row();
 
         if ($result) {
+            // $dateTime = new DateTime($result->jam);
+            // $dateTime->modify('+1 hour');
+            // $newJam = $dateTime->format('H:i');
+
+            // // Cek apakah sensor adalah total_rainfall dan jam adalah 08:00
+            // // if ($jenis_sensor_jadi->var_name == 'total_rainfall' && $newJam == '08:00') {
+            // //     return 0;
+            // // }
+
+            // // Cek apakah tanggal dan jam sudah lewat 1 hari pada pukul 7 pagi
+            // if ($newJam == '01:00') {
+            //     $currentDate = new DateTime();
+            //     $currentDate->modify('-1 day');
+            //     if ($dateTime->format('Y-m-d') < $currentDate->format('Y-m-d')) {
+            //         return 0;
+            //     }
+            // }
+            // // Jika bukan kasus khusus, gunakan data sebelumnya
+
             $dateTime = new DateTime($result->jam);
             $dateTime->modify('+1 hour');
             $newJam = $dateTime->format('H:i');
 
-            // Cek apakah sensor adalah total_rainfall dan jam adalah 08:00
-            if ($jenis_sensor_jadi->var_name == 'total_rainfall' && $newJam == '08:00') {
+            if ($newJam == '01:00') {
                 return 0;
             }
-
-            // Cek apakah tanggal dan jam sudah lewat 1 hari pada pukul 7 pagi
-            if ($dateTime->format('H') == '07') {
-                $currentDate = new DateTime();
-                $currentDate->modify('-1 day');
-                if ($dateTime->format('Y-m-d') < $currentDate->format('Y-m-d')) {
-                    return 0;
-                }
-            }
-            // Jika bukan kasus khusus, gunakan data sebelumnya
             return $result->data_jadi;
         } else {
             return 0;
