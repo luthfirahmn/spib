@@ -1,21 +1,45 @@
 <?php
-class M_maps extends CI_Model 
+class M_maps extends CI_Model
 {
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
 	}
 
-	function station($ap_id_user){ 
-		return $this->db->query("
-		SELECT a.*, b.`site_name`
+	function station($ap_id_user)
+	{
+		$station =  $this->db->query("
+		SELECT a.*, 
+			b.`site_name`, 
+			GROUP_CONCAT(c.`kode_instrument`) AS `kode_instruments`
 		FROM `ms_stasiun` a 
-		LEFT JOIN ms_regions b ON a.`ms_regions_id`=b.id
-		LEFT JOIN ms_user_regions d ON a.`ms_regions_id`= d.`ms_regions_id`
-		WHERE d.ms_users_id='$ap_id_user';
+		LEFT JOIN `ms_regions` b ON a.`ms_regions_id` = b.`id`
+		LEFT JOIN `ms_user_regions` d ON a.`ms_regions_id` = d.`ms_regions_id`
+		LEFT JOIN `tr_instrument` c ON a.`id` = c.`ms_stasiun_id`
+		WHERE d.`ms_users_id` = '$ap_id_user'
+		GROUP BY a.`id`, b.`site_name`;
 		")->result();
+
+
+		foreach ($station as $row) {
+			$db_site = $this->change_connection($row->ms_regions_id);
+
+			$kode_instruments = "'" . str_replace(",", "','", $row->kode_instruments) . "'";
+
+			$result = $db_site->query("SELECT 
+										t3.jenis_sensor, t3.unit_sensor, data_value.data_jadi
+									FROM (SELECT id FROM data WHERE data.kode_instrument IN ($kode_instruments) ORDER BY data.tanggal DESC, data.jam DESC LIMIT 1) data 
+									INNER JOIN data_value ON data.id = data_value.data_id
+									INNER JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON data_value.sensor_id = t3.id
+									AND data_value.data_jadi != '' AND data_value.data_primer = 0
+									")->result();
+			$row->sensor_data = $result;
+		}
+		return $station;
 	}
-	
-	function station_detail($id){ 
+
+	function station_detail($id)
+	{
 		return $this->db->query("
 		SELECT a.*, b.`site_name`
 		FROM `ms_stasiun` a 
@@ -25,7 +49,8 @@ class M_maps extends CI_Model
 		")->row();
 	}
 
-	function region($ms_users_id){ 
+	function region($ms_users_id)
+	{
 		return $this->db->query("
 		SELECT b.id, b.site_name 
 		FROM ms_user_regions a
@@ -34,4 +59,48 @@ class M_maps extends CI_Model
 		")->result();
 	}
 
+
+
+	function change_connection($id_regions)
+	{
+
+		$query = $this->db->query("SELECT * FROM ms_regions WHERE id = '$id_regions'");
+		$result = $query->row();
+
+		$second_db_params = $this->switchDatabase($result->database_host, $result->database_username, $result->database_password, $result->database_name, $result->database_port);
+		$this->db2 = $this->load->database($second_db_params, TRUE);
+
+		if ($this->db2->initialize()) {
+			return $this->db2;
+		} else {
+			return false;
+		}
+	}
+
+	private function switchDatabase($hostname, $username, $password, $database, $port)
+	{
+		$params = array(
+			'hostname' => $hostname . ':' . $port,
+			'username' => $username,
+			'password' => $password,
+			'database' => $database,
+			// Other database configuration parameters
+			'dbdriver' => 'mysqli',
+			'dbprefix' => '',
+			'pconnect' => FALSE,
+			'db_debug' => (ENVIRONMENT !== 'production'),
+			'cache_on' => FALSE,
+			'cachedir' => '',
+			'char_set' => 'utf8',
+			'dbcollat' => 'utf8_general_ci',
+			'swap_pre' => '',
+			'encrypt'  => FALSE,
+			'compress' => FALSE,
+			'stricton' => FALSE,
+			'failover' => array(),
+			'save_queries' => TRUE
+		);
+
+		return $params;
+	}
 }

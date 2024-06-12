@@ -148,9 +148,10 @@ class Data extends MY_Controller
 			$db_site->trans_begin();
 			if (!empty($tanggal)) {
 				if ($waktu == 'jam') {
-					$start_datetime = $tanggal . ' 07:00:00';
-					$end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 07:00:00'));
-
+					// $start_datetime = $tanggal . ' 07:00:00';
+					// $end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 07:00:00'));
+					$start_datetime = $tanggal . ' 01:00:00';
+					$end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 00:00:00'));
 					$ddt = "AND CONCAT(t1.tanggal, ' ', t1.jam) >= '$start_datetime' AND CONCAT(t1.tanggal, ' ', t1.jam) < '$end_datetime'";
 				} else {
 					$ddt = "AND DATE_FORMAT(tanggal, '%Y-%m') = '$tanggal'";
@@ -483,7 +484,13 @@ class Data extends MY_Controller
 
 				$data_row = array();
 				foreach ($cellIterator as  $cell) {
-					$var_name = $this->db->get_where("sys_jenis_sensor", array('jenis_sensor' => $cell->getValue()))->row();
+					$query = $this->db->query("SELECT t1.*
+												FROM sys_jenis_sensor t1 
+												WHERE t1.jenis_sensor = '{$cell->getValue()}'
+												AND t1.id = (SELECT sys_jenis_sensor_id FROM sys_jenis_sensor_region WHERE ms_regions_id = {$site} AND sys_jenis_sensor_id = t1.id)
+											");
+					$var_name = $query->row();
+					// $var_name = $this->db->get_where("sys_jenis_sensor", array('jenis_sensor' => $cell->getValue(),))->row();
 					if (isset($var_name->var_name)) {
 						$data_row[] = $var_name->var_name;
 					} else {
@@ -568,7 +575,14 @@ class Data extends MY_Controller
 				}
 
 				foreach ($data_mentah_raw as $index => $row) {
-					$id_sensor = $this->db->get_where("sys_jenis_sensor", array('var_name' => $index))->row()->id;
+					// $id_sensor = $this->db->get_where("sys_jenis_sensor", array('var_name' => $index))->row()->id;
+					// pre($index);
+					$query = $this->db->query("SELECT t1.*
+					FROM sys_jenis_sensor t1 
+					WHERE t1.var_name = '{$index}'
+					AND t1.id = (SELECT sys_jenis_sensor_id FROM sys_jenis_sensor_region WHERE ms_regions_id = {$site} AND sys_jenis_sensor_id = t1.id)
+				");
+					$id_sensor = $query->row()->id;
 
 					$data_value = array(
 						'data_id' => $last_id,

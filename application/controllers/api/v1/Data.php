@@ -122,6 +122,7 @@ class Data extends REST_Controller
 
 
             $data = array();
+            $data['instrument_id'] = $get_instrument->id;
             $data['data_mentah'] = $data_mentah;
 
             $hasil = formula($type_instrument_name, $data_jadi, $data, $koefisien, 'OTOMATIS');

@@ -85,8 +85,7 @@ class Grafik extends MY_Controller
         echo $this->M_data->instrument($ms_stasiun_id);
     }
 
-
-    public function getInstrument()
+    public function getElevation()
     {
         try {
             $stasiun = $_GET['stasiun'];
@@ -95,26 +94,75 @@ class Grafik extends MY_Controller
                 throw new Exception('Site harus dipilih');
             }
             $query = $this->db->query("
-            SELECT t1.id,t1.kode_instrument,t1.nama_instrument
-            FROM tr_instrument t1
-            WHERE t1.ms_regions_id = {$regions_id}
-            AND  t1.ms_stasiun_id = {$stasiun}
+            SELECT t1.elevasi_sensor
+            FROM tr_instrument_instalasi t1
+            WHERE t1.tr_instrument_id IN (
+                                        SELECT id
+                                        FROM tr_instrument 
+                                        WHERE ms_regions_id = {$regions_id}
+                                        AND ms_stasiun_id = {$stasiun}
+                                        )
+            GROUP BY t1.elevasi_sensor
             ");
             $result = $query->result();
             if (!$result) {
                 throw new Exception('Tidak ada data didalam stasiun tersebut, pilih stasiun lain');
             }
 
+            echo json_encode(['error' => false, 'data' => $result]);
+        } catch (Exception $e) {
+            echo json_encode(['error' => true, 'msg' => $e->getMessage()]);
+        }
+    }
 
-            // Group instruments by removing numbers from the name
-            $groupedInstruments = [];
-            foreach ($result as $instrument) {
-                if (strpos($instrument->nama_instrument, 'SMR') !== false) {
-                    $groupedInstruments['SMR'][] = $instrument;
-                }
+    public function getInstrument()
+    {
+        try {
+            $stasiun = $_GET['stasiun'];
+            $regions_id = $_GET['regions_id'];
+            $flag = $_GET['flag'];
+            $elevasi = $_GET['elevasi'];
+
+            if ($regions_id == '') {
+                throw new Exception('Site harus dipilih');
             }
 
-            echo json_encode(['error' => false, 'data' => $groupedInstruments]);
+            if ($flag == 'by_elevasi') {
+
+                $kondisi = "AND t1.id IN (SELECT tr_instrument_id FROM tr_instrument_instalasi WHERE elevasi_sensor = {$elevasi})";
+            } else {
+                $kondisi = "";
+            }
+            $query = $this->db->query("
+            SELECT t1.id,t1.kode_instrument,t1.nama_instrument
+            FROM tr_instrument t1
+            WHERE t1.ms_regions_id = {$regions_id}
+            AND  t1.ms_stasiun_id = {$stasiun}
+            $kondisi
+            ");
+            $result = $query->result();
+            if (!$result) {
+                throw new Exception('Tidak ada data didalam stasiun tersebut, pilih stasiun lain');
+            }
+            // $combinedResults = array();
+            // foreach ($result as $row) {
+            //     $nama_instrument = $row->nama_instrument;
+            //     // Cek apakah string memiliki format "SMR-x.x"
+            //     if (preg_match('/^SMR-(\d+\.\d+)$/', $nama_instrument, $matches)) {
+            //         $combinedName = 'SMR-' . $matches[1];
+            //         // Simpan ke dalam array dengan key yang unik
+            //         $combinedResults[$combinedName] = array(
+            //             'id' => $row->id,
+            //             'kode_instrument' => $row->kode_instrument,
+            //             'nama_instrument' => $combinedName
+            //         );
+            //     }
+            // }
+
+            // // Ubah array asosiatif menjadi array biasa
+            // $combinedResults = array_values($combinedResults);
+            // pre($combinedResults);
+            echo json_encode(['error' => false, 'data' => $result]);
         } catch (Exception $e) {
             echo json_encode(['error' => true, 'msg' => $e->getMessage()]);
         }
@@ -202,50 +250,61 @@ class Grafik extends MY_Controller
             }
 
             if (!empty($data_tambah)) {
+                $data_tambah_cek = 0;
+                if (in_array('Tinggi Muka Air', $data_tambah)) {
+                    $data_tambah_cek = 1;
+                }
+                if (in_array('Rainfall', $data_tambah)) {
+                    $data_tambah_cek = 1;
+                }
 
-                foreach ($data_tambah as $row_data_tambah) {
+                if ($data_tambah_cek != 0) {
+                    foreach ($data_tambah as $row_data_tambah) {
 
-                    if ($row_data_tambah == 'Tinggi Muka Air') {
-                        $stasiun_dt_tambah = 'AWLR1';
-                    } else if ($row_data_tambah == 'Rainfall') {
-                        $stasiun_dt_tambah = 'KLIM1';
-                    }
-
-                    $query = $this->db->query("
-                    SELECT t1.kode_instrument,t1.nama_instrument, t3.id as sensor_id, t3.jenis_sensor, t3.unit_sensor
-                    FROM tr_instrument t1
-                    INNER JOIN tr_koefisien_sensor_non_vwp t2 ON t2.tr_instrument_id = t1.id
-                    INNER JOIN sys_jenis_sensor t3 ON t2.jenis_sensor_jadi = t3.id
-                    WHERE t1.ms_regions_id = {$ms_regions_id}
-                    AND t3.jenis_sensor  = '{$row_data_tambah}'
-                    AND t1.kode_instrument LIKE '%{$stasiun_dt_tambah}%'
-                    ");
-
-
-                    $dt_result = $query->result();
-
-                    foreach ($dt_result as $row_data_tambah) {
-                        if ($result->unit_sensor == $row_data_tambah->unit_sensor) {
-                            $row_data[] = (object) array(
-                                'data_type' => 'data_utama',
-                                'nama_instrument' => $row_data_tambah->nama_instrument,
-                                'kode_instrument' => $row_data_tambah->kode_instrument,
-                                'sensor_id' => $row_data_tambah->sensor_id,
-                                'jenis_sensor' => $row_data_tambah->jenis_sensor,
-                                'unit_sensor' => $row_data_tambah->unit_sensor
-                            );
+                        if ($row_data_tambah == 'Tinggi Muka Air') {
+                            $stasiun_dt_tambah = 'AWLR1';
+                        } else if ($row_data_tambah == 'Rainfall') {
+                            $stasiun_dt_tambah = 'KLIM1';
                         } else {
-                            $row_data[] = (object) array(
-                                'data_type' => 'data_tambahan',
-                                'nama_instrument' => $row_data_tambah->nama_instrument,
-                                'kode_instrument' => $row_data_tambah->kode_instrument,
-                                'sensor_id' => $row_data_tambah->sensor_id,
-                                'jenis_sensor' => $row_data_tambah->jenis_sensor,
-                                'unit_sensor' => $row_data_tambah->unit_sensor
-                            );
+                        }
+
+                        $query = $this->db->query("
+                        SELECT t1.kode_instrument,t1.nama_instrument, t3.id as sensor_id, t3.jenis_sensor, t3.unit_sensor
+                        FROM tr_instrument t1
+                        INNER JOIN tr_koefisien_sensor_non_vwp t2 ON t2.tr_instrument_id = t1.id
+                        INNER JOIN sys_jenis_sensor t3 ON t2.jenis_sensor_jadi = t3.id
+                        WHERE t1.ms_regions_id = {$ms_regions_id}
+                        AND t3.jenis_sensor  = '{$row_data_tambah}'
+                        AND t1.kode_instrument LIKE '%{$stasiun_dt_tambah}%'
+                        ");
+
+
+                        $dt_result = $query->result();
+
+                        foreach ($dt_result as $row_data_tambah) {
+                            if ($result->unit_sensor == $row_data_tambah->unit_sensor) {
+                                $row_data[] = (object) array(
+                                    'data_type' => 'data_utama',
+                                    'nama_instrument' => $row_data_tambah->nama_instrument,
+                                    'kode_instrument' => $row_data_tambah->kode_instrument,
+                                    'sensor_id' => $row_data_tambah->sensor_id,
+                                    'jenis_sensor' => $row_data_tambah->jenis_sensor,
+                                    'unit_sensor' => $row_data_tambah->unit_sensor
+                                );
+                            } else {
+                                $row_data[] = (object) array(
+                                    'data_type' => 'data_tambahan',
+                                    'nama_instrument' => $row_data_tambah->nama_instrument,
+                                    'kode_instrument' => $row_data_tambah->kode_instrument,
+                                    'sensor_id' => $row_data_tambah->sensor_id,
+                                    'jenis_sensor' => $row_data_tambah->jenis_sensor,
+                                    'unit_sensor' => $row_data_tambah->unit_sensor
+                                );
+                            }
                         }
                     }
                 }
+
 
                 $elevasi_awlr = [];
                 if (in_array('Elevasi Puncak', $data_tambah)) {
@@ -307,8 +366,7 @@ class Grafik extends MY_Controller
                         $row_pertama = $row_data[0]->detail;
                         if (!empty($row_pertama)) {
                             foreach ($row_pertama as $index => $row_pertama_val) {
-
-                                $detail = (object)array(
+                                $detail[$index] = (object)array(
                                     'tanggal' => $row_pertama_val->tanggal,
                                     'jam' => $row_pertama_val->jam,
                                     'data_jadi' => $row->value,
@@ -319,7 +377,6 @@ class Grafik extends MY_Controller
                         $row_pertama = $row_data[0]->detail;
                         if (!empty($row_pertama)) {
                             foreach ($row_pertama as $index => $row_pertama_val) {
-
                                 $detail[$index] = (object) array(
                                     'tanggal' => $row_pertama_val->tanggal,
                                     'data_jadi' => $row->value,

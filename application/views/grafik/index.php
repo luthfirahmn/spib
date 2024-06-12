@@ -84,8 +84,7 @@
                                     <div class="form-group col-md-2">
                                         <select class="select2" name="status" id="status" disabled>
                                             <option value="" selected>Select Status</option>
-                                            <option value="1">Konstruksi</option>
-                                            <option value="2">Pasca Konstruksi</option>
+
                                         </select>
                                     </div>
                                     <div class="form-group col-md-2">
@@ -189,6 +188,29 @@
 
         });
 
+        function zoomImage() {
+            // var regions_id = $("#ms_regions_id").val();
+            var stasiun = $("#stasiun").val();
+
+            if (stasiun == "") {
+                toastr.error("Site harus diisi");
+                $(this).val('');
+                return
+            }
+
+            $.ajax({
+                url: "<?= base_url('Grafik/getImageStasiun/'); ?>" + stasiun,
+                type: "GET",
+                dataType: "JSON",
+                success: function(response) {
+                    console.log(response);
+                    $('#modalImage').attr('src', response.imageUrl);
+                    $('#imageModal').modal('show');
+                }
+            })
+
+        }
+
         $("#periode").change(function() {
             var option = $(this).val();
             switch (option) {
@@ -208,7 +230,7 @@
 
         $("#ms_regions_id").change(function() {
             var ms_regions_id = $(this).val();
-
+            reset_field()
             $.ajax({
                 url: "<?= base_url('Grafik/getSensor/?ms_regions_id='); ?>" + ms_regions_id,
                 type: "GET",
@@ -233,27 +255,11 @@
         })
 
 
-        function zoomImage() {
-            // var regions_id = $("#ms_regions_id").val();
-            var stasiun = $("#stasiun").val();
-
-            if (stasiun == "") {
-                toastr.error("Site harus diisi");
-                $(this).val('');
-                return
-            }
-
-            $.ajax({
-                url: "<?= base_url('Grafik/getImageStasiun/'); ?>" + stasiun,
-                type: "GET",
-                dataType: "JSON",
-                success: function(response) {
-                    console.log(response);
-                    $('#modalImage').attr('src', response.imageUrl);
-                    $('#imageModal').modal('show');
-                }
-            })
-
+        function reset_field() {
+            $("#data_tambah").empty();
+            $("#pilih_instrument").empty();
+            $("#select_data").empty();
+            $("#pilih_instrument").empty();
         }
 
         $("#stasiun").change(function() {
@@ -270,9 +276,8 @@
             $("#elevasi").prop('disabled', true);
             $("#status").prop('disabled', true);
             $("#data_tambah").prop('disabled', true);
-            $("#data_tambah").empty();
-            $("#pilih_instrument").empty();
-            $("#select_data").empty();
+
+            reset_field();
 
             switch (stasiun_type) {
                 case 'HIDROLOGI':
@@ -282,21 +287,40 @@
                         '<option value="Elevasi Puncak">Elevasi Puncak</option>' +
                         '<option value="Elevasi Spillway">Elevasi Spillway</option>' +
                         '<option value="Batas Kritis">Batas Kritis</option>');
+
+                    get_instrument('by_station');
+                    break;
+                case 'EWS':
+                    $("#data_tambah").prop('disabled', false);
+                    $("#data_tambah").html('<option value="Tinggi Muka Air">Tinggi Muka Air</option>' +
+                        '<option value="Rainfall">Rainfall</option>' +
+                        '<option value="Elevasi Puncak">Elevasi Puncak</option>' +
+                        '<option value="Elevasi Spillway">Elevasi Spillway</option>' +
+                        '<option value="Batas Kritis">Batas Kritis</option>');
+                    get_instrument('by_station');
                     break;
                 case 'GEOLOGI':
                     $("#elevasi").prop('disabled', false);
                     $("#status").prop('disabled', false);
+                    $("#status").html('<option value="2" selected>Pasca Konstruksi</option>' +
+                        '<option value="1">Konstruksi</option>');
+                    $('#status').trigger('change');
+                    step_geologi(regions_id, stasiun)
                     break;
                 default:
                     $("#elevasi").prop('disabled', true);
                     $("#status").prop('disabled', true);
                     $("#data_tambah").prop('disabled', true);
-                    $("#data_tambah").empty();
+                    get_instrument('by_station');
+
                     break;
             }
+        })
 
+
+        function step_geologi(regions_id, stasiun) {
             $.ajax({
-                url: "<?= base_url('Grafik/getInstrument'); ?>",
+                url: "<?= base_url('Grafik/getElevation'); ?>",
                 type: "GET",
                 dataType: "json",
                 data: {
@@ -308,9 +332,44 @@
                         toastr.error(response.msg);
                     }
 
+                    var options = '<option value="">Select Elevation</option>';
+                    $.each(response.data, function(index, item) {
+                        options += '<option value="' + item.elevasi_sensor + '">' + item.elevasi_sensor +
+                            '</option>';
+                    });
+
+                    $("#elevasi").html(options);
+                }
+
+            })
+        }
+
+        $("#elevasi").change(function() {
+            var elevasi = $("#elevasi").val();
+            get_instrument('by_elevasi', elevasi)
+        })
+
+        function get_instrument(flag, elevasi = 0) {
+            var regions_id = $("#ms_regions_id").val();
+            var stasiun = $("#stasiun").val();
+            $.ajax({
+                url: "<?= base_url('Grafik/getInstrument'); ?>",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    stasiun: stasiun,
+                    regions_id: regions_id,
+                    flag: flag,
+                    elevasi: elevasi
+                },
+                success: function(response) {
+                    if (response.error !== false) {
+                        toastr.error(response.msg);
+                    }
+
                     var options = '<option value="">Select Instrument</option>';
                     $.each(response.data, function(index, item) {
-                        options += '<option value="' + item.id + '">' + item.nama_instrument +
+                        options += '<option data-id="' + item.kode_instrument + '" value="' + item.id + '">' + item.nama_instrument +
                             '</option>';
                     });
 
@@ -319,7 +378,7 @@
                 }
 
             })
-        })
+        }
 
         $("#pilih_instrument").change(function() {
             var instrument_id = $("#pilih_instrument").val();
@@ -358,7 +417,7 @@
                 case "1":
                     $("#data_tambah").prop('disabled', false);
                     $("#data_tambah").html('<option value="Rainfall">Rainfall</option>' +
-                        '<option value="Elevasi Timbunan">Elevasi Timbunan</option>');
+                        '<option value="Elevasi Spillway">Elevasi Spillway</option>');
                     break;
                 case "2":
                     $("#data_tambah").prop('disabled', false);
@@ -447,6 +506,13 @@
         var chart;
 
         function generateChart(data, periode, data_tambah) {
+
+            var region = $('#ms_regions_id option:selected').html()
+            var kode_instrument = $('#pilih_instrument option:selected').attr('data-id')
+            var nama_instrument = $('#pilih_instrument option:selected').html()
+            var waktu = $('#waktu').val()
+
+            var filename = region + '_' + kode_instrument + '_' + nama_instrument + '_' + waktu
             var yAxisConfig = [{
                 title: {
                     text: data[0].unit_sensor,
@@ -457,16 +523,13 @@
                 }
             }];
 
-            // var isRainfall = data.some(function(sensor) {
-            //     return sensor.nama_instrument.toUpperCase() === "RAINFALL";
-            // });
 
             if (data[0].nama_instrument.toUpperCase() === "RAINFALL") {
                 yAxisConfig[0].reversed = true;
             }
 
             if (data_tambah && data_tambah.length > 0) {
-                yAxisConfig.push({
+                var newConfig = {
                     opposite: true,
                     title: {
                         text: data_tambah[0].unit_sensor,
@@ -475,18 +538,43 @@
                             fontSize: '16px'
                         }
                     }
-                });
+                };
                 if (data_tambah[0].nama_instrument.toUpperCase() === "RAINFALL") {
-                    yAxisConfig[0].reversed = true;
+                    newConfig.reversed = true;
+                    newConfig.yAxisIndex = 1;
                 }
+                yAxisConfig.push(newConfig);
             }
-
-
 
             var options = {
                 chart: {
                     type: 'line',
-                    height: 350
+                    height: 350,
+                    toolbar: {
+                        show: true,
+                        offsetX: 0,
+                        offsetY: 0,
+                        tools: {
+                            download: true,
+                            selection: true,
+                            zoom: true,
+                            zoomin: true,
+                            zoomout: true,
+                            pan: true,
+
+                        },
+                        export: {
+                            csv: {
+                                filename: filename,
+                            },
+                            svg: {
+                                filename: filename,
+                            },
+                            png: {
+                                filename: filename,
+                            }
+                        }
+                    }
                 },
                 series: generateSeries(data, data_tambah),
                 xaxis: {
@@ -512,7 +600,9 @@
                         toggleDataSeries: true
                     },
                     showForSingleSeries: true
-                }
+                },
+
+
             };
 
             if (chart && chart.destroy) {

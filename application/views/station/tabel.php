@@ -4,6 +4,7 @@
 			<tr>
 				<th>Site</th>
 				<th>Nama Station</th>
+				<th>Tipe Station</th>
 				<th>Wilayah Sungai</th>
 				<th>DAS</th>
 				<th>Latitude</th>
@@ -20,6 +21,7 @@
 				<tr>
 					<td><?= $rec->site_name ?></td>
 					<td><?= $rec->nama_stasiun ?></td>
+					<td><?= $rec->stasiun_type ?></td>
 					<td><?= $rec->wilayah_sungai ?></td>
 					<td><?= $rec->daerah_aliran_sungai ?></td>
 					<td><?= number_format($rec->latitude, 6) ?></td>
