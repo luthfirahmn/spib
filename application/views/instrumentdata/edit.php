@@ -274,9 +274,9 @@
 										<label class="form-label" for="modal_data_mentah_create">Jenis Sensor Data Mentah</label>
 										<select class="form-control" name="modal_data_mentah[]" id="modal_data_mentah_create" placeholder="This is a placeholder" multiple>
 
-											<?php foreach ($sensor as $sns2) { ?>
+											<!-- <?php foreach ($sensor as $sns2) { ?>
 												<option value="<?= $sns2->id ?>"><?= $sns2->nama_sensor ?></option>
-											<?php } ?>
+											<?php } ?> -->
 										</select>
 									</div>
 								</div>
@@ -285,9 +285,9 @@
 										<label class="form-label" for="modal_data_jadi_create">Jenis Sensor Data Jadi</label>
 										<select class="form-control" name="modal_data_jadi[]" id="modal_data_jadi_create" placeholder="This is a placeholder" multiple>
 
-											<?php foreach ($sensor as $sns3) { ?>
+											<!-- <?php foreach ($sensor as $sns3) { ?>
 												<option value="<?= $sns3->id ?>"><?= $sns3->nama_sensor ?></option>
-											<?php } ?>
+											<?php } ?> -->
 										</select>
 									</div>
 								</div>
@@ -343,9 +343,9 @@
 								<div class="form-group col-md-12">
 									<label class="form-label" for="modal_data_mentah_edit">Jenis Sensor Data Mentah</label>
 									<select class="form-control" name="modal_data_mentah[]" id="modal_data_mentah_edit" placeholder="This is a placeholder" multiple>
-										<?php foreach ($sensor as $sns2) { ?>
+										<!-- <?php foreach ($sensor as $sns2) { ?>
 											<option value="<?= $sns2->id ?>"><?= $sns2->nama_sensor ?></option>
-										<?php } ?>
+										<?php } ?> -->
 									</select>
 								</div>
 							</div>
@@ -354,9 +354,9 @@
 									<label class="form-label" for="modal_data_jadi_edit">Jenis Sensor Data Jadi</label>
 									<select class="form-control" name="modal_data_jadi[]" id="modal_data_jadi_edit" placeholder="This is a placeholder" multiple>
 
-										<?php foreach ($sensor as $sns3) { ?>
+										<!-- <?php foreach ($sensor as $sns3) { ?>
 											<option value="<?= $sns3->id ?>"><?= $sns3->nama_sensor ?></option>
-										<?php } ?>
+										<?php } ?> -->
 									</select>
 								</div>
 							</div>
@@ -390,21 +390,21 @@
 			// 	removeItemButton: true
 			// });
 
-			var multipleCancelButton = new Choices('#modal_data_mentah_create', {
-				removeItemButton: true
-			});
+			// var multipleCancelButton = new Choices('#modal_data_mentah_create', {
+			// 	removeItemButton: true
+			// });
 
-			var multipleCancelButton = new Choices('#modal_data_jadi_create', {
-				removeItemButton: true
-			});
+			// var multipleCancelButton = new Choices('#modal_data_jadi_create', {
+			// 	removeItemButton: true
+			// });
 
-			var multipleCancelButton = new Choices('#modal_data_mentah_edit', {
-				removeItemButton: true
-			});
+			// var multipleCancelButton = new Choices('#modal_data_mentah_edit', {
+			// 	removeItemButton: true
+			// });
 
-			var multipleCancelButton = new Choices('#modal_data_jadi_edit', {
-				removeItemButton: true
-			});
+			// var multipleCancelButton = new Choices('#modal_data_jadi_edit', {
+			// 	removeItemButton: true
+			// });
 		});
 	</script>
 	<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
@@ -426,10 +426,44 @@
 
 		//tambah koefisien
 		function tambahTempKoefisien() {
-			var instrument_type_create = document.getElementById('tr_instrument_type_id');
-			getNameType(instrument_type_create, 'create');
-			document.getElementById('modal_type_create').value = instrument_type_create.value;
-			$('#exampleModal').modal('show');
+
+			var region_id = $("#ms_regions_id").val();
+			$.ajax({
+				url: "<?= base_url('instrumentData/get_sensor/') ?>" + region_id,
+				type: "GET",
+				dataType: "JSON",
+				success: function(sensorData) {
+					var sensorOptions = [];
+
+
+					var instrument_type_create = document.getElementById('tr_instrument_type_id');
+					getNameType(instrument_type_create, 'create');
+					document.getElementById('modal_type_create').value = instrument_type_create.value;
+
+					// Add predefined sensors
+					$.each(sensorData, function(i, item) {
+						sensorOptions.push({
+							value: item.id,
+							label: item.nama_sensor
+						});
+					});
+
+					// Initialize Choices.js
+					new Choices('#modal_data_mentah_create', {
+						choices: sensorOptions,
+						removeItemButton: true,
+					});
+
+
+					new Choices('#modal_data_jadi_create', {
+						choices: sensorOptions,
+						removeItemButton: true,
+					});
+
+					$('#exampleModal').modal('show');
+				}
+			});
+			// Akhir dari Pemilihan
 		};
 
 		var originalModal = $('#formBodyCreate').clone();
@@ -734,6 +768,7 @@
 
 		//edit koefisien
 		function editTempKoefisien(id) {
+			var region_id = $("#ms_regions_id").val();
 			// choices.removeActiveItems();
 			// choices.setChoiceByValue("");
 
@@ -797,7 +832,7 @@
 
 				}
 			};
-			xhttp.open("GET", "<?php echo base_url('InstrumentData/detailTempKoefisien'); ?>" + '?id=' + id, true);
+			xhttp.open("GET", "<?php echo base_url('InstrumentData/detailTempKoefisien'); ?>" + '?id=' + id + '&regions_id=' + region_id, true);
 			xhttp.send();
 
 			$('#modal_type_edit').val($('#tr_instrument_type_id').val())

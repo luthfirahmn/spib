@@ -361,7 +361,7 @@ class M_data extends CI_Model
 									} else if ($trend == 'turun') {
 										$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrow-down-circle text-green-700 "></i><span class="text-green-700 text-sm align-middle"> -' . $hitung . '</span>';
 									} else {
-										$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrows-sort text-yellow-700"></i><span class="text-yellow-700 text-sm align-middle"> 0</span>';
+										$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrows-sort text-black"></i><span class="text-black text-sm align-middle"> 0</span>';
 									}
 								}
 							}
@@ -539,7 +539,7 @@ class M_data extends CI_Model
 									} else if ($trend == 'turun') {
 										$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrow-down-circle text-green-700 "></i><span class="text-green-700 text-sm align-middle"> -' . $hitung . '</span>';
 									} else {
-										$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrows-sort text-yellow-700"></i><span class="text-yellow-700 text-sm align-middle"> 0</span>';
+										$data[$key]['Perubahan ' . $index_jenis_sensor] = '<i class="ti ti-arrows-sort text-black"></i><span class="text-black text-sm align-middle"> 0</span>';
 									}
 								}
 							}

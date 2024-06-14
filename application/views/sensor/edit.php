@@ -87,13 +87,14 @@
 								</div>
 
 								<div class="row">
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-3">
 										<label class="form-label" for="file">Icon</label>
 										<input type="file" id="file" name="file" accept="image/*" hidden>
 										<div class="img-area" data-img="">
-											<i class='bx bxs-cloud-upload icon'></i>
-											<h3>Upload Icon</h3>
-											<p>Icon size must be less than <span>2MB</span></p>
+											<!-- <i class='bx bxs-cloud-upload icon'></i> -->
+											<!-- <h3>Upload Icon</h3>
+											<p>Icon size must be less than <span>2MB</span></p> -->
+											<img src="<?= base_url('assets/upload/sensor/' . $sensor->icon) ?>">
 										</div>
 										<button type="button" class="select-image">Select Icon</button>
 									</div>

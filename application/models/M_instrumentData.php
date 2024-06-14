@@ -105,10 +105,20 @@ class M_instrumentData extends CI_Model
 		")->result();
 	}
 
-	function sensor()
+	function sensor($user_id)
 	{
 		return $this->db->query("
-		SELECT id, CONCAT(jenis_sensor, ' (',unit_sensor,')') AS nama_sensor FROM `sys_jenis_sensor`;
+		SELECT t1.id, CONCAT(t1.jenis_sensor, ' (',t1.unit_sensor,')') AS nama_sensor FROM `sys_jenis_sensor`  t1
+		WHERE t1.id IN (SELECT t2.sys_jenis_sensor_id FROM sys_jenis_sensor_region t2 WHERE t2.ms_regions_id IN 
+		(SELECT t3.ms_regions_id FROM ms_user_regions t3 WHERE t3.ms_users_id = {$user_id}));
+		")->result();
+	}
+
+	function get_sensor($regions_id)
+	{
+		return $this->db->query("
+		SELECT t1.id, CONCAT(t1.jenis_sensor, ' (',t1.unit_sensor,')') AS nama_sensor FROM `sys_jenis_sensor`  t1
+		WHERE t1.id IN (SELECT t2.sys_jenis_sensor_id FROM sys_jenis_sensor_region t2 WHERE t2.ms_regions_id = {$regions_id});
 		")->result();
 	}
 
@@ -456,7 +466,7 @@ class M_instrumentData extends CI_Model
 	}
 
 
-	public function detailTempKoefisien($id)
+	public function detailTempKoefisien($id, $regions_id)
 	{
 		$temp_koefisien =  $this->db->query("
 		SELECT a.*, b.`type` FROM `temp_koefisien` a
@@ -480,6 +490,7 @@ class M_instrumentData extends CI_Model
 			SELECT 'selected' FROM `temp_sensor` WHERE `jenis_sensor_mentah`=a.id AND `id_temp_koefisien`='$id' ORDER BY id ASC LIMIT 1
 		), '') AS pilih
 		FROM sys_jenis_sensor a
+		WHERE a.id IN (SELECT sys_jenis_sensor_id FROM sys_jenis_sensor_region WHERE ms_regions_id = {$regions_id})
 		ORDER BY 
 		(
 			SELECT 
@@ -502,6 +513,7 @@ class M_instrumentData extends CI_Model
 			SELECT 'selected' FROM `temp_sensor` WHERE `jenis_sensor_jadi`=a.id AND `id_temp_koefisien`='$id' ORDER BY id ASC LIMIT 1
 		), '') AS pilih
 		FROM sys_jenis_sensor a
+		WHERE a.id IN (SELECT sys_jenis_sensor_id FROM sys_jenis_sensor_region WHERE ms_regions_id = {$regions_id})
 		ORDER BY 
 		(
 			SELECT 

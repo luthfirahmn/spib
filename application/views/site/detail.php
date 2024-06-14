@@ -152,15 +152,10 @@
 											<i class='bx bxs-cloud-upload icon'></i>
 											<h3>Upload Foto/Layout</h3>
 											<p>Image size must be less than <span>2MB</span></p>
+											<img src="<?= base_url('assets/upload/sensor/' . $site->foto) ?>">
 										</div>
 										<button type="button" class="select-image">Select Foto/Layout</button>
 									</div>
-
-									<div class="form-group col-md-4">
-										<label class="form-label" for="file">Preview</label><br>
-										<img src="<?= base_url('assets/upload/sensor/' . $site->foto) ?>" width="500">
-									</div>
-
 								</div>
 								<button type="submit" class="btn btn-primary">Submit</button>
 								<a href="<?= base_url('Site') ?>" type="button" class="btn btn-danger">Cancel</a>

@@ -30,8 +30,15 @@ class InstrumentData extends MY_Controller
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['region'] = $this->M_instrumentData->region($ap_id_user);
 		$data['type'] = $this->M_instrumentData->type();
-		$data['sensor'] = $this->M_instrumentData->sensor();
+		$data['sensor'] = $this->M_instrumentData->sensor($ap_id_user);
 		$this->load->view('instrumentdata/tambah', $data);
+	}
+
+	public function get_sensor($regions_id)
+	{
+		$sensor_data = $this->M_instrumentData->get_sensor($regions_id);
+
+		echo json_encode($sensor_data);
 	}
 
 	public function getTypeStation()
@@ -124,10 +131,11 @@ class InstrumentData extends MY_Controller
 
 	public function parameter()
 	{
+		$ap_id_user = $this->session->userdata('ap_id_user');
 		$tr_instrument_type_id 	= $this->input->post('tr_instrument_type_id');
 		$data['action'] 		= $this->input->post('action');
 		$data['parameter']		= $this->M_instrumentData->parameter($tr_instrument_type_id);
-		$data['sensor']			= $this->M_instrumentData->sensor();
+		$data['sensor']			= $this->M_instrumentData->sensor($ap_id_user);
 		$dataparameter = array(
 			'rc'		=> '00',
 			'err_desc'	=> 'Sukses',
@@ -228,7 +236,7 @@ class InstrumentData extends MY_Controller
 		$data['detail'] = $this->M_instrumentData->instrument_detail($id);
 		$data['region'] = $this->M_instrumentData->region($ap_id_user);
 		$data['typeinstrument'] = $this->M_instrumentData->type();
-		$data['sensor'] = $this->M_instrumentData->sensor();
+		$data['sensor'] = $this->M_instrumentData->sensor($ap_id_user);
 
 		$this->load->view('instrumentdata/edit', $data);
 	}
@@ -288,7 +296,8 @@ class InstrumentData extends MY_Controller
 	public function detailTempKoefisien()
 	{
 		$id = $this->input->get('id');
-		$data = $this->M_instrumentData->detailTempKoefisien($id);
+		$regions_id = $this->input->get('regions_id');
+		$data = $this->M_instrumentData->detailTempKoefisien($id, $regions_id);
 		$data['tabel_parameter'] = $this->load->view('instrumentdata/data_parameter_edit', $data, true);
 		echo json_encode($data);
 
@@ -306,7 +315,7 @@ class InstrumentData extends MY_Controller
 		$ap_id_user 	= $this->session->userdata('ap_id_user');
 		$data['region']	= $this->M_instrumentData->region($ap_id_user);
 		$data['type']	= $this->M_instrumentData->type();
-		$data['sensor']	= $this->M_instrumentData->sensor();
+		$data['sensor']	= $this->M_instrumentData->sensor($ap_id_user);
 		$tabel			= $this->load->view('instrumentdata/form_koefisien', $data, true);
 
 		echo $tabel;
