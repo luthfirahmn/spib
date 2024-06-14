@@ -84,16 +84,16 @@
 						<div class="card-body table-border-style">
 							<?php if ($hak_akses->insert == '1') { ?>
 								<a href="<?= base_url('Instrument/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
-									<i class="ti ti-plus"></i>Tambah Data
+									<i class="ti ti-plus"></i>Add Data
 								</a>
 							<?php } ?>
 							<div class="table-responsive">
 								<table class="table" id="pc-dt-simple">
 									<thead>
 										<tr>
-											<th>Site</th>
+											<th>Region Name</th>
 											<th>Jenis Instrument</th>
-											<th>Type</th>
+											<th>Instrument Category</th>
 											<th>Parameter</th>
 											<th>Action</th>
 										</tr>
@@ -142,14 +142,6 @@
 					</div>
 				</div>
 			</div>
-
-
-
-
-
-
-
-
 		</div>
 	</section>
 

@@ -72,7 +72,7 @@
 
                                 <?php if ($hak_akses->insert == '1') { ?>
                                     <button type="button" class="btn btn-outline-primary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                                        <i class="ti ti-plus"></i>Tambah
+                                        <i class="ti ti-plus"></i>Add Data
                                     </button>
                                 <?php } ?>
                                 <?php if ($hak_akses->insert == '1') { ?>
@@ -97,9 +97,9 @@
                                     <input type="text" class="form-control" id="keyword" name="keyword">
                                 </div> -->
                                 <div class="form-group col-md-2">
-                                    <label class="form-label" for="ms_regions_id">Site:</label>
+                                    <label class="form-label" for="ms_regions_id">Region:</label>
                                     <select class="form-control" name="ms_regions_id" id="ms_regions_id">
-                                        <option>--- Pilih Site ---</option>
+                                        <option>Select Region</option>
                                         <?php foreach ($region as $reg) { ?>
                                             <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                         <?php } ?>
@@ -107,34 +107,34 @@
                                 </div>
 
                                 <div class="form-group col-md-2">
-                                    <label class="form-label" for="stasiun">Stasiun</label>
+                                    <label class="form-label" for="stasiun">Station</label>
                                     <select class="form-control" name="stasiun" id="stasiun">
-                                        <option>--Pilih Stasiun--</option>
+                                        <option>Select Station</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label class="form-label" for="instrument">Instrument</label>
                                     <select class="form-control" name="instrument" id="instrument">
-                                        <option>--Pilih Instrument--</option>
+                                        <option>Select Instrument</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label class="form-label" for="type">Type</label>
+                                    <label class="form-label" for="type">Data Type</label>
                                     <select class="form-control" name="keterangan" id="keterangan">
-                                        <option value="" selected>--Pilih Keterangan--</option>
+                                        <option value="" selected>Select Data Type</option>
                                         <option value="MANUAL">Manual</option>
                                         <option value="OTOMATIS">Otomatis</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label class="form-label" for="date">Waktu</label>
+                                    <label class="form-label" for="date">Period</label>
                                     <select class="form-control" name="waktu" id="waktu">
                                         <option value="jam" selected>Jam-Jaman</option>
                                         <option value="hari">Harian</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label class="form-label" for="date">Periode</label>
+                                    <label class="form-label" for="date">Time</label>
                                     <input type="date" class="form-control" id="tanggal" name="tanggal" value="<?php date_default_timezone_set('Asia/Jakarta');
                                                                                                                 echo date('Y-m-d'); ?>">
                                 </div>
@@ -166,16 +166,16 @@
             <!-- Ubah ukuran modal dari lg ke xl -->
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalInfoLabel">Tambah Data</h5>
+                    <h5 class="modal-title" id="modalInfoLabel">Add Data</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="site">Site</label>
+                                <label for="site">Region</label>
                                 <select class="form-control" id="add_site" name="add_site">
-                                    <option value="" selected>--- Pilih Site ---</option>
+                                    <option value="" selected>Select Region</option>
                                     <?php foreach ($region as $reg) { ?>
                                         <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                     <?php } ?>
@@ -184,9 +184,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="stasiun">Stasiun</label>
+                                <label for="stasiun">Station </label>
                                 <select class="form-control" id="add_stasiun" name="add_stasiun">
-                                    <option value="" selected>--Pilih Stasiun--</option>
+                                    <option value="" selected>Select Station</option>
                                 </select>
                             </div>
                         </div>
@@ -194,7 +194,7 @@
                             <div class="form-group">
                                 <label for="instrument">Instrument</label>
                                 <select class="form-control" id="add_instrument" name="add_instrument">
-                                    <option value="" selected>--Pilih Instrument--</option>
+                                    <option value="" selected>Select Instrument</option>
                                 </select>
                             </div>
                         </div>
@@ -202,14 +202,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="tanggal">Tanggal</label>
+                                <label for="tanggal">Date</label>
                                 <input type="date" class="form-control" id="add_tanggal" name="add_tanggal" max="<?php date_default_timezone_set('Asia/Jakarta');
                                                                                                                     echo date('Y-m-d'); ?>">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="jam">Jam</label>
+                                <label for="jam">Time</label>
                                 <input type="time" class="form-control" id="add_jam" name="add_jam">
                             </div>
                         </div>
@@ -247,9 +247,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="site">Site</label>
+                                <label for="site">Region</label>
                                 <select class="form-control" id="upload_site" name="upload_site">
-                                    <option value="" selected>--- Pilih Site ---</option>
+                                    <option value="" selected>Select Region</option>
                                     <?php foreach ($region as $reg) { ?>
                                         <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                     <?php } ?>
@@ -258,9 +258,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="stasiun">Stasiun</label>
+                                <label for="stasiun">Station</label>
                                 <select class="form-control" id="upload_stasiun" name="upload_stasiun">
-                                    <option value="" selected>--Pilih Stasiun--</option>
+                                    <option value="" selected>Select Station</option>
                                 </select>
                             </div>
                         </div>
@@ -268,7 +268,7 @@
                             <div class="form-group">
                                 <label for="instrument">Instrument</label>
                                 <select class="form-control" id="upload_instrument" name="upload_instrument">
-                                    <option value="" selected>--Pilih Instrument--</option>
+                                    <option value="" selected>Select Instrument</option>
                                 </select>
                             </div>
                         </div>
@@ -604,7 +604,7 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var result = JSON.parse(xhttp.responseText).result;
-                    var html = "<option>--- Pilih Stasiun ---</option>";
+                    var html = "<option>Select Station</option>";
                     var stasiun = document.getElementById('stasiun');
 
                     if (result.length > 0) {
@@ -613,7 +613,7 @@
                                 '</option>';
                         }
                     } else {
-                        html = '<option>--Tidak Ada Data--</option>';
+                        html = '<option>Tidak Ada Data</option>';
                     }
 
                     stasiun.innerHTML = html;
@@ -631,7 +631,7 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var result = JSON.parse(xhttp.responseText).result;
-                    var html = '<option value="">--- Pilih Stasiun ---</option>';
+                    var html = '<option value="">Select Instrument</option>';
                     var instrument = document.getElementById('instrument');
 
                     if (result.length > 0) {
@@ -640,7 +640,7 @@
                                 '</option>';
                         }
                     } else {
-                        html = '<option value="">--Tidak Ada Data--</option>';
+                        html = '<option value="">Tidak Ada Data</option>';
                     }
 
                     instrument.innerHTML = html;
@@ -700,7 +700,7 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var result = JSON.parse(xhttp.responseText).result;
-                    var html = "<option>--- Pilih Stasiun ---</option>";
+                    var html = "<option>Select Station</option>";
                     var stasiun = document.getElementById('add_stasiun');
 
                     if (result.length > 0) {
@@ -709,7 +709,7 @@
                                 '</option>';
                         }
                     } else {
-                        html = '<option>--Tidak Ada Data--</option>';
+                        html = '<option>Tidak Ada Data</option>';
                     }
 
                     stasiun.innerHTML = html;
@@ -727,7 +727,7 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var result = JSON.parse(xhttp.responseText).result;
-                    var html = '<option value="">--- Pilih Stasiun ---</option>';
+                    var html = '<option value="">Select Instrument</option>';
                     var instrument = document.getElementById('add_instrument');
 
                     if (result.length > 0) {
@@ -736,7 +736,7 @@
                                 '</option>';
                         }
                     } else {
-                        html = '<option value="">--Tidak Ada Data--</option>';
+                        html = '<option value="">Tidak Ada Data</option>';
                     }
 
                     instrument.innerHTML = html;
@@ -804,7 +804,7 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var result = JSON.parse(xhttp.responseText).result;
-                    var html = "<option>--- Pilih Stasiun ---</option>";
+                    var html = "<option>Select Station</option>";
                     var stasiun = document.getElementById('upload_stasiun');
 
                     if (result.length > 0) {
@@ -813,7 +813,7 @@
                                 '</option>';
                         }
                     } else {
-                        html = '<option>--Tidak Ada Data--</option>';
+                        html = '<option>Tidak Ada Data</option>';
                     }
 
                     stasiun.innerHTML = html;
@@ -831,7 +831,7 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var result = JSON.parse(xhttp.responseText).result;
-                    var html = '<option value="">--- Pilih Stasiun ---</option>';
+                    var html = '<option value="">Select Instrument</option>';
                     var instrument = document.getElementById('upload_instrument');
 
                     if (result.length > 0) {
@@ -840,7 +840,7 @@
                                 '</option>';
                         }
                     } else {
-                        html = '<option value="">--Tidak Ada Data--</option>';
+                        html = '<option value="">Tidak Ada Data</option>';
                     }
 
                     instrument.innerHTML = html;

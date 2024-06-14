@@ -2,7 +2,7 @@
 	<table class="table" id="pc-dt-simple">
 		<thead>
 			<tr>
-				<th>Site</th>
+				<th>Region Name</th>
 				<th>Nama Station</th>
 				<th>Tipe Station</th>
 				<th>Wilayah Sungai</th>

@@ -11,7 +11,8 @@ class M_sensor extends CI_Model
 		return $this->db->query("
 
 		SELECT t1.*,
-			(SELECT site_name FROM ms_regions WHERE id = {$site_id}) site_name
+			(SELECT site_name FROM ms_regions WHERE id = {$site_id}) site_name,
+			(SELECT COUNT(*) FROM tr_koefisien_sensor_non_vwp WHERE jenis_sensor_jadi = t1.id OR jenis_sensor_mentah = t1.id) total_data
 		FROM sys_jenis_sensor t1
 		INNER JOIN sys_jenis_sensor_region t2 ON t2.sys_jenis_sensor_id = t1.id
 		WHERE t2.ms_regions_id = {$site_id}

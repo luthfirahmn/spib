@@ -88,7 +88,10 @@
 										<tr>
 											<th>Region Name</th>
 											<th>Site Name</th>
-											<th>Foto</th>
+											<th>Site Location</th>
+											<th>Total Station</th>
+											<th>Total Instrument</th>
+											<th>Photo/Layout</th>
 											<?php if ($hak_akses->update == '1') { ?>
 												<th>Action</th>
 											<?php } ?>
@@ -99,6 +102,9 @@
 											<tr>
 												<td><?= $rec->nama_site ?></td>
 												<td><?= $rec->site_name ?></td>
+												<td><?= $rec->provinsi ?></td>
+												<td><?= $rec->total_stasiun ?></td>
+												<td><?= $rec->total_instrument ?></td>
 												<td>
 													<div class="d-inline-block align-middle" bis_skin_checked="1">
 														<img src="<?= base_url('assets/upload/sensor/' . $rec->foto) ?>" alt="image" style="width:50px" onClick="viewImage('<?= $rec->foto ?>')">

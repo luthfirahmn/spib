@@ -86,7 +86,7 @@
 								<div class="col-md-6">
 									<?php if ($hak_akses->insert == '1') { ?>
 										<a href="<?= base_url('InstrumentData/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
-											<i class="ti ti-plus"></i>Tambah Data
+											<i class="ti ti-plus"></i>Add Instrument
 										</a>
 									<?php } ?>
 								</div>
@@ -103,7 +103,7 @@
 								<table class="table" id="pc-dt-simple">
 									<thead>
 										<tr>
-											<th>Site</th>
+											<th>Region Name</th>
 											<th>Kode Instrument</th>
 											<th>Nama Instrument</th>
 											<th>Type Instrument</th>
@@ -121,8 +121,8 @@
 												<td><?= $rec->nama_instrument ?></td>
 												<td><?= $rec->name ?></td>
 												<td><?= $rec->nama_stasiun ?></td>
-												<td></td>
-												<td></td>
+												<td><?= $rec->data_terakhir_masuk ?></td>
+												<td><?= $rec->total_data ?></td>
 												<td>
 													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 														<div class="btn-group" role="group">

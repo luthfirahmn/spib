@@ -62,7 +62,7 @@
 							<form action="<?= base_url('Site/edit_proses') ?>" method="post" enctype="multipart/form-data">
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="form-label" for="site_name">Nama Site</label>
+										<label class="form-label" for="site_name">Region Name</label>
 										<input type="text" class="form-control" id="site_name" name="site_name" value="<?= $site->site_name ?>" required>
 										<input type="text" class="form-control" id="idsite" name="idsite" value="<?= $site->id ?>" hidden>
 									</div>

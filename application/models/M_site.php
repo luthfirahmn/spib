@@ -3,10 +3,13 @@
 
 	function site($ap_id_user)
 	{
-		return $this->db->query("SELECT a.`ms_users_id`, a.`ms_regions_id`, b.id, b.`site_name`, c.`site_name` AS nama_site, b.foto
+		return $this->db->query("SELECT a.`ms_users_id`, a.`ms_regions_id`, b.id, b.`site_name`, c.`site_name` AS nama_site, b.foto, t4.nama as provinsi,
+		(SELECT COUNT(*) FROM ms_stasiun WHERE ms_regions_id = c.id) total_stasiun,
+		(SELECT COUNT(*) FROM tr_instrument WHERE ms_regions_id = c.id) total_instrument
 	  FROM `ms_user_regions` a
 	  LEFT JOIN ms_sites b ON a.`ms_regions_id`=b.`ms_regions_id`
 	  LEFT JOIN `ms_regions` c ON a.`ms_regions_id`=c.id
+	  LEFT JOIN `wilayah` t4 ON t4.kode = b.provinsi
 	  WHERE a.ms_users_id='$ap_id_user'
 	  ORDER BY 
 		CASE 

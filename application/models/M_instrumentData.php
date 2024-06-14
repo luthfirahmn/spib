@@ -8,7 +8,7 @@ class M_instrumentData extends CI_Model
 
 	function instrument($ap_id_user)
 	{
-		return $this->db->query("
+		$instrument = $this->db->query("
 			SELECT a.*, b.site_name, c.name, d.nama_stasiun FROM `tr_instrument` a
 			INNER JOIN `ms_regions` b ON a.`ms_regions_id`=b.id
 			INNER JOIN `tr_instrument_type` c ON a.`tr_instrument_type_id`=c.id
@@ -22,6 +22,37 @@ class M_instrumentData extends CI_Model
 		END,
 		b.id ASC
 		")->result();
+
+		foreach ($instrument as $row) {
+			$db_site = $this->change_connection($row->ms_regions_id);
+
+			$total_data = $db_site->query("SELECT COUNT(*) total_data FROM data WHERE data.kode_instrument = '{$row->kode_instrument}'
+									")->row();
+			$row->total_data = $total_data->total_data;
+
+			$data_terkhir = $db_site->query("
+				SELECT tanggal, jam 
+				FROM data 
+				WHERE data.kode_instrument = '{$row->kode_instrument}' 
+				ORDER BY tanggal DESC, jam DESC 
+				LIMIT 1
+			")->row();
+
+			if ($data_terkhir) {
+				// Combine tanggal and jam into a single datetime string
+				$datetime_string = $data_terkhir->tanggal . ' ' . $data_terkhir->jam;
+
+				// Convert the datetime string into a DateTime object
+				$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $datetime_string);
+
+				// Format the DateTime object into the desired format
+				$row->data_terakhir_masuk = $datetime->format('d M Y H:i');
+			} else {
+				// Handle the case where no data was found
+				$row->data_terakhir_masuk = 'No data found';
+			}
+		}
+		return $instrument;
 	}
 
 
@@ -603,5 +634,48 @@ class M_instrumentData extends CI_Model
 		}
 
 		return $this->db->trans_status();
+	}
+
+	function change_connection($id_regions)
+	{
+
+		$query = $this->db->query("SELECT * FROM ms_regions WHERE id = '$id_regions'");
+		$result = $query->row();
+
+		$second_db_params = $this->switchDatabase($result->database_host, $result->database_username, $result->database_password, $result->database_name, $result->database_port);
+		$this->db2 = $this->load->database($second_db_params, TRUE);
+
+		if ($this->db2->initialize()) {
+			return $this->db2;
+		} else {
+			return false;
+		}
+	}
+
+	private function switchDatabase($hostname, $username, $password, $database, $port)
+	{
+		$params = array(
+			'hostname' => $hostname . ':' . $port,
+			'username' => $username,
+			'password' => $password,
+			'database' => $database,
+			// Other database configuration parameters
+			'dbdriver' => 'mysqli',
+			'dbprefix' => '',
+			'pconnect' => FALSE,
+			'db_debug' => (ENVIRONMENT !== 'production'),
+			'cache_on' => FALSE,
+			'cachedir' => '',
+			'char_set' => 'utf8',
+			'dbcollat' => 'utf8_general_ci',
+			'swap_pre' => '',
+			'encrypt'  => FALSE,
+			'compress' => FALSE,
+			'stricton' => FALSE,
+			'failover' => array(),
+			'save_queries' => TRUE
+		);
+
+		return $params;
 	}
 }

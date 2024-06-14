@@ -1,11 +1,13 @@
 <?php
-class M_dokumen extends CI_Model 
+class M_dokumen extends CI_Model
 {
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
 	}
 
-	function dokumen($ap_id_user, $site_id){ 
+	function dokumen($ap_id_user, $site_id)
+	{
 		return $this->db->query("
 		SELECT a.*, b.`site_name`, c.`lookup_name` AS jenis 
 		FROM `ms_documentations` a 
@@ -16,7 +18,8 @@ class M_dokumen extends CI_Model
 		")->result();
 	}
 
-	function dokumen_detail($id){ 
+	function dokumen_detail($id)
+	{
 		return $this->db->query("
 		SELECT a.*, b.`site_name`, c.`lookup_name` AS jenis 
 		FROM `ms_documentations` a 
@@ -26,16 +29,24 @@ class M_dokumen extends CI_Model
 		")->row();
 	}
 
-	function region($ms_users_id){ 
+	function region($ms_users_id)
+	{
 		return $this->db->query("
 		SELECT b.id, b.site_name 
 		FROM ms_user_regions a
 		LEFT JOIN `ms_regions` b ON a.`ms_regions_id`=b.`id`
 		WHERE ms_users_id='$ms_users_id'
+		ORDER BY 
+		CASE 
+			WHEN b.id = 5 THEN 0 
+			ELSE 1
+		END,
+		b.id ASC
 		")->result();
 	}
 
-	function kategori(){ 
+	function kategori()
+	{
 		$this->db->select('lookup_code, lookup_name');
 		$this->db->from('ms_lookup_values');
 		$query = $this->db->get()->result();
@@ -43,32 +54,34 @@ class M_dokumen extends CI_Model
 		return $this->db->get_where('ms_lookup_values', array('lookup_config' => 'DOCUMENT_CATEGORY'))->result();
 	}
 
-	function simpan($body){
+	function simpan($body)
+	{
 		$this->db->trans_begin();
 		$this->db->insert('ms_documentations', $body);
 
-		$doc=$this->db->query('select max(id) as id from ms_documentations')->row();
-		$ms_documentations_id=$doc->id;
+		$doc = $this->db->query('select max(id) as id from ms_documentations')->row();
+		$ms_documentations_id = $doc->id;
 
 		$this->db->query("INSERT INTO `ms_documentation_files`(ms_documentations_id, `name`) SELECT '$ms_documentations_id', `name` FROM files_temp");
-		
-		if ($this->db->trans_status() === FALSE){
+
+		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
-		}else{
+		} else {
 			$this->db->trans_commit();
 		}
 
 		return $this->db->trans_status();
 	}
 
-	function hapus($id){
+	function hapus($id)
+	{
 		$this->db->trans_begin();
 		$this->db->delete('ms_documentation_files', array('ms_documentations_id' => $id));
 		$this->db->delete('ms_documentations', array('id' => $id));
-		
-		if ($this->db->trans_status() === FALSE){
+
+		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
-		}else{
+		} else {
 			$this->db->trans_commit();
 		}
 
@@ -110,7 +123,7 @@ class M_dokumen extends CI_Model
 	// 	return $query;
 	// }
 
-	
+
 
 	// function detail_user($id){
 	// 	return $this->db->query("
@@ -133,10 +146,10 @@ class M_dokumen extends CI_Model
 	// 			'ms_users_id' 	=> $ms_users_id,
 	// 			'ms_regions_id' => $site[$i]
 	// 		);
-			
+
 	// 		$this->db->insert('ms_user_regions', $detail);
 	// 	}
-		
+
 	// 	if ($this->db->trans_status() === FALSE){
 	// 		$this->db->trans_rollback();
 	// 	}else{
@@ -146,7 +159,7 @@ class M_dokumen extends CI_Model
 	// 	return $this->db->trans_status();
 	// }
 
-	
+
 
 	// function menu($roles_id){
 	// 	return $this->db->query("

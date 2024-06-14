@@ -62,7 +62,7 @@
 							<form action="<?= base_url('Site/add_proses') ?>" method="post" enctype="multipart/form-data">
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="form-label" for="site_name">Nama Site</label>
+										<label class="form-label" for="site_name">Region Name</label>
 										<input type="text" class="form-control" id="site_name" name="site_name" required>
 
 										<input type="text" class="form-control" id="ms_regions_id" name="ms_regions_id" value="<?= $ms_regions_id ?>" hidden>

@@ -64,7 +64,7 @@
 						<div class="card-body table-border-style">
 							<?php if ($hak_akses->insert == '1') { ?>
 								<a href="<?= base_url('Sensor/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
-									<i class="ti ti-plus"></i>Tambah Data
+									<i class="ti ti-plus"></i>Add Data
 								</a>
 							<?php } ?>
 
@@ -74,8 +74,8 @@
                                     <label class="form-label" for="keyword">Keyword:</label>
                                     <input type="text" class="form-control" id="keyword" name="keyword">
                                 </div> -->
-								<div class="form-group col-md-4">
-									<label class="form-label" for="ms_regions_id">Site:</label>
+								<div class="form-group col-md-3">
+									<label class="form-label" for="ms_regions_id">Select Region:</label>
 									<select class="form-control" name="ms_regions_id" id="ms_regions_id">
 										<?php foreach ($region as $reg) { ?>
 											<option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>

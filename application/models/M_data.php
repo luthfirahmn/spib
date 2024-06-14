@@ -277,7 +277,7 @@ class M_data extends CI_Model
 						$unit_sensor = $row->unit_sensor != '-' ? $row->unit_sensor : '';
 						$jenis_sensor_head = 'P - ' . $row->jenis_sensor . ' (' . $unit_sensor . ')';
 						// $jenis_sensor_head = $row->jenis_sensor;
-						$data[$key][$jenis_sensor_head] = $row->val_sensor;
+						$data[$key][$jenis_sensor_head] = number_format($row->val_sensor, 3);
 					}
 
 					// if ($download) {
@@ -460,7 +460,7 @@ class M_data extends CI_Model
 						$unit_sensor = $row->unit_sensor != '-' ? $row->unit_sensor : '';
 						$jenis_sensor_head = 'P - ' . $row->jenis_sensor . ' (' . $unit_sensor . ')';
 						// $jenis_sensor_head = $row->jenis_sensor;
-						$data[$key][$jenis_sensor_head] = $row->avg_val_sensor;
+						$data[$key][$jenis_sensor_head] = number_format($row->avg_val_sensor, 3);
 					}
 
 

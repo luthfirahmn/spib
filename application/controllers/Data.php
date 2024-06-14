@@ -85,7 +85,7 @@ class Data extends MY_Controller
 		$db_site = $this->change_connection($site_id);
 
 		// Ambil data dari model berdasarkan parameter yang diberikan
-		$data = $this->M_data->list($db_site, $site_id, $instrument_id, $keterangan, $tanggal, $waktu, 0, 10, $download = 1);
+		$data = $this->M_data->list($db_site, $site_id, $instrument_id, $keterangan, $tanggal, $waktu, 0, 32, $download = 1);
 
 		// Load library PHPExcel
 		$this->load->library('PHPExcel');

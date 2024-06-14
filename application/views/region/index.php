@@ -61,10 +61,11 @@
 								<table class="table" id="pc-dt-simple">
 									<thead>
 										<tr>
-											<th>Nama Site</th>
+											<th>Region Name</th>
 											<th>Host</th>
-											<th>User Db</th>
-											<th>Qty User</th>
+											<th>Database Name</th>
+											<th>Database Username</th>
+											<th>Total User</th>
 											<th>Action</th>
 										</tr>
 									</thead>
@@ -73,6 +74,7 @@
 											<tr>
 												<td><?= $rec->site_name ?></td>
 												<td><?= $rec->database_host ?></td>
+												<td><?= $rec->database_name ?></td>
 												<td><?= $rec->database_username ?></td>
 												<td><?= $rec->qty_user ?></td>
 												<td>

@@ -2,10 +2,11 @@
 	<table class="table" id="pc-dt-simple">
 		<thead>
 			<tr>
-				<th>Site</th>
-				<th>Jenis Sensor</th>
-				<th>Jumlah Data</th>
+				<th>Region Name</th>
+				<th>Sensor Type</th>
+				<th>Variable Name</th>
 				<th>Unit</th>
+				<th>Jumlah Data</th>
 				<th>Icon</th>
 				<th>Action</th>
 			</tr>
@@ -15,8 +16,9 @@
 				<tr>
 					<td><?= $rec->site_name ?></td>
 					<td><?= $rec->jenis_sensor ?></td>
-					<td></td>
+					<td><?= $rec->var_name ?></td>
 					<td><?= $rec->unit_sensor ?></td>
+					<td><?= $rec->total_data ?></td>
 					<td><img src="<?= base_url('assets/upload/sensor/') . $rec->icon ?>" widht="30" height="30"></td>
 					<td>
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">

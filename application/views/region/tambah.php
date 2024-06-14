@@ -69,7 +69,7 @@
 								<div class="col-md-12">
 									<form action="<?= base_url('Region/tambah_proses') ?>" method="post" enctype="multipart/form-data">
 										<div class="row mb-3">
-											<label for="site_name" class="col-sm-3 col-form-label">Nama Site</label>
+											<label for="site_name" class="col-sm-3 col-form-label">Region Name</label>
 											<div class="col-sm-9">
 												<input type="text" class="form-control" id="site_name" name="site_name" required />
 											</div>
