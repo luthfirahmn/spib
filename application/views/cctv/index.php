@@ -23,6 +23,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.7/sweetalert2.min.js"></script>
 </head>
 
+<style>
+    .btn-smaller {
+        font-size: 11px;
+    }
+</style>
+
 <body>
     <div class="loader-bg">
         <div class="loader-track">
@@ -61,21 +67,28 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card">
-                        <div class="card-header d-flex align-items-center px-4 py-1">
+                        <div class="card-header align-items-center d-flex px-4 py-1">
                             <h5>CCTV</h5>
-                            <div class="ms-auto d-flex align-items-center">
-                                <div class="form-group me-2">
-                                    <label class="form-label" for="ms_regions_id"></label>
-                                    <select class="form-control" name="ms_regions_id" id="ms_regions_id">
+                            <div class="ms-auto d-flex  align-items-center mt-2">
+                                <div class="form-group me-2 d-flex  align-items-center">
+                                    <label class="form-label w-75" for="ms_regions_id">Select Region</label>
+                                    <select class="form-control  me-2" name="ms_regions_id" id="ms_regions_id">
                                         <?php foreach ($region as $reg) { ?>
                                             <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                         <?php } ?>
                                     </select>
+                                    <select class="form-control  me-2" id="updateInterval">
+                                        <option disabled>Interval Update Capture</option>
+                                        <option value="1" selected>1 Minute</option>
+                                        <option value="5">5 Minute</option>
+                                        <option value="10">10 Minute</option>
+                                        <option value="30">30 Minute</option>
+                                        <option value="60">60 Minute</option>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-primary d-inline-flex w-75" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                                        <i class="ti ti-plus"></i>Add CCTV
+                                    </button>
                                 </div>
-                                <button type="button" class="btn btn-outline-primary d-inline-flex" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                                    <i class="ti ti-plus"></i>Tambah
-                                </button>
-
 
                             </div>
 
@@ -94,7 +107,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTambahLabel">Add Data CCTV</h5>
+                    <h5 class="modal-title" id="modalTambahLabel">Add CCTV</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -104,18 +117,57 @@
                                 <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                             <?php } ?>
                         </select>
-                        <input type="text" class="form-control mb-3" name="lokasi" id="lokasi" placeholder="Lokasi">
-                        <input type="url" class="form-control" name="url" id="url" placeholder="URL">
+                        <input type="text" class="form-control mb-3" name="lokasi" id="lokasi" placeholder="CCTV Name">
+                        <input type="url" class="form-control mb-3" name="url" id="url" placeholder="URL">
+                        <input type="url_live" class="form-control" name="url_live" id="url_live" placeholder="URL Live View">
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary" id="add_data">Simpan</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="modalEdit" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditLabel">Edit CCTV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formcctvedit">
+                        <input type="hidden" name="id_edit" id="id_edit">
+                        <input type="text" class="form-control mb-3" name="lokasi_edit" id="lokasi_edit" placeholder="CCTV Name">
+                        <input type="url" class="form-control mb-3" name="url_edit" id="url_edit" placeholder="URL">
+                        <input type="url_live" class="form-control" name="url_live_edit" id="url_live_edit" placeholder="URL Live View">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="edit_data">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle"></h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div style="width: 100%; height:100%;">
+                        <embed id="modalImage" width="460" height="280" type="image/jpeg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?php $this->load->view('include/footer.php'); ?>
 
@@ -138,11 +190,22 @@
     $(document).ready(function() {
         var region_id = $("#ms_regions_id").val();
         getData(region_id);
+        setIntervals(region_id)
+
     });
+
+    function setIntervals(region_id) {
+        var updateInterval = $("#updateInterval").val() * 60000;
+        setInterval(function() {
+            getData(region_id);
+        }, updateInterval);
+    }
+
 
     $("#ms_regions_id").on("change", function() {
         var region_id = $(this).val()
         getData(region_id);
+        setIntervals(region_id)
     })
 
     function resetForm(form) {
@@ -155,10 +218,6 @@
     $('#btnTambah').click(function() {
         $('#modalTambah').modal('show');
         $("#formcctv")[0].reset()
-    });
-
-    $('#btnEdit').click(function() {
-        $('#modalEdit').modal('show');
     });
 
 
@@ -180,6 +239,35 @@
                     getData(region_id);
 
                     $('#modalTambah').modal('hide');
+                }
+
+            },
+            error: function(xhr, status, error) {
+
+                toastr.error(response.error)
+            }
+        });
+    });
+
+
+    $("#edit_data").click(function() {
+        var formData = $("#formcctvedit").serialize();
+
+        $.ajax({
+            type: "POST",
+            url: "<?= base_url("CCTV/edit_data") ?>",
+            dataType: "json",
+            data: formData,
+            success: function(response) {
+                if (response.error) {
+                    toastr.error(response.message)
+                } else {
+
+                    toastr.success(response.message)
+                    var region_id = $("#ms_regions_id").val();
+                    getData(region_id);
+
+                    $('#modalEdit').modal('hide');
                 }
 
             },
@@ -214,7 +302,10 @@
 							<p>` + item.lokasi + `</p>
 
 							<div class="ms-auto">
-								<button type="button" class="btn btn-sm btn-danger" onclick="deleteData(` + item.id + `)">Delete</button>
+								<button type="button" class="btn btn-sm btn-info btn-smaller" onclick="edit(` + item.id + `,'` + item.lokasi + `','` + item.url + `','` + item.url_live + `')">Edit</button>
+								<button type="button" class="btn btn-sm btn-primary btn-smaller" onclick="preview('` + item.url + `','` + item.lokasi + `')">Preview</button>
+								<button type="button" class="btn btn-sm btn-success btn-smaller" onclick="redirect('` + item.url_live + `')">Live View</button>
+								<button type="button" class="btn btn-sm btn-danger btn-smaller" onclick="deleteData(` + item.id + `)">Delete</button>
 							</div>
 						</div>
                             <embed class="img-cctv"  src="` +
@@ -251,6 +342,29 @@
 						</div>`;
             $("#listCCTV").html(dataHtml)
         }
+    }
+
+
+    function edit(id, lokasi, urls, url_live) {
+        $('#modalEdit').modal('show');
+        $('#id_edit').val(id);
+        $('#lokasi_edit').val(lokasi);
+        $('#url_edit').val(urls);
+        $('#url_live_edit').val(url_live);
+    }
+
+
+    function preview(url, lokasi) {
+        $('#modalImage').attr('src', url);
+        $('#modalTitle').html(lokasi);
+
+        $('#imageModal').modal('show');
+
+    }
+
+
+    function redirect(urls) {
+        window.open(urls, '_blank');
     }
 
     function deleteData(id) {

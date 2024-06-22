@@ -45,9 +45,10 @@ class CCTV extends MY_Controller
 		$this->load->library('form_validation');
 
 		// Set validation rules
-		$this->form_validation->set_rules('add_regions_id', 'Site', 'required');
+		$this->form_validation->set_rules('add_regions_id', 'Region', 'required');
 		$this->form_validation->set_rules('lokasi', 'Lokasi', 'required');
 		$this->form_validation->set_rules('url', 'URL', 'trim|required');
+		$this->form_validation->set_rules('url_live', 'URL Live', 'trim|required');
 
 		// Run validation
 		if ($this->form_validation->run() == FALSE) {
@@ -58,13 +59,47 @@ class CCTV extends MY_Controller
 			$data = array(
 				'ms_regions_id' => $this->input->post('add_regions_id'),
 				'lokasi' => $this->input->post('lokasi'),
-				'url' => $this->input->post('url')
+				'url' => $this->input->post('url'),
+				'url_live' => $this->input->post('url_live'),
 			);
 			$inserted = $this->db->insert("ms_cctv", $data);
 			if ($inserted) {
 				echo json_encode(array('error' => false, 'message' => 'Data cctv berhasil ditambahkan'));
 			} else {
 				echo json_encode(array('error' => true, 'message' => 'Gagal menambahkan data cctv'));
+			}
+		}
+	}
+
+
+
+	public function edit_data()
+	{
+		// Load form validation library
+		$this->load->library('form_validation');
+
+		// Set validation rules
+		$this->form_validation->set_rules('lokasi_edit', 'Lokasi', 'required');
+		$this->form_validation->set_rules('url_edit', 'URL', 'trim|required');
+		$this->form_validation->set_rules('url_live_edit', 'URL Live', 'trim|required');
+
+		// Run validation
+		if ($this->form_validation->run() == FALSE) {
+			// Validation failed, return errors
+			$errors = validation_errors();
+			echo json_encode(array('error' => true, 'message' => $errors));
+		} else {
+			$data = array(
+				'lokasi' => $this->input->post('lokasi_edit'),
+				'url' => $this->input->post('url_edit'),
+				'url_live' => $this->input->post('url_live_edit'),
+			);
+			$this->db->where("id", $this->input->post('id_edit'));
+			$inserted = $this->db->update("ms_cctv", $data);
+			if ($inserted) {
+				echo json_encode(array('error' => false, 'message' => 'Data cctv berhasil diupdate'));
+			} else {
+				echo json_encode(array('error' => true, 'message' => 'Gagal mengupdate data cctv'));
 			}
 		}
 	}

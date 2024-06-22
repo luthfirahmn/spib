@@ -49,8 +49,30 @@ class Region extends MY_Controller
 			'logo_site'			=> $data['file_name']
 		);
 
+
+
 		$status = $this->db->insert('ms_regions', $body);
 		if ($status) {
+			$region_id = $this->db->insert_id();
+
+			$check_user = $this->db->query(
+				"SELECT  t1.id
+				FROM ms_users t1 
+				WHERE t1.ms_roles_id = (SELECT id FROM ms_roles WHERE is_superadmin = 1 LIMIT 1) 
+				AND t1.id NOT IN (SELECT ms_users_id FROM ms_user_regions WHERE ms_regions_id = {$region_id} AND ms_users_id = t1.id)"
+			)->result();
+
+			if ($check_user) {
+				foreach ($check_user as $row) {
+					$data_insert_user = array(
+						'ms_users_id' => $row->id,
+						'ms_regions_id' => $region_id,
+					);
+					$this->db->insert('ms_user_regions', $data_insert_user);
+				}
+			}
+
+
 			$this->session->set_flashdata('success', 'Sukses!');
 		} else {
 			$this->session->set_flashdata('warning', 'Gagal!');
@@ -82,6 +104,24 @@ class Region extends MY_Controller
 		$this->db->where('id', $id);
 		$status = $this->db->update('ms_regions', $body);
 		if ($status) {
+
+			$check_user = $this->db->query(
+				"SELECT  t1.id
+				FROM ms_users t1 
+				WHERE t1.ms_roles_id = (SELECT id FROM ms_roles WHERE is_superadmin = 1 LIMIT 1) 
+				AND t1.id NOT IN (SELECT ms_users_id FROM ms_user_regions WHERE ms_regions_id = {$id} AND ms_users_id = t1.id)"
+			)->result();
+
+			if ($check_user) {
+				foreach ($check_user as $row) {
+					$data_insert_user = array(
+						'ms_users_id' => $row->id,
+						'ms_regions_id' => $id,
+					);
+					$this->db->insert('ms_user_regions', $data_insert_user);
+				}
+			}
+
 			$this->session->set_flashdata('success', 'Sukses!');
 		} else {
 			$this->session->set_flashdata('warning', 'Gagal!');

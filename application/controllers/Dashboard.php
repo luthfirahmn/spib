@@ -88,7 +88,6 @@ class Dashboard extends MY_Controller
 		$this->db->where('ms_stasiun.ms_regions_id', $region_id); // Add region filter
 		$this->db->order_by("FIELD(ms_stasiun.stasiun_type, 'KLIMATOLOGI', 'HIDROLOGI', 'EWS', 'GEOLOGI', 'SEISMOLOGI')");
 		$query = $this->db->get();
-
 		$result = $query->result();
 		$stations = array();
 		foreach ($result as $row) {

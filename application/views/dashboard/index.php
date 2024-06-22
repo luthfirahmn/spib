@@ -127,7 +127,7 @@
                     </h3>
                 </div>
                 <div class="form-group d-flex align-items-center mb-2">
-                    <label class="form-label me-2 mb-0 w-75">Select Region</label>
+                    <label class="form-label  mb-0 w-75 ">Select Region</label>
                     <select class="form-control" name="ms_regions_id" id="ms_regions_id">
                         <?php
                         foreach ($region as $reg) { ?>
