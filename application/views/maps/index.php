@@ -110,7 +110,7 @@
                 <div class="col-7">
                     <span class="fs-5">STA. <b><?= $stasiun->nama_stasiun ?><br>
                     <?= $stasiun->site_name ?></b><br>
-                    <a href="https://www.google.com/maps/search/?api=1&query=<?= $stasiun->latitude ?>,<?= $stasiun->longitude ?>" target="_blank" class="fs-6"><?= $stasiun->longitude . " " . $stasiun->latitude ?></a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=<?= $stasiun->latitude ?>,<?= $stasiun->longitude ?>" target="_blank" class="fs-6"><?= number_format($stasiun->longitude, 6) . " " . number_format($stasiun->latitude, 6) ?></a>
                     </span>
                 </div>
             </div>

@@ -80,21 +80,37 @@ function piezometer($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tam
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "tekanan_air_kgcm2":
-                $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0']))) * 10.0003;
+                $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
+                $data_tambahan['tekanan_air_kgcm2'] = 0;
+                $data_tambahan['tekanan_air_kgcm2'] += $hitung;
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
 
             case "tekanan_air_kpa":
-                $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0']))) * 0.1022;
+                $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
+                $data_tambahan['tekanan_air_kpa'] = 0;
+                $data_tambahan['tekanan_air_kpa'] += $hitung;
+
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
 
             case "tekanan_air_mh2o":
-                $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0']))) * 0.1022;
+                // $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0']))) * 0.1022;
+                if (isset($data_tambahan['tekanan_air_kpa'])) {
+                    $hitung = $data_tambahan['tekanan_air_kpa'] * 0.1022;
+                } else if (isset($data_tambahan['tekanan_air_kgcm2'])) {
+                    $hitung = $data_tambahan['tekanan_air_kgcm2'] * 10.0003;
+                } else {
+                    $hitung = 0;
+                }
+
+                $data_tambahan['tekanan_air_mh2o'] = 0;
+                $data_tambahan['tekanan_air_mh2o'] += $hitung;
+
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             case "level_freatik_air":
-                $hitung = (float)$koefisien['elevasi_sensor'] - (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0']))) * 0.1022;
+                $hitung = (float)$koefisien['elevasi_sensor'] +  $data_tambahan['tekanan_air_mh2o'];
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             default:
@@ -161,28 +177,52 @@ function pressurecell($data_jadi, $data_mentah, $koefisien, $data_type, &$data_t
         switch ($data_jadi->kode_sensor_jadi) {
             case "tekanan_tanah_kgcm2":
                 $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
-                $data_tambahan['tekanan_tanah_kgcm2'] = 0;
-                $data_tambahan['tekanan_tanah_kgcm2'] += $hitung;
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             case "tekanan_tanah_mpa":
-                $data_tambahan['tekanan_tanah_kgcm2'] = 0;
-                $hitung = $data_tambahan['tekanan_tanah_kgcm2'] * 0.098;
+                $init = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
+                $hitung = $init * 0.098;
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             case "tekanan_air_mh2o":
-                $hitung = $data_tambahan['tekanan_tanah_kgcm2'] * 10.0003;
-                $data_tambahan['tekanan_air_mh2o'] = 0;
-                $data_tambahan['tekanan_air_mh2o'] += $hitung;
+                $init = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
+                $hitung = $init * 10.0003;
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             case "level_freatik_air":
-                $hitung = (float)$koefisien['elevasi_sensor'] + $data_tambahan['tekanan_air_mh2o'];
+                $hitung = (float)$koefisien['elevasi_sensor'] + (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0']))) * 10.0003;
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             default:
                 throw new Exception();
         }
+
+
+        // switch ($data_jadi->kode_sensor_jadi) {
+        //     case "tekanan_tanah_kgcm2":
+        //         $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
+        //         $data_tambahan['tekanan_tanah_kgcm2'] = 0;
+        //         $data_tambahan['tekanan_tanah_kgcm2'] += $hitung;
+        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
+        //         break;
+        //     case "tekanan_tanah_mpa":
+        //         $data_tambahan['tekanan_tanah_kgcm2'] = 0;
+        //         $hitung = $data_tambahan['tekanan_tanah_kgcm2'] * 0.098;
+        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
+        //         break;
+        //     case "tekanan_air_mh2o":
+        //         $hitung = $data_tambahan['tekanan_tanah_kgcm2'] * 10.0003;
+        //         $data_tambahan['tekanan_air_mh2o'] = 0;
+        //         $data_tambahan['tekanan_air_mh2o'] += $hitung;
+        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
+        //         break;
+        //     case "level_freatik_air":
+        //         $hitung = (float)$koefisien['elevasi_sensor'] + $data_tambahan['tekanan_air_mh2o'];
+        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
+        //         break;
+        //     default:
+        //         throw new Exception();
+        // }
     } catch (Exception $e) {
         return false;
     }

@@ -219,11 +219,11 @@ class M_data extends CI_Model
 		if ($waktu == 'jam') {
 			// $start_datetime = $tanggal . ' 07:00:00';
 			// $end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 07:00:00'));
-			$start_datetime = $tanggal . ' 00:00:00';
+			$start_datetime = $tanggal . ' 01:00:00';
 			$end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 00:00:00'));
 
 
-			$ddt = "AND CONCAT(t1.tanggal, ' ', t1.jam) >= '$start_datetime' AND CONCAT(t1.tanggal, ' ', t1.jam) < '$end_datetime'";
+			$ddt = "AND CONCAT(t1.tanggal, ' ', t1.jam) >= '$start_datetime' AND CONCAT(t1.tanggal, ' ', t1.jam) <= '$end_datetime'";
 
 
 			if (!empty($keterangan)) {
