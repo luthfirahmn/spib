@@ -380,14 +380,11 @@ class Data extends MY_Controller
 
 	public function download_template($id_instrument)
 	{
-		$query = $this->db->query("SELECT 
-										t1.jenis_sensor
-									FROM sys_jenis_sensor t1
-									WHERE t1.id IN (SELECT t2.jenis_sensor_mentah
-													FROM tr_koefisien_sensor_non_vwp  t2
-													WHERE t2.jenis_sensor_mentah = t1.id
-													AND t2.tr_instrument_id = '$id_instrument')
-									ORDER BY t1.id ASC
+		$query = $this->db->query("  SELECT t1.jenis_sensor
+										FROM sys_jenis_sensor t1
+										JOIN tr_koefisien_sensor_non_vwp t2 ON t2.jenis_sensor_mentah = t1.id
+										WHERE t2.tr_instrument_id = '$id_instrument'
+										ORDER BY t2.id ASC
 									");
 		$this->load->library('PHPExcel');
 

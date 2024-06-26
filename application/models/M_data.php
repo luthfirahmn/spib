@@ -76,6 +76,7 @@ class M_data extends CI_Model
 						LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
 						WHERE t2.data_id = '" . $value['id'] . "'
 						AND t2.data_jadi = ''
+						ORDER BY t2.id ASC
 					")->result();
 					// $data_mentah_arr = [];
 					foreach ($data_mentah as $row) {
@@ -91,6 +92,7 @@ class M_data extends CI_Model
 					LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
 					WHERE t2.data_id = '" . $value['id'] . "'
 					AND t2.data_jadi != ''
+					ORDER BY t2.id ASC
 				")->result_array();
 
 					foreach ($sensor as $row) {
@@ -156,6 +158,7 @@ class M_data extends CI_Model
 						LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
 						WHERE t2.data_id = '" . $value['id'] . "'
 						AND t2.data_jadi = ''
+						ORDER BY t2.id ASC
 					")->result();
 					// $data_mentah_arr = [];
 					foreach ($data_mentah as $row) {
@@ -172,6 +175,7 @@ class M_data extends CI_Model
 					LEFT JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
 					WHERE t2.data_id = '" . $value['id'] . "'
 					AND t2.data_jadi != ''
+					ORDER BY t2.id ASC
 				")->result_array();
 
 					foreach ($sensor as $row) {
@@ -565,15 +569,13 @@ class M_data extends CI_Model
 	function get_sensor_by_instrument_id($instrument_id)
 	{
 		$query = $this->db->query("SELECT 
-										t1.id,
-										t1.jenis_sensor,
-										t1.var_name
-									FROM sys_jenis_sensor t1
-									WHERE t1.id IN (SELECT t2.jenis_sensor_mentah
-													FROM tr_koefisien_sensor_non_vwp  t2
-													WHERE t2.jenis_sensor_mentah = t1.id
-													AND t2.tr_instrument_id = '$instrument_id')
-									ORDER BY t1.id ASC
+        t1.id,
+        t1.jenis_sensor,
+        t1.var_name
+    FROM sys_jenis_sensor t1
+    JOIN tr_koefisien_sensor_non_vwp t2 ON t2.jenis_sensor_mentah = t1.id
+    WHERE t2.tr_instrument_id = '$instrument_id'
+    ORDER BY t2.id ASC
 								");
 		return json_encode(array('result' => $query->result()));
 	}

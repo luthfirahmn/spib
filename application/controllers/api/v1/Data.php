@@ -112,6 +112,7 @@ class Data extends REST_Controller
 										 INNER JOIN  sys_jenis_sensor t2 ON t1.jenis_sensor_jadi = t2.id
 										 WHERE t1.tr_instrument_id = {$get_instrument->id}
 										 AND t1.jenis_sensor_jadi != 0
+                                         ORDER BY t1.id ASC
 										 ");
             $data_jadi = $query->result();
 

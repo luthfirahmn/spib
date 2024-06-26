@@ -54,13 +54,12 @@ class Grafik extends MY_Controller
             }
             $grouped_data[$data['jenis_sensor']]['data'][] = array(
                 'val_sensor' => $data['val_sensor'],
-                'jam' => $data['jam']
+                'jam' => substr($data['jam'], 0, 5)
             );
         }
 
         // Ubah array menjadi indeks numerik
         $grouped_data = array_values($grouped_data);
-
         // Outputkan data yang telah dikelompokkan
         echo json_encode($grouped_data);
     }
@@ -128,7 +127,6 @@ class Grafik extends MY_Controller
             }
 
             if ($flag == 'by_elevasi') {
-
                 $kondisi = "AND t1.id IN (SELECT tr_instrument_id FROM tr_instrument_instalasi WHERE elevasi_sensor = {$elevasi})";
             } else {
                 $kondisi = "";
@@ -140,31 +138,58 @@ class Grafik extends MY_Controller
             AND  t1.ms_stasiun_id = {$stasiun}
             $kondisi
             ");
-            $result = $query->result();
-            if (!$result) {
+            $results = $query->result();
+            if (!$results) {
                 throw new Exception('Tidak ada data didalam stasiun tersebut, pilih stasiun lain');
             }
-            // $combinedResults = array();
-            // foreach ($result as $row) {
-            //     $nama_instrument = $row->nama_instrument;
-            //     // Cek apakah string memiliki format "SMR-x.x"
-            //     if (preg_match('/^SMR-(\d+\.\d+)$/', $nama_instrument, $matches)) {
-            //         $combinedName = 'SMR-' . $matches[1];
-            //         // Simpan ke dalam array dengan key yang unik
-            //         $combinedResults[$combinedName] = array(
-            //             'id' => $row->id,
-            //             'kode_instrument' => $row->kode_instrument,
-            //             'nama_instrument' => $combinedName
-            //         );
-            //     }
-            // }
+            $grouped_results = [];
 
-            // // Ubah array asosiatif menjadi array biasa
-            // $combinedResults = array_values($combinedResults);
-            // pre($combinedResults);
-            echo json_encode(['error' => false, 'data' => $result]);
+            foreach ($results as $row) {
+                $nama_instrument = $row->nama_instrument;
+
+                if (preg_match('/^SMR-(\d+)\.\d+$/', $nama_instrument, $matches)) {
+                    $group_name = "SMR-{$matches[1]}";
+                } else {
+                    $group_name = $nama_instrument;
+                }
+
+                // Menambahkan ke grup yang sesuai
+                if (!isset($grouped_results[$group_name])) {
+                    $grouped_results[$group_name] = [];
+                }
+                $grouped_results[$group_name][] = [
+                    'id' => $row->id,
+                    'kode_instrument' => $row->kode_instrument,
+                    'nama_instrument' => $nama_instrument
+                ];
+            }
+
+
+            $processed_results = [];
+            foreach ($grouped_results as $group_name => $group_items) {
+                if (count($group_items) === 1) {
+                    $processed_results[] = $group_items[0];
+                } else {
+                    // Jika grup memiliki lebih dari satu item, tambahkan nama grup saja
+                    $processed_results[] =  [
+                        'id' => $group_name,
+                        'kode_instrument' => $group_name,
+                        'nama_instrument' => $group_name
+                    ];
+                }
+            }
+            echo json_encode(['error' => false, 'data' => $processed_results]);
         } catch (Exception $e) {
             echo json_encode(['error' => true, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    function getGroupKey($kode_instrument)
+    {
+        if (strpos($kode_instrument, 'SMR-') === 0) {
+            return substr($kode_instrument, 0, 5);
+        } else {
+            return substr($kode_instrument, 0, 4);
         }
     }
 
@@ -173,6 +198,12 @@ class Grafik extends MY_Controller
         try {
             $instrument_id = $_GET['instrument_id'];
 
+            if (strpos($instrument_id, 'SMR') !== false) {
+                $inst = $instrument_id . '.';
+                $con = "t2.nama_instrument LIKE '{$inst}%'";
+            } else {
+                $con = "t2.id = {$instrument_id}";
+            }
             $query = $this->db->query("
             SELECT tt1.id,tt1.jenis_sensor,tt1.unit_sensor
                 FROM sys_jenis_sensor tt1
@@ -180,7 +211,7 @@ class Grafik extends MY_Controller
                 SELECT t1.jenis_sensor_jadi
                 FROM tr_koefisien_sensor_non_vwp t1
                 INNER JOIN tr_instrument t2 ON t2.id = t1.tr_instrument_id
-                WHERE t2.id = {$instrument_id}
+                WHERE {$con}
                 )
             ");
             $result = $query->result();
@@ -230,6 +261,13 @@ class Grafik extends MY_Controller
 
             $db_site = $this->change_connection($ms_regions_id);
 
+            if (strpos($instrument_id, 'SMR') !== false) {
+                $inst = $instrument_id . '.';
+                $con = "t1.nama_instrument LIKE '{$inst}%'";
+            } else {
+                $con = "t1.id = {$instrument_id}";
+            }
+
             // $select_data_str = implode(',', $select_data);
             $query = $this->db->query("
                 SELECT t1.kode_instrument,t1.nama_instrument, t3.id as sensor_id, t3.jenis_sensor, t3.unit_sensor
@@ -239,14 +277,18 @@ class Grafik extends MY_Controller
                 WHERE t1.ms_regions_id = {$ms_regions_id}
                 AND t2.jenis_sensor_jadi = ($select_data)
                 AND t1.ms_stasiun_id = {$stasiun}
-                AND t1.id = {$instrument_id}
+                AND {$con}
+                ORDER BY t1.id
             ");
-            $result = $query->row();
+            $results = $query->result();
 
             $row_data = [];
-            if ($result) {
-                $result->data_type = 'data_utama';
-                $row_data[] = $result;
+
+            foreach ($results as $result) {
+                if ($result) {
+                    $result->data_type = 'data_utama';
+                    $row_data[] = $result;
+                }
             }
 
             if (!empty($data_tambah)) {
@@ -269,14 +311,14 @@ class Grafik extends MY_Controller
                         }
 
                         $query = $this->db->query("
-                        SELECT t1.kode_instrument,t1.nama_instrument, t3.id as sensor_id, t3.jenis_sensor, t3.unit_sensor
-                        FROM tr_instrument t1
-                        INNER JOIN tr_koefisien_sensor_non_vwp t2 ON t2.tr_instrument_id = t1.id
-                        INNER JOIN sys_jenis_sensor t3 ON t2.jenis_sensor_jadi = t3.id
-                        WHERE t1.ms_regions_id = {$ms_regions_id}
-                        AND t3.jenis_sensor  = '{$row_data_tambah}'
-                        AND t1.kode_instrument LIKE '%{$stasiun_dt_tambah}%'
-                        ");
+                    SELECT t1.kode_instrument,t1.nama_instrument, t3.id as sensor_id, t3.jenis_sensor, t3.unit_sensor
+                    FROM tr_instrument t1
+                    INNER JOIN tr_koefisien_sensor_non_vwp t2 ON t2.tr_instrument_id = t1.id
+                    INNER JOIN sys_jenis_sensor t3 ON t2.jenis_sensor_jadi = t3.id
+                    WHERE t1.ms_regions_id = {$ms_regions_id}
+                    AND t3.jenis_sensor  = '{$row_data_tambah}'
+                    AND t1.kode_instrument LIKE '%{$stasiun_dt_tambah}%'
+                    ");
 
 
                         $dt_result = $query->result();
@@ -323,10 +365,10 @@ class Grafik extends MY_Controller
                 if (!empty($elevasi_awlr)) {
                     $elevasi_awlr_jadi = implode(",", $elevasi_awlr);
                     $query = $this->db->query("
-                        SELECT {$elevasi_awlr_jadi}
-                        FROM ms_sites t1
-                        WHERE t1.ms_regions_id = {$ms_regions_id}
-                    ");
+                    SELECT {$elevasi_awlr_jadi}
+                    FROM ms_sites t1
+                    WHERE t1.ms_regions_id = {$ms_regions_id}
+                ");
                     $row_elevasi_awlr = $query->row_array();
 
                     $unit_elevasi_awlr = 'm';
@@ -368,7 +410,7 @@ class Grafik extends MY_Controller
                             foreach ($row_pertama as $index => $row_pertama_val) {
                                 $detail[$index] = (object)array(
                                     'tanggal' => $row_pertama_val->tanggal,
-                                    'jam' => $row_pertama_val->jam,
+                                    'jam' => substr($row_pertama_val->jam, 0, 5),
                                     'data_jadi' => $row->value,
                                 );
                             }
@@ -387,20 +429,20 @@ class Grafik extends MY_Controller
                 } else {
                     if ($periode == 'Jam') {
                         $ddt = "AND t1.tanggal = '$waktu'
-                                    AND t1.jam LIKE '%:00:00'";
+                                AND t1.jam LIKE '%:00:00'";
                         $kt = !empty($tipe_data) ? "AND t1.keterangan = '$tipe_data'" : "";
 
                         $query = $db_site->query("
-                                SELECT t1.tanggal, t1.jam, FORMAT(t2.data_jadi, 2) as data_jadi
-                                FROM data t1
-                                INNER JOIN data_value t2 ON t2.data_id = t1.id
-                                WHERE t1.kode_instrument = '{$row->kode_instrument}'
-                                AND t2.sensor_id = {$row->sensor_id}
-                                AND t2.data_jadi != ''
-                                {$kt}
-                                {$ddt}
-                                ORDER BY t1.tanggal ASC, t1.jam ASC
-                            ");
+                            SELECT t1.tanggal, DATE_FORMAT(t1.jam, '%H:%i') AS jam, FORMAT(t2.data_jadi, 2) as data_jadi
+                            FROM data t1
+                            INNER JOIN data_value t2 ON t2.data_id = t1.id
+                            WHERE t1.kode_instrument = '{$row->kode_instrument}'
+                            AND t2.sensor_id = {$row->sensor_id}
+                            AND t2.data_jadi != ''
+                            {$kt}
+                            {$ddt}
+                            ORDER BY t1.tanggal ASC, t1.jam ASC
+                        ");
                         $detail = $query->result();
                     } else {
                         $ddt = "AND DATE_FORMAT(t1.tanggal, '%Y-%m') = '$waktu'";
@@ -412,19 +454,19 @@ class Grafik extends MY_Controller
                         }
 
                         $query = $db_site->query("
-                                SELECT 
-                                    DATE(t1.tanggal) as tanggal,
-                                    FORMAT(AVG(t2.data_jadi), 2) as data_jadi
-                                FROM data t1
-                                LEFT JOIN data_value t2 ON t1.id = t2.data_id
-                                WHERE t1.kode_instrument = '{$row->kode_instrument}'
-                                AND t2.sensor_id = {$row->sensor_id}
-                                AND t2.data_jadi != ''
-                                {$kt}
-                                {$ddt}
-                                GROUP BY DATE(t1.tanggal)
-                                ORDER BY tanggal ASC
-                            ");
+                            SELECT 
+                                DATE(t1.tanggal) as tanggal,
+                                FORMAT(AVG(t2.data_jadi), 2) as data_jadi
+                            FROM data t1
+                            LEFT JOIN data_value t2 ON t1.id = t2.data_id
+                            WHERE t1.kode_instrument = '{$row->kode_instrument}'
+                            AND t2.sensor_id = {$row->sensor_id}
+                            AND t2.data_jadi != ''
+                            {$kt}
+                            {$ddt}
+                            GROUP BY DATE(t1.tanggal)
+                            ORDER BY tanggal ASC
+                        ");
                         $detail = $query->result();
                     }
                 }
@@ -432,6 +474,7 @@ class Grafik extends MY_Controller
 
                 $row->detail = $detail;
             }
+
             $data_utama = array();
             $data_tambahan = array();
 

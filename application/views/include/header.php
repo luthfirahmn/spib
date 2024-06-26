@@ -3,7 +3,6 @@ $list_region_user = $this->session->userdata('list_region');
 $foto = $this->session->userdata('foto');
 $nama_user = $this->session->userdata('ap_nama');
 $jabatan = $this->session->userdata('jabatan');
-
 ?>
 <style>
     .header-logo {
@@ -14,13 +13,12 @@ $jabatan = $this->session->userdata('jabatan');
 <header class="pc-header">
     <div class="m-header">
         <div class="header-logo">
-            <!-- <img src="<?= base_url() . 'assets/upload/' . $list_region_user[0]->logo_site ?>" alt=""
-                class="logo logo-lg" style="width: 40px;" /> -->
-            <img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt="" class="logo logo-lg" style="width: 40px;" />
+            <img src="<?= base_url() . 'assets/upload/' . $list_region_user[0]->logo_site ?>" alt="" class="logo logo-lg" style="width: 40px;" />
+            <!-- <img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt="" class="logo logo-lg" style="width: 40px;" /> -->
         </div>
 
-        <!-- <h4 style="padding-top: 10px;"><?= $list_region_user[0]->site_name ?></h4> -->
-        <h4 style="padding-top: 10px;">SIMETRI VIEW</h4>
+        <h4 style="padding-top: 10px;"><?= $list_region_user[0]->site_name ?></h4>
+        <h4 style="padding-top: 10px;"></h4>
         <div class="pc-h-item">
             <a href="#" class="pc-head-link head-link-secondary m-0" id="sidebar-hide">
                 <i class="ti ti-menu-2"></i>

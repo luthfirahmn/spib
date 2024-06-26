@@ -97,8 +97,6 @@
                                     <div class="form-group col-md-2">
                                         <button class="btn btn-sm btn-warning" type="button" onclick="zoomImage()"><i class="ti ti-maximize me-1"></i>Preview Layout</button>
                                     </div>
-                                </div>
-                                <div class="row">
                                     <div class="form-group col-md-2 ">
                                         <select class="pilih_instrument pb-5" name="pilih_instrument" id="pilih_instrument" " style=" width: 100%">
                                         </select>
@@ -136,7 +134,10 @@
                                 </div>
                             </div>
                             <div class="fs-1 text-center" id="nama_site_text"></div>
-                            <div class="" id="chart"></div>
+                            <div style="max-width: 100%; overflow-x: auto;overflow-y: hidden;">
+                                <div class="" id="chart"></div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -424,6 +425,7 @@
                     $("#data_tambah").html('<option value="Batas Kritis">Batas Kritis</option>' +
                         '<option value="Tinggi Muka Air">Tinggi Muka Air</option>' +
                         '<option value="Elevasi Puncak">Elevasi Puncak</option>' +
+                        '<option value="Elevasi Spillway">Elevasi Spillway</option>' +
                         '<option value="Rainfall">Rainfall</option>');
                     break;
                 default:
@@ -488,7 +490,6 @@
                     });
                 });
             }
-
             return series;
         }
 
@@ -503,6 +504,23 @@
                 });
             }
         }
+
+        function calculateOverallMinMax(data) {
+            let allValues = [];
+            data.forEach(item => {
+                item.detail.forEach(detailItem => {
+                    allValues.push(parseFloat(detailItem.data_jadi));
+                });
+            });
+
+            let minValue = Math.min(...allValues);
+            let maxValue = Math.max(...allValues);
+            return {
+                min: minValue,
+                max: Math.round(maxValue)
+            };
+        }
+
         var chart;
 
         function generateChart(data, periode, data_tambah) {
@@ -513,38 +531,58 @@
             var waktu = $('#waktu').val()
 
             var filename = region + '_' + kode_instrument + '_' + nama_instrument + '_' + waktu
-            var yAxisConfig = [{
-                title: {
-                    text: data[0].unit_sensor,
-                    style: {
-                        fontWeight: 'normal',
-                        fontSize: '16px'
-                    }
-                }
-            }];
 
 
-            if (data[0].nama_instrument.toUpperCase() === "RAINFALL") {
-                yAxisConfig[0].reversed = true;
-            }
 
+            // Menghitung nilai minimum dan maksimum dari semua data_jadi dalam data
+            let leftY = calculateOverallMinMax(data);
+
+            var yAxisConfig = [];
+            data.forEach(function(item, index) {
+                let showYAxis = index === 0 ? true : false;
+                yAxisConfig.push({
+                    title: {
+                        text: item.unit_sensor,
+                        style: {
+                            fontWeight: 'normal',
+                            fontSize: '16px'
+                        }
+                    },
+                    // min: 0,
+                    max: Math.ceil(leftY.max / 200) * 200,
+                    tickAmount: 5,
+                    show: showYAxis
+                });
+            });
+            // if (data[0].nama_instrument.toUpperCase() === "RAINFALL") {
+            //     yAxisConfig[0].reversed = true;
+            // }
             if (data_tambah && data_tambah.length > 0) {
+
+                let rightY = calculateOverallMinMax(data_tambah);
                 var newConfig = {
                     opposite: true,
+                    reversed: true,
+                    yAxisIndex: 1,
                     title: {
                         text: data_tambah[0].unit_sensor,
                         style: {
                             fontWeight: 'normal',
                             fontSize: '16px'
                         }
-                    }
+                    },
+
+                    // min: 0,
+                    // max: rightY.max
                 };
-                if (data_tambah[0].nama_instrument.toUpperCase() === "RAINFALL") {
-                    newConfig.reversed = true;
-                    newConfig.yAxisIndex = 1;
-                }
+                // if (data_tambah[0].nama_instrument.toUpperCase() === "RAINFALL") {
+                //     newConfig.reversed = true;
+                //     newConfig.yAxisIndex = 1;
+                // }
                 yAxisConfig.push(newConfig);
+
             }
+            console.log(yAxisConfig);
 
             var options = {
                 chart: {
