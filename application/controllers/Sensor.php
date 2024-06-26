@@ -163,7 +163,8 @@ class Sensor extends MY_Controller
 	function hapus()
 	{
 		$id = $this->input->get('id');
-		$status = $this->db->delete('sys_jenis_sensor', array('id' => $id));
+		$regions_id = $this->input->get('regions_id');
+		$status = $this->db->delete('sys_jenis_sensor_region', array('sys_jenis_sensor_id' => $id, 'ms_regions_id' => $regions_id));
 		if ($status) {
 			$this->session->set_flashdata('warning', 'Sukses!');
 		} else {

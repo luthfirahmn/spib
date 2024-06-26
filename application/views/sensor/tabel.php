@@ -29,7 +29,7 @@
 										<a class="dropdown-item" href="<?= base_url('Sensor/edit?id=' . $rec->id) ?>"> <i class="ti ti-edit"></i> Edit</a>
 									<?php } ?>
 									<?php if ($hak_akses->delete == '1') { ?>
-										<a class="dropdown-item" href="<?= base_url('Sensor/hapus?id=' . $rec->id) ?>" onclick="return confirm('Are you sure?')"> <i class="ti ti-trash"></i> Delete</a>
+										<a class="dropdown-item" href="<?= base_url('Sensor/hapus?id=' . $rec->id . '&regions_id=' . $rec->ms_regions_id) ?>" onclick="return confirm('Are you sure?')"> <i class="ti ti-trash"></i> Delete</a>
 									<?php } ?>
 								</div>
 							</div>
