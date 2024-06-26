@@ -101,6 +101,22 @@ class Region extends MY_Controller
 			'app_name'			=> $this->input->post('app_name')
 		);
 
+		$config['upload_path'] = FCPATH . '/assets/upload/';
+		$config['allowed_types'] = 'gif|jpg|png';
+		$config['max_size'] = 2000;
+
+
+		$this->load->library('upload', $config);
+
+		if ($this->upload->do_upload('logo_site')) {
+			$data =  $this->upload->data();
+			$logo_site = $data['file_name'];
+
+			$body['logo_site'] = $logo_site;
+		}
+
+
+
 		$this->db->where('id', $id);
 		$status = $this->db->update('ms_regions', $body);
 		if ($status) {

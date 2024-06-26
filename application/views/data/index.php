@@ -97,9 +97,8 @@
                                     <input type="text" class="form-control" id="keyword" name="keyword">
                                 </div> -->
                                 <div class="form-group col-md-2">
-                                    <label class="form-label" for="ms_regions_id">Region:</label>
+                                    <label class="form-label" for="ms_regions_id">Region</label>
                                     <select class="form-control" name="ms_regions_id" id="ms_regions_id">
-                                        <option>Select Region</option>
                                         <?php foreach ($region as $reg) { ?>
                                             <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                         <?php } ?>
@@ -423,8 +422,6 @@
         })
 
         function Createtable() {
-
-
             if ($.fn.DataTable.isDataTable('#pc-dt-simple')) {
                 $('#pc-dt-simple').empty();
                 $('#pc-dt-simple').DataTable().destroy();
@@ -454,14 +451,58 @@
                         var tableColumns = columns.map(function(columnName, index) {
                             if (index === 0) {
                                 return {
-                                    data: "id", // Assuming the `No` column in the returned data contains the numbering
+                                    data: "id",
                                     title: 'No'
                                 };
+                            } else if (index === 1) {
+                                return {
+                                    data: "kode_instrument",
+                                    title: 'Instrument Code'
+                                };
+                            } else if (index === 2) {
+                                return {
+                                    data: "nama_instrument",
+                                    title: 'Instrument Name'
+                                };
+                            } else if (index === 3) {
+                                return {
+                                    data: "tanggal",
+                                    title: 'Date'
+                                };
                             } else {
+
+                                if (columnName == 'jam') {
+                                    return {
+                                        data: "jam",
+                                        title: "Time"
+                                    };
+                                } else if (columnName == 'keterangan') {
+                                    return {
+                                        data: "keterangan",
+                                        title: 'Data Type'
+                                    };
+                                }
                                 return {
                                     data: columnName,
                                     title: columnName
                                 };
+                            }
+                        });
+
+                        tableColumns.push({
+                            data: null,
+                            title: "Actions",
+                            render: function(data, type, row) {
+                                return `
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Action
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item delete-row" href="#" data-id="${row.id}">Delete</a></li>
+                                </ul>
+                            </div>
+                        `;
                             }
                         });
 
@@ -473,9 +514,7 @@
                             serverSide: true,
                             processing: true,
                             paging: true,
-                            searching: {
-                                regex: true,
-                            },
+                            searching: false,
                             lengthMenu: [
                                 [10, 25, 50, 100, -1],
                                 [10, 25, 50, 100, "All"],
@@ -528,9 +567,6 @@
 
 
         }
-
-
-
 
         function reload_table() {
             $('#pc-dt-simple').ajax.reload()
@@ -595,7 +631,9 @@
             });
         });
 
-
+        $(document).ready(function() {
+            $("#ms_regions_id").trigger("change");
+        });
 
         $("#ms_regions_id").change(function() {
             var ms_regions_id = $(this).val();

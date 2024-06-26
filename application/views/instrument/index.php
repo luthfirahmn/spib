@@ -92,7 +92,7 @@
 									<thead>
 										<tr>
 											<th>Region Name</th>
-											<th>Jenis Instrument</th>
+											<th>Instrument Name</th>
 											<th>Instrument Category</th>
 											<th>Parameter</th>
 											<th>Action</th>
