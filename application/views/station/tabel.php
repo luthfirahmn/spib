@@ -3,16 +3,14 @@
 		<thead>
 			<tr>
 				<th>Region Name</th>
-				<th>Nama Station</th>
-				<th>Tipe Station</th>
-				<th>Wilayah Sungai</th>
-				<th>DAS</th>
+				<th>Station Name</th>
+				<th>Station Type</th>
 				<th>Latitude</th>
 				<th>Longitude</th>
-				<th>Jumlah Instrument</th>
-				<th>Jenis Komunikasi</th>
-				<th>GSM/IP</th>
-				<th>Layout</th>
+				<th>Total Instrument</th>
+				<th>Communication</th>
+				<th>ID Station</th>
+				<th>Photo/Layout</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -22,13 +20,11 @@
 					<td><?= $rec->site_name ?></td>
 					<td><?= $rec->nama_stasiun ?></td>
 					<td><?= $rec->stasiun_type ?></td>
-					<td><?= $rec->wilayah_sungai ?></td>
-					<td><?= $rec->daerah_aliran_sungai ?></td>
 					<td><?= number_format($rec->latitude, 6) ?></td>
 					<td><?= number_format($rec->longitude, 6) ?></td>
 					<td><?= $rec->count ?></td>
 					<td><?= $rec->komunikasi ?></td>
-					<td><?= $rec->kontak_gsm ?></td>
+					<td><?= $rec->id_station ?></td>
 					<td>
 						<div class="d-inline-block align-middle" bis_skin_checked="1">
 							<img src="<?= base_url('assets/upload/station/' . $rec->foto) ?>" alt="image" class="img-radius wid-40 align-top m-r-15" onClick="viewImage('<?= $rec->foto ?>')">

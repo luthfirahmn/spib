@@ -64,13 +64,13 @@
 						<div class="card-body table-border-style">
 							<?php if ($hak_akses->insert == '1') { ?>
 								<a href="<?= base_url('Station/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
-									<i class="ti ti-plus"></i>Add Data
+									<i class="ti ti-plus"></i>Add Station
 								</a>
 							<?php } ?>
 
 							<div class="row">
-								<div class="form-group col-md-4">
-									<label class="form-label" for="ms_regions_id">Region:</label>
+								<div class="form-group col-md-3">
+									<label class="form-label" for="ms_regions_id">Region</label>
 									<select class="form-control" name="ms_regions_id" id="ms_regions_id">
 										<?php foreach ($region as $reg) { ?>
 											<option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>

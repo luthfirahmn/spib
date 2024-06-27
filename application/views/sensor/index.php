@@ -75,7 +75,7 @@
                                     <input type="text" class="form-control" id="keyword" name="keyword">
                                 </div> -->
 								<div class="form-group col-md-3">
-									<label class="form-label" for="ms_regions_id">Select Region:</label>
+									<label class="form-label" for="ms_regions_id">Select Region</label>
 									<select class="form-control" name="ms_regions_id" id="ms_regions_id">
 										<?php foreach ($region as $reg) { ?>
 											<option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>

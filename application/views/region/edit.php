@@ -119,6 +119,15 @@
 												<input type="password" class="form-control" id="database_password" name="database_password" required />
 											</div>
 										</div>
+										<div class="row mb-3">
+											<label class="col-sm-3 col-form-label" for="type">Perubahan Data Jadi</label>
+											<div class="col-sm-2">
+												<select class="form-control" name="is_perubahan" id="is_perubahan">
+													<option value="1" <?= $regional->is_perubahan == 1 ? 'selected' : '' ?>>Active</option>
+													<option value="0" <?= $regional->is_perubahan == 0 ? 'selected' : '' ?>>Not Active</option>
+												</select>
+											</div>
+										</div>
 										<button type="button" id="test_koneksi" class="btn btn-warning mb-3">Test Connection</button>
 										<button type="submit" class="btn btn-primary mb-3">Submit</button>
 										<a href="<?= base_url('Region') ?>" type="button" class="btn btn-danger mb-3">Cancel</a>

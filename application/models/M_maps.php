@@ -21,20 +21,20 @@ class M_maps extends CI_Model
 		")->result();
 
 
-		foreach ($station as $row) {
-			$db_site = $this->change_connection($row->ms_regions_id);
+		// foreach ($station as $row) {
+		// 	$db_site = $this->change_connection($row->ms_regions_id);
 
-			$kode_instruments = "'" . str_replace(",", "','", $row->kode_instruments) . "'";
+		// 	$kode_instruments = "'" . str_replace(",", "','", $row->kode_instruments) . "'";
 
-			$result = $db_site->query("SELECT 
-										t3.jenis_sensor, t3.unit_sensor, data_value.data_jadi
-									FROM (SELECT id FROM data WHERE data.kode_instrument IN ($kode_instruments) ORDER BY data.tanggal DESC, data.jam DESC LIMIT 1) data 
-									INNER JOIN data_value ON data.id = data_value.data_id
-									INNER JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON data_value.sensor_id = t3.id
-									AND data_value.data_jadi != '' AND data_value.data_primer = 0
-									")->result();
-			$row->sensor_data = $result;
-		}
+		// 	$result = $db_site->query("SELECT 
+		// 								t3.jenis_sensor, t3.unit_sensor, data_value.data_jadi
+		// 							FROM (SELECT id FROM data WHERE data.kode_instrument IN ($kode_instruments) ORDER BY data.tanggal DESC, data.jam DESC LIMIT 1) data 
+		// 							INNER JOIN data_value ON data.id = data_value.data_id
+		// 							INNER JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON data_value.sensor_id = t3.id
+		// 							AND data_value.data_jadi != '' AND data_value.data_primer = 0
+		// 							")->result();
+		// 	$row->sensor_data = $result;
+		// }
 		return $station;
 	}
 

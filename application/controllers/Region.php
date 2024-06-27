@@ -46,6 +46,7 @@ class Region extends MY_Controller
 			'database_username'	=> $this->input->post('database_username'),
 			'database_password'	=> $this->input->post('database_password'),
 			'app_name'			=> $this->input->post('app_name'),
+			'is_perubahan'			=> $this->input->post('is_perubahan'),
 			'logo_site'			=> $data['file_name']
 		);
 
@@ -98,6 +99,7 @@ class Region extends MY_Controller
 			'database_port'		=> $this->input->post('database_port'),
 			'database_username'	=> $this->input->post('database_username'),
 			'database_password'	=> $this->input->post('database_password'),
+			'is_perubahan'			=> $this->input->post('is_perubahan'),
 			'app_name'			=> $this->input->post('app_name')
 		);
 

@@ -17,7 +17,12 @@ $jabatan = $this->session->userdata('jabatan');
             <!-- <img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt="" class="logo logo-lg" style="width: 40px;" /> -->
         </div>
 
-        <h4 style="padding-top: 10px;"><?= $list_region_user[0]->site_name ?></h4>
+        <?php if (count($list_region_user) > 1) : ?>
+            <h4 style="padding-top: 10px;">Telemetry View</h4>
+        <?php else : ?>
+            <h4 style="padding-top: 10px;"><?= $list_region_user[0]->site_name ?></h4>
+        <?php endif; ?>
+
         <h4 style="padding-top: 10px;"></h4>
         <div class="pc-h-item">
             <a href="#" class="pc-head-link head-link-secondary m-0" id="sidebar-hide">

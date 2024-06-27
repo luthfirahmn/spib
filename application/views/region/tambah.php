@@ -118,6 +118,15 @@
 												<input type="password" class="form-control" id="database_password" name="database_password" required />
 											</div>
 										</div>
+										<div class="row mb-3">
+											<label class="col-sm-3 col-form-label" for="type">Perubahan Data Jadi</label>
+											<div class="col-sm-2">
+												<select class="form-control" name="is_perubahan" id="is_perubahan">
+													<option value="1" selected>Active</option>
+													<option value="0">Not Active</option>
+												</select>
+											</div>
+										</div>
 										<button type="button" id="test_koneksi" class="btn btn-warning mb-3">Test Connection</button>
 										<button type="submit" class="btn btn-primary mb-3">Submit</button>
 									</form>

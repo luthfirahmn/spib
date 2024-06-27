@@ -25,6 +25,13 @@
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<link rel="stylesheet" href="<?= base_url() ?>assets/imageupload/style.css">
 </head>
+<style>
+	.img-area img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+</style>
 
 <body>
 	<div class="loader-bg">
@@ -84,16 +91,6 @@
 								</div>
 								<div class="row">
 									<div class="form-group col-md-6">
-										<label class="form-label" for="wilayah_sungai">Wilayah Sungai</label>
-										<input type="text" class="form-control" id="wilayah_sungai" name="wilayah_sungai" required>
-									</div>
-									<div class="form-group col-md-6">
-										<label class="form-label" for="daerah_aliran_sungai">Daerah Aliran Sungai</label>
-										<input type="text" class="form-control" id="daerah_aliran_sungai" name="daerah_aliran_sungai" required>
-									</div>
-								</div>
-								<div class="row">
-									<div class="form-group col-md-6">
 										<label class="form-label" for="latitude">Latitude</label>
 										<input type="text" class="form-control" id="latitude" name="latitude" required>
 									</div>
@@ -108,25 +105,22 @@
 										<input type="text" class="form-control" id="komunikasi" name="komunikasi" required>
 									</div>
 									<div class="form-group col-md-6">
-										<label class="form-label" for="kontak_gsm">Kontak Gsm</label>
-										<input type="text" class="form-control" id="kontak_gsm" name="kontak_gsm" required>
+										<label class="form-label" for="kontak_gsm">ID Station</label>
+										<input type="text" class="form-control" id="id_station" name="id_station" required>
 									</div>
 								</div>
 								<div class="row">
-									<div class="form-group col-md-6">
-										<label class="form-label" for="alamat_ip">Alamat IP</label>
-										<input type="text" class="form-control" id="alamat_ip" name="alamat_ip" required>
-									</div>
 									<div class="form-group col-md-6">
 										<label class="form-label" for="tahun_pembuatan">Tahun Pembuatan</label>
 										<input type="text" class="form-control" id="tahun_pembuatan" name="tahun_pembuatan" required>
 									</div>
-								</div>
-								<div class="row">
 									<div class="form-group col-md-6">
 										<label class="form-label" for="elevasi">Elevasi</label>
 										<input type="number" step=".001" class="form-control" id="elevasi" name="elevasi" required>
 									</div>
+								</div>
+								<div class="row">
+
 									<div class="form-group col-md-6">
 										<label class="form-label" for="file">Stasiun Type</label>
 										<select class="form-control" name="stasiun_type" id="stasiun_type">
@@ -137,7 +131,7 @@
 									</div>
 								</div>
 								<div class="row">
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 										<label class="form-label" for="file">Foto</label>
 										<input type="file" id="file" name="foto" accept="image/*" hidden>
 										<div class="img-area" data-img="">
