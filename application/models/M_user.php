@@ -35,9 +35,10 @@ class M_user extends CI_Model
 
 		$where = ($roles_id == '1') ? "" : " AND a.ms_roles_id='$roles_id' ";
 		return $this->db->query("
-		SELECT a.*, b.role_name FROM ms_users a
+		SELECT a.*, b.role_name, GROUP_CONCAT(t3.site_name ORDER BY c.id ASC) AS region_name FROM ms_users a
 		LEFT JOIN ms_roles b ON a.ms_roles_id=b.id
 		LEFT JOIN `ms_user_regions` c ON a.`id`=c.`ms_users_id`
+		LEFT JOIN ms_regions t3 ON t3.id = c.ms_regions_id
 		WHERE c.ms_regions_id IN(SELECT ms_regions_id FROM ms_user_regions WHERE ms_users_id='$ap_id_user') $where
 		GROUP BY a.id
 		")->result();

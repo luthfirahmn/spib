@@ -104,12 +104,12 @@
 									<thead>
 										<tr>
 											<th>Region Name</th>
-											<th>Kode Instrument</th>
-											<th>Nama Instrument</th>
-											<th>Type Instrument</th>
+											<th>Instrument Code</th>
+											<th>Instrument Name</th>
+											<th>Instrument Type</th>
 											<th>Station</th>
-											<th>Data terakhir Masuk</th>
-											<th>Jumlah Data</th>
+											<th>Last Data</th>
+											<th>Total Data</th>
 											<th>Action</th>
 										</tr>
 									</thead>

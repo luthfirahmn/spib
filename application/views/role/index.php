@@ -65,19 +65,26 @@
 							<div class="card-header">
 								<h5>Role Management</h5>
 								</br>
+
 								<div class="row">
 									<div class="form-group col-md-6">
 										<a type="button" class="btn btn-light-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-											<i class="ti ti-plus"></i>Tambah Role
+											<i class="ti ti-plus"></i>Add Role
 										</a>
 									</div>
 									<div class="form-group col-md-6">
-										<label class="form-label" for="username">Role Name:</label>
-										<select class="form-control" name="ms_roles_id" id="ms_roles_id" onchange="load_data(this.value)">
-											<?php foreach ($role as $role) { ?>
-												<option value="<?= $role->id ?>"><?= $role->role_name ?></option>
-											<?php } ?>
-										</select>
+										<div class="row align-items-center">
+											<div class="col-2">
+												<label class=" form-label " for=" username">Role Name</label>
+											</div>
+											<div class="col-8">
+												<select class="form-control" name="ms_roles_id" id="ms_roles_id" onchange="load_data(this.value)">
+													<?php foreach ($role as $role) { ?>
+														<option value="<?= $role->id ?>"><?= $role->role_name ?></option>
+													<?php } ?>
+												</select>
+											</div>
+										</div>
 									</div>
 								</div>
 
@@ -99,7 +106,7 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Tambah Role</h5>
+					<h5 class="modal-title" id="exampleModalLabel">Add Role</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<form action="<?= base_url('Role/tambah_proses') ?>" method="post" enctype="multipart/form-data">

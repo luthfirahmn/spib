@@ -20,6 +20,7 @@
 	<link rel="stylesheet" href="<?= base_url() ?>assets/css/style-preset.css" id="preset-style-link" />
 </head>
 
+
 <body>
 	<div class="loader-bg">
 		<div class="loader-track">
@@ -64,7 +65,7 @@
 						<div class="card-body table-border-style">
 							<?php if ($hak_akses->insert == '1') { ?>
 								<a href="<?= base_url('Sensor/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
-									<i class="ti ti-plus"></i>Add Data
+									<i class="ti ti-plus"></i>Add Sensor
 								</a>
 							<?php } ?>
 

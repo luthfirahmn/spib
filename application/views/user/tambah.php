@@ -89,7 +89,7 @@
 								</div>
 								<div class="row">
 									<div class="form-group col-md-6">
-										<label class="form-label" for="dinas">Dinas</label>
+										<label class="form-label" for="dinas">Instansi</label>
 										<input type="text" class="form-control" id="dinas" name="dinas" required>
 									</div>
 									<div class="form-group col-md-6">

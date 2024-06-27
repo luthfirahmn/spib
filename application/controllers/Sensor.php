@@ -115,11 +115,10 @@ class Sensor extends MY_Controller
 			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
 			$ImageExt       = str_replace('.', '', $ImageExt); // Extension
 			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
-			$NewImageName   = str_replace(' ', '', $nama_file . '.' . $ImageExt);
+			$NewImageName   = str_replace(' ', '', $ImageName . '.' . $ImageExt);
 
-			move_uploaded_file($_FILES["file"]["tmp_name"], $temp . $NewImageName); // Menyimpan file
-
-			$body['foto'] = $NewImageName;
+			move_uploaded_file($_FILES["file"]["tmp_name"], $temp . $NewImageName);
+			$body['icon'] = $NewImageName;
 		}
 
 		$id 	= $this->input->post('id');

@@ -86,7 +86,7 @@
 								</div>
 								<div class="row">
 									<div class="form-group col-md-6">
-										<label class="form-label" for="dinas">Dinas</label>
+										<label class="form-label" for="dinas">Instansi</label>
 										<input type="text" class="form-control" id="dinas" name="dinas" value="<?= $user->dinas ?>" required>
 									</div>
 									<div class="form-group col-md-6">
@@ -111,7 +111,7 @@
 										<label class="form-label" for="ms_roles_id">Role</label>
 										<select class="form-control" name="ms_roles_id" id="ms_roles_id">
 											<?php foreach ($role as $role) { ?>
-												<option value="<?= $role->id ?>"><?= $role->role_name ?></option>
+												<option value="<?= $role->id ?>" <?= ($user->ms_roles_id == $role->id) ? 'selected' : '' ?>><?= $role->role_name ?></option>
 											<?php } ?>
 										</select>
 									</div>

@@ -21,8 +21,8 @@
 			<thead>
 				<tr>
 					<th>Data Koefisien</th>
-					<th>Jenis Sensor Data Mentah</th>
-					<th>Jenis Sensor Data Jadi</th>
+					<th>Jenis Sensor Primer</th>
+					<th>Jenis Sensor Sekunder</th>
 				</tr>
 			</thead>
 			<tbody class="">
@@ -43,7 +43,7 @@
 							</tbody>
 						</table>
 					</td>
-					<td>
+					<td style=" vertical-align:top">
 						<?php
 						foreach ($koe['jenis_sensor_mentah'] as $sns2) {
 							if (!empty($sns2->jenis_sensor)) {
@@ -59,7 +59,7 @@
 						}
 						?>
 					</td>
-					<td>
+					<td style=" vertical-align:top">
 						<?php
 						foreach ($koe['jenis_sensor_jadi'] as $sns1) {
 							if (!empty($sns1->jenis_sensor)) {

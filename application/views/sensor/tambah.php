@@ -24,6 +24,13 @@
 	<link rel="stylesheet" href="<?= base_url() ?>assets/imageupload/style.css">
 
 </head>
+<style>
+	.img-area img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+</style>
 
 <body>
 	<div class="loader-bg">
@@ -78,7 +85,7 @@
 								<div class="row">
 									<div class="form-group col-md-6">
 										<label class="form-label" for="unit_sensor">Satuan Sensor</label>
-										<input type="text" class="form-control" id="unit_sensor" name="unit_sensor" required>
+										<input type="text" class="form-control" id="unit_sensor" name="unit_sensor">
 									</div>
 									<div class="form-group col-md-6">
 										<label class="form-label" for="var_name">Nama Variabel</label>

@@ -20,7 +20,7 @@ class M_instrumentData extends CI_Model
 			WHEN b.id = 5 THEN 0 
 			ELSE 1
 		END,
-		b.id ASC
+		b.id ASC, a.kode_instrument ASC
 		")->result();
 
 		foreach ($instrument as $row) {

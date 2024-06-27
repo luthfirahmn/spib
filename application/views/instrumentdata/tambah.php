@@ -59,9 +59,12 @@
 						<div class="card-body">
 
 							<form action="<?= base_url('InstrumentData/tambah_proses') ?>" method="post">
-								<label class="form-label" for="name"><b>Informasi Umum</b></label>
-								<hr>
+
 								<div class="row">
+									<div class="col-12 bg-primary p-2 ">
+										<label class="form-label text-white" for="name"><b>Informasi Umum</b></label>
+									</div>
+									<hr>
 									<div class="form-group col-md-4">
 										<label class="form-label" for="ms_regions_id">Site</label>
 										<select class="form-control" name="ms_regions_id" id="ms_regions_id">
@@ -112,34 +115,40 @@
 									</div>
 								</div>
 
-								<label class="form-label" for="name"><b>Informasi Sensor</b></label>
-								<hr>
+
 								<div class="row">
+									<div class="col-12 bg-info p-2 ">
+										<label class="form-label text-white" for="name"><b>Informasi Sensor</b></label>
+									</div>
+									<hr>
 									<div class="form-group col-md-6">
 										<label class="form-label" for="nama_sensor">Nama Sensor</label>
-										<input type="text" class="form-control" id="nama_sensor" name="nama_sensor" required>
+										<input type="text" class="form-control" id="nama_sensor" name="nama_sensor">
 									</div>
 									<div class="form-group col-md-6">
 										<label class="form-label" for="serial_number">Serial Number</label>
-										<input type="text" class="form-control" id="serial_number" name="serial_number" required>
+										<input type="text" class="form-control" id="serial_number" name="serial_number">
 									</div>
 								</div>
 								<div class="row">
 									<div class="form-group col-md-6">
 										<label class="form-label" for="range">Range</label>
-										<input type="text" class="form-control" id="range" name="range" required>
+										<input type="text" class="form-control" id="range" name="range">
 									</div>
 									<div class="form-group col-md-6">
 										<label class="form-label" for="type">Output</label>
-										<input type="text" class="form-control" id="output" name="output" required>
+										<input type="text" class="form-control" id="output" name="output">
 									</div>
 								</div>
 
 
 								<div id="form_vwp" style="display: none;">
-									<label class="form-label" for="name"><b>Informasi Instalasi</b></label>
-									<hr>
+
 									<div class="row">
+										<div class="col-12 bg-warning p-2 ">
+											<label class="form-label text-white" for="name"><b>Informasi Instalasi</b></label>
+										</div>
+										<hr>
 										<div class="form-group col-md-6">
 											<label class="form-label" for="zona_pemasangan">Zona Pemasangan</label>
 											<select class="form-control" name="zona_pemasangan" id="zona_pemasangan">
@@ -192,9 +201,12 @@
 								</div>
 
 								<div id="form_kalibrasi">
-									<label class="form-label" for="name"><b>Informasi Kalibrasi</b></label>
-									<hr>
+
 									<div class="row">
+										<div class="col-12 bg-dark p-2 ">
+											<label class="form-label text-white" for="name"><b>Informasi Kalibrasi</b></label>
+										</div>
+										<hr>
 										<div class="form-group col-md-12">
 											<button type="button" class="btn btn-outline-info d-inline-flex" data-bs-toggle="modal" style="float: right;" onclick="tambahTempKoefisien()">
 												<i class="ti ti-info-circle me-1"></i>Tambah Koefisien
@@ -254,7 +266,7 @@
 							<div id="modal_nonvwp_create" style="display: none;">
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="form-label" for="modal_data_mentah_create">Jenis Sensor Data Mentah</label>
+										<label class="form-label" for="modal_data_mentah_create">Jenis Sensor Primer</label>
 										<select class="form-control" name="modal_data_mentah[]" id="modal_data_mentah_create" placeholder="This is a placeholder" multiple>
 
 											<!-- <?php foreach ($sensor as $sns2) { ?>
@@ -265,7 +277,7 @@
 								</div>
 								<div class="row">
 									<div class="form-group col-md-12">
-										<label class="form-label" for="modal_data_jadi_create">Jenis Sensor Data Jadi</label>
+										<label class="form-label" for="modal_data_jadi_create">Jenis Sensor Sekunder</label>
 										<select class="form-control" name="modal_data_jadi[]" id="modal_data_jadi_create" placeholder="This is a placeholder" multiple>
 											<!-- 
 											<?php foreach ($sensor as $sns3) { ?>
@@ -324,14 +336,14 @@
 						<div id="modal_nonvwp_edit" style="display: none;">
 							<div class="row">
 								<div class="form-group col-md-12">
-									<label class="form-label" for="modal_data_mentah_edit">Jenis Sensor Data Mentah</label>
+									<label class="form-label" for="modal_data_mentah_edit">Jenis Sensor Primer</label>
 									<select class="form-control" name="modal_data_mentah[]" id="modal_data_mentah_edit" placeholder="This is a placeholder" multiple>
 									</select>
 								</div>
 							</div>
 							<div class="row">
 								<div class="form-group col-md-12">
-									<label class="form-label" for="modal_data_jadi_edit">Jenis Sensor Data Jadi</label>
+									<label class="form-label" for="modal_data_jadi_edit">Jenis Sensor Sekunder</label>
 									<select class="form-control" name="modal_data_jadi[]" id="modal_data_jadi_edit" placeholder="This is a placeholder" multiple>
 									</select>
 								</div>
@@ -591,11 +603,11 @@
 				}
 			} else if ($('#modal_nonvwp_' + action).is(':visible')) {
 				if ($('#modal_data_mentah_' + action).val().length === 0) {
-					notiftoast('Jenis sensor data mentah is required');
+					notiftoast('Jenis sensor Primer is required');
 					return false;
 				}
 				if ($('#modal_data_jadi_' + action).val().length === 0) {
-					notiftoast('Jenis sensor data jadi is required');
+					notiftoast('Jenis sensor Sekunder is required');
 					return false;
 				}
 			}

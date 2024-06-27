@@ -6,7 +6,7 @@
 				<th>Sensor Type</th>
 				<th>Variable Name</th>
 				<th>Unit</th>
-				<th>Jumlah Data</th>
+				<th>Total Sensor</th>
 				<th>Icon</th>
 				<th>Action</th>
 			</tr>

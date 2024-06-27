@@ -64,7 +64,7 @@
 						<div class="card-body table-border-style">
 							<?php if ($hak_akses->insert == '1') { ?>
 								<a href="<?= base_url('User/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
-									<i class="ti ti-plus"></i>Tambah User
+									<i class="ti ti-plus"></i>Add User
 								</a>
 							<?php } ?>
 							<div class="table-responsive">
@@ -72,10 +72,10 @@
 									<thead>
 										<tr>
 											<th>Nama</th>
-											<th>User Name</th>
-											<th>Email</th>
-											<th>Jabatan</th>
+											<th>Username</th>
+											<th>Position</th>
 											<th>Role</th>
+											<th>Region</th>
 											<th>Action</th>
 										</tr>
 									</thead>
@@ -84,9 +84,9 @@
 											<tr>
 												<td><?= $rec->nama ?></td>
 												<td><?= $rec->username ?></td>
-												<td><?= $rec->email ?></td>
 												<td><?= $rec->jabatan ?></td>
 												<td><?= $rec->role_name ?></td>
+												<td><?= $rec->region_name ?></td>
 												<td>
 													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 														<div class="btn-group" role="group">
