@@ -56,9 +56,34 @@ class Role extends MY_Controller
 		echo json_encode($tagihan);
 	}
 
+	public function edit_role()
+	{
+
+		$body = array(
+			'role_name' 		=> $this->input->post('nama_role_edit'),
+			'status' 		=> $this->input->post('status_edit')
+		);
+
+		$this->db->where('id', $this->input->post('id_role_edit'));
+		$update = $this->db->update('ms_roles', $body);
+
+		if ($update) {
+			redirect('Role');
+		}
+	}
+
 	// public function tambah(){
 	// 	$this->load->view('region/tambah');
 	// }
+
+	public function get_data_role()
+	{
+		$id = $_GET['ms_roles_id'];
+
+		$data = $this->db->get_where('ms_roles', ['id' => $id])->row();
+
+		echo json_encode(['data' => $data]);
+	}
 
 	public function tambah_proses()
 	{
@@ -90,10 +115,15 @@ class Role extends MY_Controller
 
 
 
-	// function hapus(){
-	// 	$id = $this->input->get('id');
-	// 	$this->db->delete('ms_regions', array('id' => $id));
-	// 	$this->session->set_flashdata('success', 'Sukses!');
-	// 	redirect('Region');
-	// }
+	function delete()
+	{
+		$id = $this->input->post('ms_roles_id');
+		$delete = $this->db->delete('ms_roles', array('id' => $id));
+
+		if ($delete) {
+			echo json_encode(['error' => false, 'msg' => 'Success delete role']);
+		} else {
+			echo json_encode(['error' => true, 'msg' => 'Error delete role']);
+		}
+	}
 }
