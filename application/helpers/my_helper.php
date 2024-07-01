@@ -468,7 +468,6 @@ function standard($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tamba
             default:
                 throw new Exception();
         }
-
         return [
             'id_sensor' => $data_jadi->jenis_sensor_jadi,
             'nama_sensor' => $data_jadi->nama_sensor . ' (' . $data_jadi->unit_sensor . ')',

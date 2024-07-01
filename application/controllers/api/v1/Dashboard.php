@@ -4,7 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 require APPPATH . '/libraries/REST_Controller.php';
 
-class Data extends REST_Controller
+class Dashboard extends REST_Controller
 {
     function __construct()
     {
@@ -159,45 +159,56 @@ class Data extends REST_Controller
         $db_site = $this->change_connection($site_id);
         $db_site->trans_begin();
         try {
-            $db_site->insert("data", $data_insert);
-            $last_id = $db_site->insert_id();
+            $check_data = $db_site->get_where("temp_data", ['kode_instrument' => $data_insert['kode_instrument']])->row();
 
+            if (!$check_data) {
+                $db_site->insert("temp_data", $data_insert);
+                $last_id = $db_site->insert_id();
 
-            foreach ($data_mentah as $index => $row) {
-                $data_mentah_raw = $this->db->get_where("sys_jenis_sensor", array('var_name' => $index))->row();
-                // pre($data_mentah_raw);
-                if (!isset($data_mentah_raw->id)) {
-                    throw new Exception();
+                foreach ($hasil as $row) {
+                    $data_value = array(
+                        'data_id' => $last_id,
+                        'sensor_id' => $row['id_sensor'],
+                        'data_primer' => 0,
+                        'data_jadi' =>  $row['hasil'],
+                        "created_by" => "SYSTEM",
+                        "updated_by" => "SYSTEM",
+                    );
+                    $insert_data_value = $db_site->insert("temp_data_value", $data_value);
+                    if (!$insert_data_value) {
+                        throw new Exception("Gagal insert data value");
+                    }
                 }
-                $data_value = array(
-                    'data_id' => $last_id,
-                    'sensor_id' => $data_mentah_raw->id,
-                    'data_primer' => $row,
-                    'data_jadi' => "",
-                    "created_by" => "SYSTEM",
-                    "updated_by" => "SYSTEM",
-                );
-                $insert_data_value = $db_site->insert("data_value", $data_value);
-                if (!$insert_data_value) {
+            } else {
+                $db_site->where("id", $check_data->id);
+                $db_site->update("temp_data", $data_insert);
 
-                    throw new Exception("Gagal insert data value");
+                foreach ($hasil as $row) {
+                    $check_data_value = $db_site->get_where("temp_data_value", ['data_id' => $check_data->id, 'sensor_id' => $row['id_sensor']])->row();
+
+                    $data_value = array(
+                        'data_id' => $check_data->id,
+                        'sensor_id' => $row['id_sensor'],
+                        'data_primer' => 0,
+                        'data_jadi' =>  $row['hasil'],
+                        "created_by" => "SYSTEM",
+                        "updated_by" => "SYSTEM",
+                    );
+                    if (!$check_data_value) {
+                        $insert_data_value = $db_site->insert("temp_data_value", $data_value);
+                        if (!$insert_data_value) {
+                            throw new Exception("Gagal insert data value");
+                        }
+                    } else {
+                        $db_site->where('id', $check_data_value->id);
+                        $update_data_value = $db_site->update("temp_data_value", $data_value);
+                        if (!$update_data_value) {
+                            throw new Exception("Gagal insert data value");
+                        }
+                    }
                 }
             }
 
-            foreach ($hasil as $row) {
-                $data_value = array(
-                    'data_id' => $last_id,
-                    'sensor_id' => $row['id_sensor'],
-                    'data_primer' => 0,
-                    'data_jadi' =>  $row['hasil'],
-                    "created_by" => "SYSTEM",
-                    "updated_by" => "SYSTEM",
-                );
-                $insert_data_value = $db_site->insert("data_value", $data_value);
-                if (!$insert_data_value) {
-                    throw new Exception("Gagal insert data value");
-                }
-            }
             $db_site->trans_commit();
             return true;
         } catch (Exception $e) {
