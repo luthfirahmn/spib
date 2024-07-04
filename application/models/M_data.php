@@ -495,18 +495,20 @@ class M_data extends CI_Model
 						AND t2.data_jadi != '' AND t2.data_primer = 0
 						GROUP BY t2.sensor_id, t3.jenis_sensor, t3.unit_sensor
 					")->result_array();
-
 					foreach ($sensor as $row) {
-						$data_id_before = isset($data[$key + 1]['tanggal']) ? "(SELECT id FROM data WHERE DATE(tanggal) = '" . $data[$key + 1]['tanggal'] . "' AND kode_instrument = '$kode_instrument' LIMIT 1)" : 'NULL';
+						// $data_id_before = isset($data[$key + 1]['tanggal']) ? "(SELECT id FROM data WHERE DATE(tanggal) = '" . $data[$key + 1]['tanggal'] . "' AND kode_instrument = '$kode_instrument' LIMIT 1)" : 'NULL';
+						$tanggal_before = date('Y-m-d', strtotime($data[$key]['tanggal'] . ' -1 day'));
 						$query = $db_site->query("
 							SELECT AVG(t2.data_jadi) as avg_val_sensor
 							FROM data t1
 							LEFT JOIN data_value t2 ON t1.id = t2.data_id AND t2.sensor_id = {$row['sensor_id']} AND t2.data_primer = 0
 							WHERE t1.kode_instrument = '$kode_instrument'
-							AND t1.id = {$data_id_before}
+							AND t1.tanggal = '{$tanggal_before}'
+							GROUP BY t1.tanggal
 						");
 
 						$data_before = $query->row();
+						$avg_data_before = isset($data_before->avg_val_sensor) ? $data_before->avg_val_sensor : 0;
 
 						$replace_val_sensor = str_replace(',', '', $row['avg_val_sensor']);
 						$is_zero  = $replace_val_sensor == 0 ? true : false;
@@ -515,7 +517,7 @@ class M_data extends CI_Model
 						if ($float_val_sensor === 0 && $is_zero === false) {
 							$data[$key]['Status'] = $replace_val_sensor;
 						} else {
-							$replace_val_before = str_replace(',', '', $data_before->avg_val_sensor);
+							$replace_val_before = str_replace(',', '', $avg_data_before);
 							$hit = $float_val_sensor - (float)$replace_val_before;
 							$hitung = number_format($hit, 3);
 							$trend = ($hitung > 0) ? 'naik' : 'turun';

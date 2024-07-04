@@ -26,6 +26,9 @@ class Dashboard extends MY_Controller
 		if ($all_data) {
 			$data['nama_region'] = $this->db->get_where('ms_regions', 'id = ' . $region_id)->row();
 			$data['station'] = $all_data;
+		} else {
+			$data['nama_region'] = $this->db->get_where('ms_regions', 'id = ' . $region_id)->row();
+			$data['station'] = [];
 		}
 
 
@@ -36,16 +39,11 @@ class Dashboard extends MY_Controller
 	public function get_all_data($region_id)
 	{
 		try {
-			// Change database connection based on region_id
 			$db_site = $this->change_connection($region_id);
 
-			// Retrieve stations with instruments for the given region_id
 			$stations = $this->get_stations_with_instruments($region_id);
 
-			// Fetch the latest data values from the database
 			$latest_data = $this->get_latest_data_values($db_site, $region_id);
-			// pre($latest_data);
-			// Organize the latest data by instrument code
 			$data_by_instrument = array();
 			foreach ($latest_data as $data) {
 				$data_by_instrument[$data->kode_instrument] = (object) [
@@ -129,8 +127,8 @@ class Dashboard extends MY_Controller
         FROM (
             SELECT data.kode_instrument, data_value.data_jadi, data.jam, data.tanggal, data_value.sensor_id,
                    ROW_NUMBER() OVER (PARTITION BY data.kode_instrument ORDER BY data.tanggal DESC, data.jam DESC, data_value.id DESC) as rn
-            FROM " . $db_site->database . ".data
-            INNER JOIN " . $db_site->database . ".data_value ON data.id = data_value.data_id
+            FROM " . $db_site->database . ".temp_data data
+            INNER JOIN " . $db_site->database . ".temp_data_value data_value ON data.id = data_value.data_id
            
             WHERE data_value.data_jadi != '' AND data_value.data_primer = 0
 			AND data.keterangan = 'OTOMATIS'

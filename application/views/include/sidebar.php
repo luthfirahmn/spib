@@ -1,16 +1,26 @@
 <?php
 $menu = $this->session->userdata('menu');
 $submenu = $this->session->userdata('submenu');
+$list_region_user = $this->session->userdata('list_region');
 
 ?>
 <nav class="pc-sidebar">
 	<div class="navbar-wrapper">
-		<div class="m-header">
-			<a href="#" class="b-brand fs-4">
-				<img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt="" class="logo logo-lg" width="35" />
-				SIMETRI VIEW
-			</a>
-		</div>
+		<?php if (count($list_region_user) > 1) : ?>
+			<div class="m-header">
+				<a href="#" class="b-brand fs-4">
+					<img src="<?= base_url() . 'assets/logo.jpg' ?>" alt="" class="logo logo-lg" width="35" />
+					Telemetry View
+				</a>
+			</div>
+		<?php else : ?>
+			<div class="m-header">
+				<a href="#" class="b-brand fs-4">
+					<img src="<?= base_url() . 'assets/upload/' . $list_region_user[0]->logo_site ?>" alt="" class="logo logo-lg" width="35" />
+					<?= $list_region_user[0]->site_name ?>
+				</a>
+			</div>
+		<?php endif; ?>
 		<div class="navbar-content">
 			<ul class="pc-navbar">
 				<?php
