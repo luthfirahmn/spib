@@ -18,7 +18,53 @@
 	<link rel="stylesheet" href="<?= base_url() ?>assets/fonts/material.css" />
 	<link rel="stylesheet" href="<?= base_url() ?>assets/css/style.css" id="main-style-link" />
 	<link rel="stylesheet" href="<?= base_url() ?>assets/css/style-preset.css" id="preset-style-link" />
+	<link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.css" />
+	<style>
+		/* Set table width and borders */
+		#instrumentTable {
+			border-collapse: collapse;
+			width: 100%;
+		}
 
+		#instrumentTable th,
+		#instrumentTable td {
+			border-bottom: 1px solid #ddd;
+			padding: 12px;
+		}
+
+		#instrumentTable th {
+			background-color: #f2f2f2;
+			color: #333;
+			text-align: left;
+		}
+
+		/* Zebra striping */
+
+		#instrumentTable tr:hover {
+			background-color: #f1f1f1;
+		}
+
+		/* Pagination controls */
+		.dataTables_paginate .paginate_button {
+			padding: 5px 10px;
+			margin: 2px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			background-color: #fff;
+			color: #333;
+		}
+
+		.dataTables_paginate .paginate_button:hover {
+			background-color: #ddd;
+		}
+
+		/* Search input */
+		.dataTables_filter input {
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 5px;
+		}
+	</style>
 	<style>
 		#ModalEdit2 {
 			position: fixed;
@@ -90,17 +136,16 @@
 										</a>
 									<?php } ?>
 								</div>
-								<!-- <div class="col-md-6">
+								<div class="col-md-6">
 									<select class="form-control" name="ms_regions_id" id="ms_regions_id">
 										<?php foreach ($region as $reg) { ?>
 											<option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
 										<?php } ?>
 									</select>
-								</div> -->
+								</div>
 							</div>
-
-							<div class="table-responsive">
-								<table class="table" id="pc-dt-simple">
+							<div id="list_data_filter">
+								<table id="instrumentTable" class="display" style="width:100%">
 									<thead>
 										<tr>
 											<th>Region Name</th>
@@ -114,32 +159,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<?php foreach ($instrument as $rec) { ?>
-											<tr>
-												<td><?= $rec->site_name ?></td>
-												<td><?= $rec->kode_instrument ?></td>
-												<td><?= $rec->nama_instrument ?></td>
-												<td><?= $rec->name ?></td>
-												<td><?= $rec->nama_stasiun ?></td>
-												<td><?= $rec->data_terakhir_masuk ?></td>
-												<td><?= $rec->total_data ?></td>
-												<td>
-													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-														<div class="btn-group" role="group">
-															<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Action </button>
-															<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-																<?php if ($hak_akses->update == '1') { ?>
-																	<a class="dropdown-item" href="<?= base_url('InstrumentData/edit?id=' . $rec->id) ?>"> <i class="ti ti-edit"></i> Edit</a>
-																<?php } ?>
-																<?php if ($hak_akses->delete == '1') { ?>
-																	<a class="dropdown-item" href="<?= base_url('InstrumentData/hapus?id=' . $rec->id) ?>" onclick="return confirm('Are you sure?')"> <i class="ti ti-trash"></i> Delete</a>
-																<?php } ?>
-															</div>
-														</div>
-													</div>
-												</td>
-											</tr>
-										<?php } ?>
+										<!-- Data will be populated by DataTables -->
 									</tbody>
 								</table>
 							</div>
@@ -151,38 +171,6 @@
 		</div>
 	</section>
 
-	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="judul"></h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<form action="<?= base_url('InstrumentData/simpan_parameter') ?>" method="post" enctype="multipart/form-data">
-					<div class="modal-body">
-						<input type="text" id="idInstrument" name="idInstrument" hidden>
-						<div style="text-align:right; cursor:pointer;" onclick="add_item('tbl_create', 'create')">
-							<i class="fas fa-plus-square" style="color:green;"></i> Tambah Parameter
-						</div>
-						<div class="form-group">
-							<table id="tbl_create" width="100%">
-								<tr>
-									<th>Nama Parameter</th>
-									<th></th>
-								</tr>
-							</table>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-						<button type="submit" class="btn btn-primary">Simpan</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-
 
 
 	<?php $this->load->view('include/footer.php'); ?>
@@ -193,103 +181,91 @@
 	<script src="<?= base_url() ?>assets/js/pcoded.js"></script>
 	<script src="<?= base_url() ?>assets/js/plugins/feather.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/customizer.js"></script>
-	<script src="<?= base_url() ?>assets/js/plugins/simple-datatables.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+	<script src="<?= base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
+	<script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+	<script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.js"></script>
 	<script>
-		const dataTable = new simpleDatatables.DataTable('#pc-dt-simple');
-		var cell_number = 0;
+		function Createtable() {
+			var ms_regions_id = $("#ms_regions_id").val();
 
-		function filterTableBySite(siteId) {
-			$('#pc-dt-simple tbody tr').hide(); // Hide all table rows
-			if (siteId === '') {
-				$('#pc-dt-simple tbody tr').show(); // Show all rows if no site is selected
-			} else {
-				$('#pc-dt-simple tbody tr[data-site="' + siteId + '"]').show(); // Show rows with selected site
-			}
-		}
-
-		// Event listener for site filter change
-		$('#ms_regions_id').change(function() {
-			var selectedSite = $(this).val();
-			filterTableBySite(selectedSite);
-		});
-
-		$(document).on("click", ".open-AddBookDialog", function() {
-			var idInstrument = $(this).data('id');
-			var nama_instrument = $(this).data('name');
-			var judul = document.getElementById("judul");
-			judul.innerHTML = nama_instrument;
-
-
-			document.getElementById('idInstrument').value = idInstrument;
-
-			//cek data 
-			var xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-
-
-					// DATA DETAIL
-
-					var result = JSON.parse(xhttp.responseText).result;
-
-					var table = document.getElementById('tbl_create');
-
-					table.innerHTML = '';
-
-					var header = table.insertRow(0);
-
-					var hdr1 = header.insertCell(0);
-					hdr1.innerHTML = 'Nama Parameter';
-
-					var hdr2 = header.insertCell(1);
-					hdr2.innerHTML = '';
-
-					for (i = 0; i < result.length; i++) {
-						cell_number++;
-
-						var row = table.insertRow(1);
-
-						var cell0 = row.insertCell(0);
-						cell0.innerHTML = '<input type="text" name="nama_parameter[]" id="nama_parameter_' + cell_number + '"  value="' + result[i].parameter_name + '" class="form-control" required>';
-
-						var cell1 = row.insertCell(1);
-						cell1.innerHTML = '<button type="button" class="btn btn-icon btn-danger d-inline-flex" onclick="deleteRow(this)"><i class="ti ti-trash"></i></button>';
-						cell1.style.padding = '10px';
-						cell1.style.textAlign = 'center';
-						cell1.style.width = '2%';
+			$('#instrumentTable').DataTable({
+				"processing": true,
+				"serverSide": true,
+				"ajax": {
+					"url": "<?php echo base_url('InstrumentData/list'); ?>",
+					"type": "POST",
+					"data": function(d) {
+						d.ms_regions_id = ms_regions_id;
+					},
+					"dataSrc": function(json) {
+						return json.data;
 					}
-				}
-			};
-			xhttp.open("GET", "<?php echo base_url('InstrumentData/parameter'); ?>" + '?id=' + idInstrument, true);
-			xhttp.send();
+				},
+				"columns": [{
+						"data": "region_name"
+					},
+					{
+						"data": "kode_instrument"
+					},
+					{
+						"data": "nama_instrument"
+					},
+					{
+						"data": "instrument_type"
+					},
+					{
+						"data": "nama_stasiun"
+					},
+					{
+						"data": "total_data"
+					},
+					{
+						"data": "data_terakhir_masuk"
+					},
+					{
+						"data": null,
+						"defaultContent": "",
+						"orderable": false,
+						"render": function(data, type, row) {
+							var editUrl = "<?php echo base_url('InstrumentData/edit?id='); ?>" + row.id;
+							var deleteUrl = "<?php echo base_url('InstrumentData/hapus?id='); ?>" + row.id;
 
-			$('#exampleModal').modal('show');
+							var editBtn = '<?php if ($hak_akses->update == '1') { ?>' +
+								'<a class="dropdown-item" href="' + editUrl + '"> <i class="ti ti-edit"></i> Edit</a>' +
+								'<?php } ?>';
+
+							var deleteBtn = '<?php if ($hak_akses->delete == '1') { ?>' +
+								'<a class="dropdown-item" href="' + deleteUrl + '" onclick="return confirm(\'Are you sure?\')"> <i class="ti ti-trash"></i> Delete</a>' +
+								'<?php } ?>';
+
+							return '<div class="btn-group" role="group" aria-label="Button group with nested dropdown">' +
+								'<div class="btn-group" role="group">' +
+								'<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Action </button>' +
+								'<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">' +
+								editBtn +
+								deleteBtn +
+								'</div>' +
+								'</div>' +
+								'</div>';
+						}
+					}
+				],
+				"paging": true,
+				"searching": true,
+				"ordering": true,
+				"info": true
+			});
+		}
+
+		$(document).ready(function() {
+			Createtable();
 		});
 
-
-		function add_item(tbl_name, act) {
-			cell_number++;
-			var table = document.getElementById(tbl_name);
-			var row = table.insertRow(1);
-
-			var cell0 = row.insertCell(0);
-			cell0.innerHTML = '<input type="text" name="nama_parameter[]" id="nama_parameter_' + cell_number + '" class="form-control" required>';
-
-			var cell1 = row.insertCell(1);
-			cell1.innerHTML = '<button type="button" class="btn btn-icon btn-danger d-inline-flex"  onclick="deleteRow(this)"><i class="ti ti-trash"></i></button>';
-			cell1.style.padding = '10px';
-			cell1.style.textAlign = 'center';
-			cell1.style.width = '2%';
-
-
-		}
-
-		function deleteRow(param) {
-			var row = param.parentNode.parentNode;
-			row.parentNode.removeChild(row);
-		}
+		$("#ms_regions_id").change(function() {
+			var table = $('#instrumentTable').DataTable();
+			table.destroy();
+			Createtable();
+		});
 	</script>
 </body>
 <!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->

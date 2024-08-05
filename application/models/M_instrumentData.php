@@ -6,7 +6,7 @@ class M_instrumentData extends CI_Model
 		parent::__construct();
 	}
 
-	function instrument($ap_id_user)
+	function instrument($ap_id_user, $region_id)
 	{
 		$instrument = $this->db->query("
 			SELECT a.*, b.site_name, c.name, d.nama_stasiun FROM `tr_instrument` a
@@ -15,6 +15,7 @@ class M_instrumentData extends CI_Model
 			INNER JOIN `ms_stasiun` d ON a.`ms_stasiun_id`=d.id
 			INNER JOIN `ms_user_regions` e ON a.`ms_regions_id`=e.ms_regions_id
 			WHERE e.`ms_users_id`='$ap_id_user'
+			AND b.id = '$region_id'
 			ORDER BY 
 		CASE 
 			WHEN b.id = 5 THEN 0 

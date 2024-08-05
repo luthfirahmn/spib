@@ -18,10 +18,126 @@ class InstrumentData extends MY_Controller
 		$roles_id = $this->session->userdata('roles_id');
 		$ap_id_user = $this->session->userdata('ap_id_user');
 		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'InstrumentData');
-		$data['instrument'] = $this->M_instrumentData->instrument($ap_id_user);
+		// $data['instrument'] = $this->M_instrumentData->instrument($ap_id_user);
 		$data['region'] = $this->M_data->region($ap_id_user);
 		$this->load->view('instrumentdata/index', $data);
 	}
+	public function list()
+	{
+		$ap_id_user  = $this->session->userdata('ap_id_user');
+		$site_id = $this->input->post("ms_regions_id");
+		$roles_id = $this->session->userdata('roles_id');
+
+		$data['hak_akses'] = $this->M_akses->hak_akses($roles_id, 'InstrumentData');
+
+		// Get DataTables parameters
+		$draw = $this->input->post('draw');
+		$start = $this->input->post('start');
+		$length = $this->input->post('length');
+		$search = $this->input->post('search')['value'];
+		$order = $this->input->post('order');
+
+		// Build query with pagination and search
+		$this->db->select('a.*, b.site_name, c.name, d.nama_stasiun');
+		$this->db->from('tr_instrument a');
+		$this->db->join('ms_regions b', 'a.ms_regions_id = b.id');
+		$this->db->join('tr_instrument_type c', 'a.tr_instrument_type_id = c.id');
+		$this->db->join('ms_stasiun d', 'a.ms_stasiun_id = d.id');
+		$this->db->join('ms_user_regions e', 'a.ms_regions_id = e.ms_regions_id');
+		$this->db->where('e.ms_users_id', $ap_id_user);
+		$this->db->where('b.id', $site_id);
+
+		// Apply search filter
+		if ($search) {
+			$this->db->like('a.kode_instrument', $search);
+			$this->db->or_like('b.site_name', $search);
+			$this->db->or_like('c.name', $search);
+			$this->db->or_like('d.nama_stasiun', $search);
+		}
+
+		// Apply ordering
+		if (isset($order)) {
+			foreach ($order as $ord) {
+
+				$this->db->order_by("CASE WHEN b.id = 5 THEN 0 ELSE 1 END", '', FALSE);
+				$this->db->order_by('b.id', 'ASC');
+				$this->db->order_by($ord['column'], $ord['dir']);
+			}
+		}
+
+		// Apply pagination
+		$this->db->limit($length, $start);
+		$query = $this->db->get();
+
+		// Get total records without filtering
+		$this->db->from('tr_instrument a');
+		$this->db->join('ms_regions b', 'a.ms_regions_id = b.id');
+		$this->db->join('tr_instrument_type c', 'a.tr_instrument_type_id = c.id');
+		$this->db->join('ms_stasiun d', 'a.ms_stasiun_id = d.id');
+		$this->db->join('ms_user_regions e', 'a.ms_regions_id = e.ms_regions_id');
+		$this->db->where('e.ms_users_id', $ap_id_user);
+		$this->db->where('b.id', $site_id);
+
+		$total_records = $this->db->count_all_results();
+
+		// Get filtered records
+		$this->db->from('tr_instrument a');
+		$this->db->join('ms_regions b', 'a.ms_regions_id = b.id');
+		$this->db->join('tr_instrument_type c', 'a.tr_instrument_type_id = c.id');
+		$this->db->join('ms_stasiun d', 'a.ms_stasiun_id = d.id');
+		$this->db->join('ms_user_regions e', 'a.ms_regions_id = e.ms_regions_id');
+		$this->db->where('e.ms_users_id', $ap_id_user);
+		$this->db->where('b.id', $site_id);
+
+		if ($search) {
+			$this->db->like('a.kode_instrument', $search);
+			$this->db->or_like('b.site_name', $search);
+			$this->db->or_like('c.name', $search);
+			$this->db->or_like('d.nama_stasiun', $search);
+		}
+
+		$filtered_records = $this->db->count_all_results();
+
+		$data = array();
+		foreach ($query->result() as $row) {
+			$db_site = $this->change_connection($row->ms_regions_id);
+
+			$total_data = $db_site->query("SELECT COUNT(*) total_data FROM data WHERE data.kode_instrument = '{$row->kode_instrument}'")->row();
+			$row->total_data = $total_data->total_data;
+
+			$data_terkhir = $db_site->query("SELECT tanggal, jam FROM data WHERE data.kode_instrument = '{$row->kode_instrument}' ORDER BY tanggal DESC, jam DESC LIMIT 1")->row();
+
+			if ($data_terkhir) {
+				$datetime_string = $data_terkhir->tanggal . ' ' . $data_terkhir->jam;
+				$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $datetime_string);
+				$row->data_terakhir_masuk = $datetime->format('d M Y H:i');
+			} else {
+				$row->data_terakhir_masuk = 'No data found';
+			}
+
+			$data[] = array(
+				'id' => $row->id,
+				'region_name' => $row->site_name,
+				'kode_instrument' => $row->kode_instrument,
+				'nama_instrument' => $row->nama_instrument,
+				'instrument_type' => $row->name,
+				'nama_stasiun' => $row->nama_stasiun,
+				'total_data' => $row->total_data,
+				'data_terakhir_masuk' => $row->data_terakhir_masuk
+			);
+		}
+
+		// Prepare JSON response
+		$response = array(
+			'draw' => intval($draw),
+			'recordsTotal' => $total_records,
+			'recordsFiltered' => $filtered_records,
+			'data' => $data
+		);
+
+		echo json_encode($response);
+	}
+
 
 	public function tambah()
 	{
@@ -319,5 +435,22 @@ class InstrumentData extends MY_Controller
 		$tabel			= $this->load->view('instrumentdata/form_koefisien', $data, true);
 
 		echo $tabel;
+	}
+
+
+	function change_connection($id_regions)
+	{
+
+		$query = $this->db->query("SELECT * FROM ms_regions WHERE id = '$id_regions'");
+		$result = $query->row();
+
+		$second_db_params = $this->switchDatabase($result->database_host, $result->database_username, $result->database_password, $result->database_name, $result->database_port);
+		$this->db2 = $this->load->database($second_db_params, TRUE);
+
+		if ($this->db2->initialize()) {
+			return $this->db2;
+		} else {
+			return false;
+		}
 	}
 }

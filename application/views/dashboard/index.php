@@ -224,12 +224,14 @@
 
     <script>
         function refreshContent() {
-            $("#carouselContent").load(window.location.href + " #carouselContent > *");
+            $(".carouselContent").load(window.location.href + " .carouselContent > *");
         }
 
         $(document).ready(function() {
-            setInterval(refreshContent, 60000); // Refresh every 60000 milliseconds (1 minute)
+            setInterval(refreshContent, 60000);
         });
+
+
         $(document).ready(function() {
             document.body.style.zoom = 1.0
             var scale = 'scale(1)';
@@ -237,6 +239,7 @@
             document.body.style.msTransform = scale; // IE 9
             document.body.style.transform = scale;
         });
+
         $("#ms_regions_id").change(function() {
             var ms_regions_id = $(this).val();
 
