@@ -405,6 +405,39 @@ function standard($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tamba
         }
 
         switch ($data_jadi->kode_sensor_jadi) {
+            case "pm25":
+                $hitung = (float)$data_mentah["pm25"] + $kalibrasi;
+                break;
+            case "pm10":
+                $hitung = (float)$data_mentah["pm10"] + $kalibrasi;
+                break;
+            case "karbon_monoksida":
+                $hitung = (float)$data_mentah["karbon_monoksida"] + $kalibrasi;
+                break;
+            case "nitrogen_dioksida":
+                $hitung = (float)$data_mentah["nitrogen_dioksida"] + $kalibrasi;
+                break;
+            case "sulfur_dioksida":
+                $hitung = (float)$data_mentah["sulfur_dioksida"] + $kalibrasi;
+                break;
+            case "ozon":
+                $hitung = (float)$data_mentah["ozon"] + $kalibrasi;
+                break;
+            case "tss":
+                $hitung = (float)$data_mentah["tss"] + $kalibrasi;
+                break;
+            case "turbidity":
+                $hitung = (float)$data_mentah["turbidity"] + $kalibrasi;
+                break;
+            case "cod":
+                $hitung = (float)$data_mentah["cod"] + $kalibrasi;
+                break;
+            case "water_ph":
+                $hitung = (float)$data_mentah["water_ph"] + $kalibrasi;
+                break;
+            case "debit_air":
+                $hitung = (float)$data_mentah["debit_air"] + $kalibrasi;
+                break;
             case "wind_speed":
                 $hitung = (float)$data_mentah["wind_speed"] + $kalibrasi;
                 break;

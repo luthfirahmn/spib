@@ -132,6 +132,16 @@ class Data extends REST_Controller
                 throw new Exception("Formula belum tersedia");
             }
 
+            $currentDateTime = new DateTime();
+
+            $inputDateTime = new DateTime("$tanggal $jam");
+
+            if ($inputDateTime > $currentDateTime) {
+
+                throw new Exception("Tanggal dan jam tidak valid");
+            }
+
+
             $data_insert = array(
                 'kode_instrument' => $kode_instrument,
                 'tanggal' => $tanggal,
@@ -158,53 +168,100 @@ class Data extends REST_Controller
     {
         $db_site = $this->change_connection($site_id);
         $db_site->trans_begin();
+
         try {
-            $db_site->insert("data", $data_insert);
-            $last_id = $db_site->insert_id();
+            // Check if the record exists
+            $existing_record = $db_site->get_where("data", [
+                'kode_instrument' => $data_insert['kode_instrument'],
+                'tanggal' => $data_insert['tanggal'],
+                'jam' => $data_insert['jam']
+            ])->row();
 
+            if ($existing_record) {
+                // Record exists, perform update
+                $db_site->where('id', $existing_record->id);
+                $db_site->update('data', $data_insert);
+                $last_id = $existing_record->id;
+            } else {
+                // Record does not exist, perform insert
+                $db_site->insert("data", $data_insert);
+                $last_id = $db_site->insert_id();
+            }
 
+            // Insert or update data_mentah
             foreach ($data_mentah as $index => $row) {
-                $data_mentah_raw = $this->db->get_where("sys_jenis_sensor", array('var_name' => $index))->row();
-                // pre($data_mentah_raw);
+                $data_mentah_raw = $this->db->get_where("sys_jenis_sensor", ['var_name' => $index])->row();
                 if (!isset($data_mentah_raw->id)) {
-                    throw new Exception();
+                    throw new Exception("Sensor type not found: " . $index);
                 }
-                $data_value = array(
+
+                // Check if data_value exists
+                $existing_data_value = $db_site->get_where("data_value", [
+                    'data_id' => $last_id,
+                    'sensor_id' => $data_mentah_raw->id
+                ])->row();
+
+                $data_value = [
                     'data_id' => $last_id,
                     'sensor_id' => $data_mentah_raw->id,
                     'data_primer' => $row,
                     'data_jadi' => "",
                     "created_by" => "SYSTEM",
                     "updated_by" => "SYSTEM",
-                );
-                $insert_data_value = $db_site->insert("data_value", $data_value);
-                if (!$insert_data_value) {
+                ];
 
-                    throw new Exception("Gagal insert data value");
+                if ($existing_data_value) {
+                    // Update existing data_value
+                    $db_site->where('id', $existing_data_value->id);
+                    $db_site->update("data_value", $data_value);
+                } else {
+                    // Insert new data_value
+                    $insert_data_value = $db_site->insert("data_value", $data_value);
+                    if (!$insert_data_value) {
+                        throw new Exception("Failed to insert data value");
+                    }
                 }
             }
 
+            // Insert or update hasil
             foreach ($hasil as $row) {
-                $data_value = array(
+                $data_value = [
                     'data_id' => $last_id,
                     'sensor_id' => $row['id_sensor'],
                     'data_primer' => 0,
-                    'data_jadi' =>  $row['hasil'],
+                    'data_jadi' => $row['hasil'],
                     "created_by" => "SYSTEM",
                     "updated_by" => "SYSTEM",
-                );
-                $insert_data_value = $db_site->insert("data_value", $data_value);
-                if (!$insert_data_value) {
-                    throw new Exception("Gagal insert data value");
+                ];
+
+                // Check if data_value exists
+                $existing_data_value = $db_site->get_where("data_value", [
+                    'data_id' => $last_id,
+                    'sensor_id' => $row['id_sensor']
+                ])->row();
+
+                if ($existing_data_value) {
+                    // Update existing data_value
+                    $db_site->where('id', $existing_data_value->id);
+                    $db_site->update("data_value", $data_value);
+                } else {
+                    // Insert new data_value
+                    $insert_data_value = $db_site->insert("data_value", $data_value);
+                    if (!$insert_data_value) {
+                        throw new Exception("Failed to insert data value");
+                    }
                 }
             }
+
             $db_site->trans_commit();
             return true;
         } catch (Exception $e) {
-            $db_site->rollback();
+            $db_site->trans_rollback();
+            // Consider logging the exception message
             return false;
         }
     }
+
 
 
     public function change_connection($id_regions)

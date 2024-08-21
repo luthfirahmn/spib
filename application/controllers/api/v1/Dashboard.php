@@ -132,6 +132,15 @@ class Dashboard extends REST_Controller
                 throw new Exception("Formula belum tersedia");
             }
 
+            $currentDateTime = new DateTime();
+
+            $inputDateTime = new DateTime("$tanggal $jam");
+
+            if ($inputDateTime > $currentDateTime) {
+
+                throw new Exception("Tanggal dan jam tidak valid");
+            }
+
             $data_insert = array(
                 'kode_instrument' => $kode_instrument,
                 'tanggal' => $tanggal,

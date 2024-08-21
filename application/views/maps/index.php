@@ -80,7 +80,7 @@
     }).addTo(mymap);
     var marker;
     <?php
-    $colors = array('blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'gray', 'black', 'red', 'cyan', 'brown', 'magenta');
+    $colors = array('blue', 'red', 'green', 'lightblue', 'yellow', 'purple', 'pink', 'blue-dot', 'red-dot', 'green-dot', 'lightblue-dot', 'yellow-dot', 'purple-dot', 'pink-dot', 'blue', 'red', 'green', 'lightblue', 'yellow', 'purple', 'pink',);
     $i = 0;
     foreach ($station as $stasiun) :
     ?>

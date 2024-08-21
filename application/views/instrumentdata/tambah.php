@@ -208,7 +208,7 @@
 										</div>
 										<hr>
 										<div class="form-group col-md-12">
-											<button type="button" class="btn btn-outline-info d-inline-flex" data-bs-toggle="modal" style="float: right;" onclick="tambahTempKoefisien()">
+											<button type="button" class="btn btn-outline-info d-inline-flex tambahKoefisien" data-bs-toggle="modal" style="float: right;" onclick="tambahTempKoefisien()">
 												<i class="ti ti-info-circle me-1"></i>Tambah Koefisien
 											</button>
 										</div>
@@ -731,6 +731,13 @@
 						obj = JSON.parse(json);
 
 					data_tagihan.html(obj.tabel);
+
+					if (data_tagihan.html() != '') {
+						console.log(data_tagihan);
+						$('.tambahKoefisien').attr('style', 'display: none !important;');
+					} else {
+						$('.tambahKoefisien').attr('style', 'display: block; float:right;');
+					}
 				}
 			});
 		};
