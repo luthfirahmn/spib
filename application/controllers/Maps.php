@@ -21,4 +21,23 @@ class Maps extends MY_Controller
         $data['controller'] = 'Maps';
         $this->load->view('maps/index', $data);
     }
+
+
+    public function get_station_data()
+    {
+        $id = $this->input->get('id');
+
+        if (!$id) {
+            echo json_encode(['error' => 'Invalid ID']);
+            return;
+        }
+
+        $data = $this->M_maps->get_station_data($id);
+
+        if ($data) {
+            echo json_encode($data);
+        } else {
+            echo json_encode(['error' => 'Station not found']);
+        }
+    }
 }

@@ -10,54 +10,65 @@ class M_maps extends CI_Model
 	{
 		// Query to fetch stations with their instruments
 		$station = $this->db->query("
+			SELECT a.*,
+				a.stasiun_type
+			FROM ms_stasiun a 
+			LEFT JOIN ms_user_regions d ON a.ms_regions_id = d.ms_regions_id
+			WHERE d.ms_users_id = '$ap_id_user'
+		")->result();
+
+
+		return $station;
+	}
+
+
+	function get_station_data($id)
+	{
+		$station = $this->db->query("
 			SELECT a.*, 
 				b.site_name, 
 				GROUP_CONCAT(c.kode_instrument) AS kode_instruments,
 				a.stasiun_type
 			FROM ms_stasiun a 
 			LEFT JOIN ms_regions b ON a.ms_regions_id = b.id
-			LEFT JOIN ms_user_regions d ON a.ms_regions_id = d.ms_regions_id
 			LEFT JOIN tr_instrument c ON a.id = c.ms_stasiun_id
-			WHERE d.ms_users_id = '$ap_id_user'
+			WHERE a.id = $id
 			GROUP BY a.id, b.site_name, a.stasiun_type
 		")->result();
 
 		foreach ($station as $row) {
 			$db_site = $this->change_connection($row->ms_regions_id);
 
-			// For different stasiun_type, adjust the query accordingly
 			if ($row->stasiun_type == 'GEOLOGI' || $row->stasiun_type == 'SEISMOLOGI') {
-				// For 'Geologi' and 'Seismologi', only fetch data for the first instrument
 				$first_instrument = explode(',', $row->kode_instruments)[0];
 				$kode_instruments = "'" . $first_instrument . "'";
 
 				$result = $db_site->query("
 					SELECT 
-						t3.jenis_sensor, t3.unit_sensor, data_value.data_jadi
+						t3.jenis_sensor, t3.unit_sensor, t2.data_jadi
 					FROM (
-						SELECT id FROM temp_data data
-						WHERE data.kode_instrument = $kode_instruments
-						ORDER BY data.tanggal DESC, data.jam DESC LIMIT 1
-					) data 
-					INNER JOIN temp_data_value data_value ON data.id = data_value.data_id
-					INNER JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON data_value.sensor_id = t3.id
-					WHERE data_value.data_jadi != '' AND data_value.data_primer = 0
+						SELECT id FROM temp_data t1
+						WHERE t1.kode_instrument = $kode_instruments
+						ORDER BY t1.tanggal DESC, t1.jam DESC LIMIT 1
+					) t1 
+					INNER JOIN temp_data_value t2 ON t1.id = t2.data_id
+					INNER JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
+					WHERE t2.data_jadi != '' AND t2.data_primer = 0
 				")->result();
 			} else {
-				// For other types, fetch data for all instruments
 				$kode_instruments = "'" . str_replace(",", "','", $row->kode_instruments) . "'";
 
 				$result = $db_site->query("
 					SELECT 
-						t3.jenis_sensor, t3.unit_sensor, data_value.data_jadi
+						t3.jenis_sensor, t3.unit_sensor, t2.data_jadi
 					FROM (
-						SELECT id FROM temp_data data
-						WHERE data.kode_instrument IN ($kode_instruments)
-						ORDER BY data.tanggal DESC, data.jam DESC LIMIT 1
-					) data 
-					INNER JOIN temp_data_value data_value ON data.id = data_value.data_id
-					INNER JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON data_value.sensor_id = t3.id
-					WHERE data_value.data_jadi != '' AND data_value.data_primer = 0
+						SELECT id FROM temp_data t1
+						WHERE t1.kode_instrument IN ($kode_instruments)
+						ORDER BY t1.tanggal DESC, t1.jam DESC LIMIT 1
+					) t1 
+					INNER JOIN temp_data_value t2 ON t1.id = t2.data_id
+					INNER JOIN " . $this->db->database . ".sys_jenis_sensor t3 ON t2.sensor_id = t3.id
+					WHERE t2.data_jadi != '' AND t2.data_primer = 0
 				")->result();
 			}
 
@@ -66,7 +77,6 @@ class M_maps extends CI_Model
 
 		return $station;
 	}
-
 
 	function station_detail($id)
 	{

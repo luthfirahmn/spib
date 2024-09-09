@@ -81,11 +81,9 @@ class Data extends MY_Controller
 		$tanggal = strval($this->input->get("tanggal"));
 		$waktu = strval($this->input->get("waktu"));
 
-		// Ganti koneksi database berdasarkan $site_id
 		$db_site = $this->change_connection($site_id);
 
-		// Ambil data dari model berdasarkan parameter yang diberikan
-		$data = $this->M_data->list($db_site, $site_id, $instrument_id, $keterangan, $tanggal, $waktu, 0, 32, $download = 1);
+		$data = $this->M_data->list($db_site, $site_id, $instrument_id, $keterangan, $tanggal, $waktu, 0, 999, $download = 1);
 
 		// Load library PHPExcel
 		$this->load->library('PHPExcel');
@@ -106,21 +104,45 @@ class Data extends MY_Controller
 		$objPHPExcel->setActiveSheetIndex(0);
 		$sheet = $objPHPExcel->getActiveSheet();
 
-		// Tambahkan header
 		$columns = array_keys((array) reset($data['data']));
 		foreach ($columns as $key => $column) {
 			$sheet->setCellValueByColumnAndRow($key, 1, $column);
 		}
-		// Tambahkan data
 		$row = 2;
-		foreach ($data['data'] as $item) {
-			$col = 0;
-			foreach ($item as $value) {
-				$sheet->setCellValueByColumnAndRow($col, $row, $value);
+		$col = 0;
+
+		$sheet->setCellValueByColumnAndRow($col, 1, 'No');
+		$col++;
+
+		foreach ($data['data'][0] as $key => $value) {
+			if ($key !== 'id' and $key !== 'no') {
+				$sheet->setCellValueByColumnAndRow($col, 1, $key);
 				$col++;
 			}
+		}
+
+		$row = 2;
+		foreach ($data['data'] as $index => $item) {
+			$col = 0;
+
+			$sheet->setCellValueByColumnAndRow($col, $row, $index + 1);
+			$col++;
+
+			foreach ($item as $key => $value) {
+				if ($key !== 'id' and $key !== 'no') {
+					$sheet->setCellValueByColumnAndRow($col, $row, $value);
+					$col++;
+				}
+			}
+
 			$row++;
 		}
+
+		$highestColumn = $sheet->getHighestColumn(); // Get highest column letter (e.g. 'D')
+		$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn); // Convert to column index
+		$sheet->removeColumnByIndex($highestColumnIndex - 1); // Remove last column
+
+
 		$site_name = $this->db->get_where('ms_regions', ['id' => $site_id])->row()->site_name;
 		$filename = $site_name . '_' . $data['data'][0]['kode_instrument'] . '_' . $data['data'][0]['nama_instrument'] . '_' . $tanggal;
 		// Save Excel file to a temporary location
@@ -131,6 +153,42 @@ class Data extends MY_Controller
 		echo base_url('assets/temp/' . $filename . '.xlsx');
 	}
 
+
+	public function getDataEdit()
+	{
+
+		$id = $this->input->post('id');
+		$ms_regions_id = $this->input->post('ms_regions_id');
+
+		try {
+			$db_site = $this->change_connection($ms_regions_id);
+
+			$db_site->trans_begin();
+
+			$query = $db_site->query("SELECT id,tanggal,jam,kode_instrument FROM data WHERE id = '$id'");
+			$data = $query->row();
+
+			if (!$data) {
+				throw new Exception("Error Processing Request", 1);
+			}
+
+			$query = $db_site->query("SELECT id,sensor_id,data_primer FROM data_value WHERE data_id = '$id' AND data_jadi = '' ");
+			$data_value = $query->result();
+
+			if (!$data_value) {
+				throw new Exception("Error Processing Request", 1);
+			}
+			$response['data'] = $data;
+			$response['data_value'] = $data_value;
+			$response['error'] = false;
+			$response['message'] = 'Success';
+			echo json_encode($response);
+		} catch (Exception $e) {
+			$response['error'] = true;
+			$response['message'] = 'Terjadi kesalahan: ' . $e->getMessage();
+			echo json_encode($response);
+		}
+	}
 
 	public function delete_data()
 	{
@@ -194,6 +252,49 @@ class Data extends MY_Controller
 			// Complete the transaction
 			if ($db_site->trans_status() === FALSE) {
 				// Rollback transaction if transaction status is false
+				$db_site->trans_rollback();
+				throw new Exception('Gagal menyelesaikan transaksi.');
+			}
+
+			// Commit transaction
+			$db_site->trans_commit();
+
+			$response['error'] = false;
+			$response['message'] = 'Data berhasil dihapus.';
+			echo json_encode($response);
+		} catch (Exception $e) {
+			$response['error'] = true;
+			$response['message'] = 'Terjadi kesalahan: ' . $e->getMessage();
+			echo json_encode($response);
+		}
+	}
+
+
+	public function delete_data_by_id()
+	{
+		$id = $this->input->post('id');
+		$ms_regions_id = $this->input->post('ms_regions_id');
+
+		try {
+			$db_site = $this->change_connection($ms_regions_id);
+
+			$db_site->trans_begin();
+
+
+
+			$delete_data_value = $db_site->query("DELETE FROM data_value WHERE data_id = '$id'");
+			if (!$delete_data_value) {
+				$db_site->trans_rollback();
+				throw new Exception('Gagal menghapus data_value dengan data_id: ' . $id);
+			}
+
+			$delete_data = $db_site->query("DELETE FROM data WHERE id = '$id'");
+			if (!$delete_data) {
+				$db_site->trans_rollback();
+				throw new Exception('Gagal menghapus data dengan id: ' . $id);
+			}
+
+			if ($db_site->trans_status() === FALSE) {
 				$db_site->trans_rollback();
 				throw new Exception('Gagal menyelesaikan transaksi.');
 			}
@@ -313,6 +414,92 @@ class Data extends MY_Controller
 			echo json_encode(["error" => true, "message" => $e->getMessage()]);
 		}
 	}
+
+	public function edit_data()
+	{
+		$add_site = $this->input->post('add_site');
+		$add_tanggal = $this->input->post('add_tanggal');
+		$add_jam = $this->input->post('add_jam');
+		$id_data = $this->input->post('id_data');
+		$db_site = $this->change_connection($add_site);
+
+
+		$db_site->trans_begin();
+		try {
+			if ($db_site) {
+
+				$id_data =  $this->input->post('id_data');
+				$data = array(
+					'tanggal' => $add_tanggal,
+					'jam' => $add_jam,
+					"created_by" => $this->session->userdata('ap_id_user'),
+					"updated_by" => $this->session->userdata('ap_id_user'),
+				);
+
+				$db_site->where('id', $id_data);
+				$data_update = $db_site->update("data", $data);
+
+				if (!$data_update) {
+					throw new Exception("Data gagal di update");
+				}
+				$data_mentah_raw = $this->input->post('data_mentah');
+
+				$data_value_id = [];
+				foreach ($data_mentah_raw  as $row) {
+					$id_sensor = $row['id'];
+					$data_mentah = $row['value'];
+					$data_value = array(
+						'data_id' => $id_data,
+						'sensor_id' => $id_sensor,
+						'data_primer' => $data_mentah,
+						'data_jadi' => "",
+						"created_by" => $this->session->userdata('ap_id_user'),
+						"updated_by" => $this->session->userdata('ap_id_user'),
+					);
+					$db_site->where('id',  $row['data_value_id']);
+					$data_value_id[] = $row['data_value_id'];
+					$insert_data_value = $db_site->update("data_value", $data_value);
+					if (!$insert_data_value) {
+						throw new Exception("Gagal update data value");
+					}
+				}
+
+				$data_jadi_raw = $this->input->post('data_jadi');
+
+				foreach ($data_jadi_raw  as $row) {
+					$id_sensor = $row['id'];
+					$data_jadi = $row['value'];
+					$data_value = array(
+						'data_id' => $id_data,
+						'sensor_id' => $id_sensor,
+						'data_primer' => 0,
+						'data_jadi' => $data_jadi,
+						"created_by" => $this->session->userdata('ap_id_user'),
+						"updated_by" => $this->session->userdata('ap_id_user'),
+					);
+
+					$db_site->where('data_id', $id_data);
+					$db_site->where('sensor_id', $id_sensor);
+					$db_site->where_not_in('id', $data_value_id);
+					$insert_data_value = $db_site->update("data_value", $data_value);
+					if (!$insert_data_value) {
+
+						throw new Exception("Gagal update data value");
+					}
+				}
+
+				$db_site->trans_commit();
+
+				echo json_encode(["error" => false, "message" => "data berhasil diupdate"]);
+			} else {
+				throw new Exception("Koneksi db gagal");
+			}
+		} catch (Exception $e) {
+			$db_site->rollback();
+			echo json_encode(["error" => true, "message" => $e->getMessage()]);
+		}
+	}
+
 
 	public function hitung()
 	{
@@ -623,8 +810,6 @@ class Data extends MY_Controller
 			echo json_encode(["error" => true, "message" => $e->getMessage()]);
 		}
 	}
-
-
 
 	public function change_connection($id_regions)
 	{

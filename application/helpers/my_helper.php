@@ -95,7 +95,6 @@ function piezometer($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tam
                 break;
 
             case "tekanan_air_mh2o":
-                // $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0']))) * 0.1022;
                 if (isset($data_tambahan['tekanan_air_kpa'])) {
                     $hitung = $data_tambahan['tekanan_air_kpa'] * 0.1022;
                 } else if (isset($data_tambahan['tekanan_air_kgcm2'])) {
@@ -114,43 +113,8 @@ function piezometer($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tam
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
             default:
-                // return ['tes'];
                 throw new Exception();
         }
-
-        // switch ($data_jadi->kode_sensor_jadi) {
-        //     case "tekanan_air_kpa":
-        //         $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
-        //         $data_tambahan['tekanan_air_kpa'] = null;
-        //         $data_tambahan['tekanan_air_kpa'] += $hitung;
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     case "tekanan_air_kgcm2":
-        //         $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
-        //         $data_tambahan['tekanan_air_kgcm2'] = null;
-        //         $data_tambahan['tekanan_air_kgcm2'] += $hitung;
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     case "tekanan_air_mh2o":
-        //         if ($data_tambahan['tekanan_air_kpa'] !== null) {
-        //             $hitung = $data_tambahan['tekanan_air_kpa'] * 0.1022;
-        //         } else if ($data_tambahan['tekanan_air_kgcm2']  !== null) {
-        //             $hitung = $data_tambahan['tekanan_air_kgcm2'] * 10.0003;
-        //         } else {
-        //             $hitung = 0;
-        //         }
-        //         $data_tambahan['tekanan_air_mh2o'] = 0;
-        //         $data_tambahan['tekanan_air_mh2o'] += $hitung;
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     case "level_freatik_air":
-        //         $hitung = (float)$koefisien['elevasi_sensor'] + $data_tambahan['tekanan_air_mh2o'];
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     default:
-        //         // return ['tes'];
-        //         throw new Exception();
-        // }
     } catch (Exception $e) {
         return false;
     }
@@ -196,33 +160,6 @@ function pressurecell($data_jadi, $data_mentah, $koefisien, $data_type, &$data_t
             default:
                 throw new Exception();
         }
-
-
-        // switch ($data_jadi->kode_sensor_jadi) {
-        //     case "tekanan_tanah_kgcm2":
-        //         $hitung = (((float)$koefisien['faktor_a'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ((float)$koefisien['faktor_b'] * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + (float)$koefisien['faktor_c']) - ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
-        //         $data_tambahan['tekanan_tanah_kgcm2'] = 0;
-        //         $data_tambahan['tekanan_tanah_kgcm2'] += $hitung;
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     case "tekanan_tanah_mpa":
-        //         $data_tambahan['tekanan_tanah_kgcm2'] = 0;
-        //         $hitung = $data_tambahan['tekanan_tanah_kgcm2'] * 0.098;
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     case "tekanan_air_mh2o":
-        //         $hitung = $data_tambahan['tekanan_tanah_kgcm2'] * 10.0003;
-        //         $data_tambahan['tekanan_air_mh2o'] = 0;
-        //         $data_tambahan['tekanan_air_mh2o'] += $hitung;
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     case "level_freatik_air":
-        //         $hitung = (float)$koefisien['elevasi_sensor'] + $data_tambahan['tekanan_air_mh2o'];
-        //         return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
-        //         break;
-        //     default:
-        //         throw new Exception();
-        // }
     } catch (Exception $e) {
         return false;
     }
@@ -234,7 +171,7 @@ function pressureawlr($data_jadi, $data_mentah, $koefisien, $data_type)
 
         $koefisien['kalibrasi'] = isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0;
         $koefisien['elevasi_sensor'] = isset($koefisien['elevasi_sensor']) ? (float)$koefisien['elevasi_sensor'] : 0;
-        // Check if data_type is MANUAL and set all coefficients to 0
+
         if ($data_type === 'MANUAL') {
             $koefisien['kalibrasi'] = 0;
         }
@@ -297,7 +234,6 @@ function ultrasonicevaporation($data_jadi, $data_mentah, $koefisien, $data_type,
             case "ketinggian_air_mm":
                 $hitung = $koefisien['elevasi_sensor'] - ((float)$data_mentah['ketinggian_air_total'] + $koefisien['kalibrasi']);
 
-                // Initialize $data_tambahan['ketinggian_air_mm'] if not set
                 if (!isset($data_tambahan['ketinggian_air_mm'])) {
                     $data_tambahan['ketinggian_air_mm'] = 0;
                 }
@@ -313,7 +249,6 @@ function ultrasonicevaporation($data_jadi, $data_mentah, $koefisien, $data_type,
             case "evaporation":
                 $data_sebelumnya = cek_data_sebelumnya($data_mentah['instrument_id'], 'ketinggian_air_mm');
 
-                // Ensure $data_tambahan['ketinggian_air_mm'] is set
                 $ketinggian_air_mm = isset($data_tambahan['ketinggian_air_mm']) ? $data_tambahan['ketinggian_air_mm'] : 0;
 
                 $hitung = (float)$data_sebelumnya - $ketinggian_air_mm;
@@ -631,7 +566,6 @@ function thermometer($data_jadi, $data_mentah, $koefisien, $data_type)
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "soil_temperature":
-                // Calculate soil temperature based on coefficients and raw data
                 $hitung = (($faktor_a * ((float)$data_mentah['frekuensi'] + $faktor_a) ** 2) + ($faktor_b * ((float)$data_mentah['frekuensi'] + $faktor_b) + $faktor_c));
                 // Return sensor data
                 return [
@@ -659,13 +593,11 @@ function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "strain":
-                // Calculate strain based on coefficients and raw data
                 $hitung = (($faktor_a * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ($faktor_b * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + $faktor_c));
 
-                // Store strain in data_tambahan
+
                 $data_tambahan['strain'] = number_format($hitung, 3);
 
-                // Return sensor data
                 return [
                     'id_sensor' => $data_jadi->jenis_sensor_jadi,
                     'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
@@ -678,14 +610,11 @@ function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$
                 $strain = str_replace(',', '', $data_tambahan['strain']);
 
 
-                // $data_sebelumnya = cek_data_awal($data_mentah['instrument_id'], 'strain');
-                // $strain = $data_tambahan['strain'];
-
                 $data_sebelumnya = floatval($data_sebelumnya);
                 $strain = floatval($strain);
 
                 $hitung = $strain - $data_sebelumnya;
-                // pre($hitung);
+
                 return [
                     'id_sensor' => $data_jadi->jenis_sensor_jadi,
                     'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
@@ -704,7 +633,6 @@ function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$
 function tiltmeter($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
-        // Set default coefficients to 0 if data type is MANUAL
         $v0 = isset($koefisien['v0']) ? (float)$koefisien['v0'] : 0;
         $offset = isset($koefisien['offset']) ? (float)$koefisien['offset'] : 0;
         $sensitivity = isset($koefisien['sensitivity']) ? (float)$koefisien['sensitivity'] : 0;
@@ -732,7 +660,6 @@ function tiltmeter($data_jadi, $data_mentah, $koefisien, $data_type)
 function tiltmeter1530($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
-        // Set default coefficients to 0 if data type is MANUAL
         $faktor_a = $data_type === 'MANUAL' ? 0 : (isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0);
         $faktor_b = $data_type === 'MANUAL' ? 0 : (isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0);
         $faktor_c = $data_type === 'MANUAL' ? 0 : (isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0);
@@ -761,7 +688,6 @@ function tiltmeter1530($data_jadi, $data_mentah, $koefisien, $data_type)
 function accelerometer($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
-        // Set default calibration to 0 if data type is MANUAL
         $kalibrasi = $data_type === 'MANUAL' ? 0 : (isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0);
 
         switch ($data_jadi->kode_sensor_jadi) {
@@ -785,7 +711,6 @@ function accelerometer($data_jadi, $data_mentah, $koefisien, $data_type)
 function seismometer($data_jadi, $data_mentah, $koefisien, $data_type)
 {
     try {
-        // Set default calibration to 0 if data type is MANUAL
         $kalibrasi = $data_type === 'MANUAL' ? 0 : (isset($koefisien['kalibrasi']) ? (float)$koefisien['kalibrasi'] : 0);
 
         switch ($data_jadi->kode_sensor_jadi) {

@@ -132,15 +132,14 @@ class Data extends REST_Controller
                 throw new Exception("Formula belum tersedia");
             }
 
-            $currentDateTime = new DateTime();
+            $currentDate = (new DateTime())->setTime(0, 0);
 
-            $inputDateTime = new DateTime("$tanggal $jam");
+            $inputDate = new DateTime($tanggal);
+            $inputDate->setTime(0, 0);
 
-            if ($inputDateTime > $currentDateTime) {
-
-                throw new Exception("Tanggal dan jam tidak valid");
+            if ($inputDate > $currentDate) {
+                throw new Exception("Tanggal tidak valid");
             }
-
 
             $data_insert = array(
                 'kode_instrument' => $kode_instrument,

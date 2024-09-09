@@ -78,91 +78,114 @@
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(mymap);
+
+    var colors = ['blue', 'red', 'green', 'lightblue', 'yellow', 'purple', 'pink', 'blue-dot', 'red-dot', 'green-dot', 'lightblue-dot', 'yellow-dot', 'purple-dot', 'pink-dot', 'blue', 'red', 'green', 'lightblue', 'yellow', 'purple', 'pink'];
     var marker;
-    <?php
-    $colors = array('blue', 'red', 'green', 'lightblue', 'yellow', 'purple', 'pink', 'blue-dot', 'red-dot', 'green-dot', 'lightblue-dot', 'yellow-dot', 'purple-dot', 'pink-dot', 'blue', 'red', 'green', 'lightblue', 'yellow', 'purple', 'pink',);
-    $i = 0;
-    foreach ($station as $stasiun) :
-    ?>
-        var legend = L.marker([<?= $stasiun->latitude ?>, <?= $stasiun->longitude ?>], {
-            icon: new L.Icon({
-                iconUrl: 'https://maps.google.com/mapfiles/ms/micons/<?= $colors[$i] ?>.png'
-            })
+    var stations = <?php echo json_encode($station); ?>;
+    var colorIndex = 0;
+
+    stations.forEach(function(stasiun) {
+        var icon = L.icon({
+            iconUrl: 'https://maps.google.com/mapfiles/ms/micons/' + colors[colorIndex] + '.png'
+        });
+
+        var legend = L.marker([stasiun.latitude, stasiun.longitude], {
+            icon: icon
         }).addTo(mymap);
-        legend.bindTooltip("<?= $stasiun->nama_stasiun ?>", {
+        legend.bindTooltip(stasiun.nama_stasiun, {
             permanent: true,
             direction: 'top'
         }).openTooltip();
-
-        marker = new L.marker([<?= $stasiun->latitude ?>, <?= $stasiun->longitude ?>], {
-            icon: new L.Icon({
-                iconUrl: 'https://maps.google.com/mapfiles/ms/micons/<?= $colors[$i] ?>.png'
+        marker = new L.marker([stasiun.latitude, stasiun.longitude], {
+                icon: icon
             })
-        }).addTo(mymap).on('click', function(e) {
-            var latlng = e.latlng;
-            var popupContent = '';
-            getTimeAtLocation(latlng, function(time) {
-                popupContent = `
+            .addTo(mymap)
+            .on('click', function(e) {
+                var latlng = e.latlng;
+                fetchStationData(latlng, stasiun.id);
+            })
+
+
+        colorIndex = (colorIndex + 1) % colors.length;
+    });
+
+    function fetchStationData(latlng, stationId) {
+        fetch(`<?= base_url('maps/get_station_data') ?>?id=${stationId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                getTimeAtLocation(latlng, function(time) {
+                    // Ensure 'data' is an array and contains elements
+                    if (Array.isArray(data) && data.length > 0) {
+                        var station = data[0]; // Assuming data is an array with at least one station object
+
+                        var popupContent = `
             <div class="row">
                 <div class="col-5">
-                    <img id="stationImage" src="<?= base_url('assets/upload/station/') . $stasiun->foto ?>" style="width: 100%;">
+                    <img id="stationImage" src="<?= base_url('assets/upload/station/') ?>${station.foto}" style="width: 100%;">
                 </div>
                 <div class="col-7">
-                    <span class="fs-5">STA. <b><?= $stasiun->nama_stasiun ?><br>
-                    <?= $stasiun->site_name ?></b><br>
-                    <a href="https://www.google.com/maps/search/?api=1&query=<?= $stasiun->latitude ?>,<?= $stasiun->longitude ?>" target="_blank" class="fs-6"><?= number_format($stasiun->longitude, 6) . " " . number_format($stasiun->latitude, 6) ?></a>
+                    <span class="fs-5">STA. <b>${station.nama_stasiun}<br>
+                    ${station.site_name}</b><br>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${latlng.lat},${latlng.lng}" target="_blank" class="fs-6">${station.longitude} ${station.latitude}</a>
                     </span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-12 text-center text-muted">
-                <p class=" fs-6">` + time + `</p>
+                <p class="fs-6">${time}</p>
                 </div>
                 <div class="col-12 text-center text-muted">
                     <table class="table" style="width:100%">
                         <tr class="bg-light">
                             <th>Sensor</th>
                             <th>Nilai</th>
-                        </tr>
-                        <?php
-                        if (!empty($stasiun->sensor_data)) {
-                            foreach ($stasiun->sensor_data as $row) {
-                                echo '
-                                        <tr>
-                                            <td>' . $row->jenis_sensor . ' (' . $row->unit_sensor . ') </td>
-                                            <td>' . $row->data_jadi . '</td>
-                                        </tr>';
-                            }
+                        </tr>`;
+
+                        // Check for sensor data and append to the table
+                        if (Array.isArray(station.sensor_data) && station.sensor_data.length > 0) {
+                            station.sensor_data.forEach(function(row) {
+                                popupContent += `
+                        <tr>
+                            <td>${row.jenis_sensor} (${row.unit_sensor})</td>
+                            <td>${row.data_jadi}</td>
+                        </tr>`;
+                            });
                         } else {
-                            echo '
-                                    <tr>
-                                        <td colspan="2">Tidak ada data</td>
-                                    </tr>';
+                            popupContent += `
+                    <tr>
+                        <td colspan="2">Tidak ada data</td>
+                    </tr>`;
                         }
-                        ?>
-                        
-                </table>
+
+                        popupContent += `
+                    </table>
                 </div>
             </div>
             <a href="<?= base_url() ?>/data" type="button" class="btn btn-light-primary mb-3 btn-sm">Detail</a>
             `;
 
-                var popup = L.popup()
+                        L.popup()
+                            .setLatLng(latlng)
+                            .setContent(popupContent)
+                            .openOn(mymap);
+                    } else {
+                        console.error('Invalid data format received');
+                        L.popup()
+                            .setLatLng(latlng)
+                            .setContent('<p>Error: Invalid data format</p>')
+                            .openOn(mymap);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching station data:', error);
+                L.popup()
                     .setLatLng(latlng)
-                    .setContent(popupContent)
+                    .setContent('<p>Error loading data</p>')
                     .openOn(mymap);
             });
-
-            var popup = L.popup()
-                .setLatLng(e.latlng)
-                .setContent(popupContent)
-                .openOn(mymap);
-        });
-
-
-    <?php
-        $i = ($i + 1) % count($colors);
-    endforeach; ?>
+    }
 
     function getTimeAtLocation(latlng, callback) {
         GeoTZ.find(latlng.lat, latlng.lng)
@@ -188,6 +211,8 @@
             });
     }
 </script>
+
+
 
 <!-- Mirrored from berrydashboard.io/bootstrap/default/forms/form2_flu-uppy.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:18 GMT -->
 

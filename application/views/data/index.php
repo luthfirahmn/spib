@@ -128,8 +128,8 @@
                                 <div class="form-group col-md-2">
                                     <label class="form-label" for="date">Period</label>
                                     <select class="form-control" name="waktu" id="waktu">
-                                        <option value="jam" selected>Jam-Jaman</option>
-                                        <option value="hari">Harian</option>
+                                        <option value="jam" selected>Harian</option>
+                                        <option value="hari">Bulanan</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
@@ -232,6 +232,73 @@
         </div>
     </div>
 
+    <!-- Modal Edit -->
+    <div class="modal fade" id="modalEdit" tabindex="-1" aria-labelledby="modalInfoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <!-- Ubah ukuran modal dari lg ke xl -->
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalInfoLabel">Edit Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="site">Region</label>
+                                <input class="form-control" id="edit_site" name="edit_site" readonly>
+                            </div>
+                        </div>
+                        <input type="hidden" id="editId">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="stasiun">Station </label>
+
+                                <input class="form-control" id="edit_stasiun" name="edit_stasiun" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="instrument">Instrument</label>
+
+                                <input class="form-control" id="edit_instrument" name="edit_instrument" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tanggal">Date</label>
+                                <input type="date" class="form-control" id="edit_tanggal" name="edit_tanggal" max="<?php date_default_timezone_set('Asia/Jakarta');
+                                                                                                                    echo date('Y-m-d'); ?>">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="jam">Time</label>
+                                <input type="time" class="form-control" id="edit_jam" name="edit_jam">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="edit_sensor"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="edit_hasil_data_jadi"></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="edit_data">Simpan</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal Upload -->
     <div class="modal fade" id="modalUpload" tabindex="-1" aria-labelledby="" aria-hidden="true">
@@ -309,6 +376,85 @@
     <script src="
 	https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
+        $(document).on('click', '.delete-row', function(e) {
+            e.preventDefault();
+
+            var id = $(this).data('id');
+
+            var ms_regions_id = $("#ms_regions_id").val();
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda tidak akan dapat mengembalikan ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "<?= base_url('Data/delete_data_by_id') ?>",
+                        method: 'POST',
+                        data: {
+                            id: id,
+                            ms_regions_id: ms_regions_id,
+                        },
+                        success: function(response) {
+                            if (response.error) {
+                                toastr.error('Data gagal dihapus')
+                            } else {
+                                Createtable()
+                                toastr.success('Data berhasil dihapus')
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            toastr.error(response.error)
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.edit-row', function(e) {
+            e.preventDefault();
+
+            var id = $(this).data('id');
+
+            getDataEdit(id);
+        });
+
+        function getDataEdit(id) {
+            var instrument_id = $("#instrument").val();
+            var ms_regions_id = $("#ms_regions_id").val();
+            var ms_regions_name = $("#ms_regions_id option:selected").text();
+            var stasiun_name = $("#stasiun option:selected").text();
+            var instrument_name = $("#instrument option:selected").text();
+            $.ajax({
+                url: "<?= base_url('Data/getDataEdit') ?>",
+                method: 'POST',
+                data: {
+                    id: id,
+                    ms_regions_id: ms_regions_id,
+                },
+                dataType: "JSON",
+                success: function(response) {
+                    $('#edit_site').val(ms_regions_name);
+                    $('#edit_stasiun').val(stasiun_name);
+                    $('#edit_instrument').val(instrument_name);
+                    $('#editId').val(response.data.id);
+                    $('#edit_tanggal').val(response.data.tanggal);
+                    $('#edit_jam').val(response.data.jam);
+                    getHitungEdit(instrument_id, response.data_value)
+                    $('#modalEdit').modal('show');
+                },
+                error: function() {
+                    alert('Failed to fetch data');
+                }
+            });
+        }
+
         $("#deleteAll").click(function() {
             var instrument_id = $("#instrument").val();
             var ms_regions_id = $("#ms_regions_id").val();
@@ -342,7 +488,7 @@
                         url: "<?= base_url('Data/delete_data') ?>",
                         type: "POST",
                         dataType: "json",
-                        data: data, // Kirim data yang diperlukan
+                        data: data,
                         success: function(response) {
                             if (response.error) {
                                 toastr.error(response.message)
@@ -408,7 +554,7 @@
                 },
                 success: function(response) {
                     if (!response.error) {
-
+                        Createtable();
                         toastr.success('Data berhasil ditambahkan');
                         $('#modalTambah').modal('hide');
                     } else {
@@ -451,7 +597,7 @@
                         var tableColumns = columns.map(function(columnName, index) {
                             if (index === 0) {
                                 return {
-                                    data: "id",
+                                    data: "no",
                                     title: 'No'
                                 };
                             } else if (index === 1) {
@@ -499,6 +645,7 @@
                                     Action
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item edit-row" href="#" data-id="${row.id}">Edit</a></li>
                                     <li><a class="dropdown-item delete-row" href="#" data-id="${row.id}">Delete</a></li>
                                 </ul>
                             </div>
@@ -950,6 +1097,182 @@
                 }
             });
         });
+
+
+        // edit
+
+        function getHitungEdit(instrument_id, data_value) {
+            var add_sensor = document.getElementById('edit_sensor');
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var result = JSON.parse(xhttp.responseText).result;
+                    console.log("Data Value:", data_value);
+                    console.log("Result:", result);
+                    if (result.length > 0) {
+                        var html = '';
+                        html += `<p class="fw-bold">Data Mentah</p>`;
+
+                        // Create a mapping of sensor_id to data_primer
+                        var dataMap = {};
+                        for (var i = 0; i < data_value.length; i++) {
+                            dataMap[data_value[i].sensor_id] = {
+                                data_primer: data_value[i].data_primer,
+                                data_value_id: data_value[i].id
+                            };
+                        }
+
+                        for (var i = 0; i < result.length; i++) {
+                            var sensor_id = result[i].id;
+                            var data = dataMap[sensor_id] || {
+                                data_primer: '0',
+                                data_value_id: '0'
+                            };
+
+                            html += `
+                        <div class="mb-1">
+                            <label>${result[i].jenis_sensor}</label>
+                            <input type="number" class="form-control data_mentah_edit" data_value_id="${data.data_value_id}" id_sensor="${sensor_id}" id="${result[i].var_name}" value="${data.data_primer}">
+                        </div>
+                    `;
+                        }
+
+                        html += `
+                    <div class="mt-2 col-md-2">
+                        <label></label>
+                        <button type="button" class="btn btn-primary" onclick="hitung_edit()">Hitung</button>
+                    </div>
+                `;
+                        add_sensor.innerHTML = html;
+                    } else {
+                        var html = `
+                    <div>
+                        <label>Tidak ada data sensor</label>
+                    </div>
+                `;
+                        add_sensor.innerHTML = html;
+                    }
+                }
+            };
+            xhttp.open("GET", "<?php echo base_url('Data/sensor'); ?>" + '?instrument_id=' + instrument_id, true);
+            xhttp.send();
+        }
+
+        function hitung_edit() {
+            var instrument = $("#instrument").val();
+            var data_mentah = {};
+            $('.data_mentah_edit').each(function() {
+                var id = $(this).attr('id');
+                var val = $(this).val();
+                data_mentah[id] = val;
+            });
+
+            $.ajax({
+                url: "<?= base_url('Data/hitung'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    instrument: instrument,
+                    data_mentah: data_mentah
+                },
+                success: function(response) {
+                    if (response.error !== true) {
+                        var html = '';
+                        html += `<p class="fw-bold ">Data Jadi</p>
+                                <table class="table table-striped " id="data_jadi_setelah_hitung_edit">
+                                    <tbody>`
+                        for (i = 0; i < response.data.length; i++) {
+                            html += `
+                            <input type="hidden" class="data_jadi_id_sensor_edit" id_sensor="` + response.data[i].id_sensor + `" value="` + response.data[i].hasil + `">
+                                        <tr>
+                                            <td>` + response.data[i].nama_sensor + `</td>
+                                            <td class="fw-bold">` + response.data[i].hasil + `</td>
+                                        </tr>`;
+
+                        }
+                        html += `
+                                    </tbody>
+                                </table>`;
+                        edit_hasil_data_jadi.innerHTML = html;
+
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('Terjadi Kesalahan');
+                }
+            });
+        }
+
+
+        $("#edit_data").click(function() {
+            var add_instrument = $("#instrument").val();
+            var add_site = $("#ms_regions_id").val();
+            var add_tanggal = $("#edit_tanggal").val();
+            var add_jam = $("#edit_jam").val();
+            var id_data = $('#editId').val();
+            var data_mentah = [];
+            var data_jadi = [];
+            var isAllValueExist = true;
+            $(".data_mentah_edit").each(function() {
+                if ($(this).val() != "") {
+                    data_mentah.push({
+                        id: $(this).attr('id_sensor'),
+                        value: $(this).val(),
+                        data_value_id: $(this).attr('data_value_id'),
+                    });
+                } else {
+                    isAllValueExist = false;
+                }
+            });
+
+            $(".data_jadi_id_sensor_edit").each(function() {
+                if ($(this).val() != "") {
+                    data_jadi.push({
+                        id: $(this).attr('id_sensor'),
+                        value: $(this).val()
+                    });
+                } else {
+                    isAllValueExist = false;
+                }
+            });
+
+            if (add_instrument == "" || add_site == "" || add_tanggal == "" || add_jam == "" || isAllValueExist ==
+                false) {
+                toastr.info('Harap isi semua kolom yang tersedia')
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "<?php echo base_url('Data/edit_data'); ?>",
+                dataType: "json",
+                data: {
+                    add_instrument: add_instrument,
+                    add_site: add_site,
+                    add_tanggal: add_tanggal,
+                    add_jam: add_jam,
+                    data_mentah: data_mentah,
+                    data_jadi: data_jadi,
+
+                    id_data: id_data
+                },
+                success: function(response) {
+                    if (!response.error) {
+
+                        toastr.success('Data berhasil diupdate');
+                        Createtable()
+                        $('#modalEdit').modal('hide');
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('Gagal update data');
+                }
+            });
+        })
     </script>
 </body>
 <!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
