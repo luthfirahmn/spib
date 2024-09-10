@@ -356,8 +356,11 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="upload_data">Simpan</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button id="upload_data" type="button" class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Submit</span>
+                    </button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -641,7 +644,7 @@
                             render: function(data, type, row) {
                                 return `
                             <div class="dropdown">
-                                <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     Action
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -1065,6 +1068,9 @@
         });
 
         $('#upload_data').click(function() {
+            var $button = $(this);
+            var $spinner = $button.find('.spinner-border');
+            var $text = $button.find('.button-text');
             var site = $('#upload_site').val();
             var stasiun = $('#upload_stasiun').val();
             var instrument = $('#upload_instrument').val();
@@ -1074,6 +1080,10 @@
             form_data.append('stasiun', stasiun);
             form_data.append('instrument', instrument);
             form_data.append('file', file_data);
+
+            $spinner.removeClass('d-none');
+            $text.text('Uploading...');
+            $button.prop('disabled', true);
 
             $.ajax({
                 url: '<?php echo base_url("Data/proses_upload_data"); ?>',
@@ -1094,6 +1104,11 @@
                 },
                 error: function() {
                     toastr.error('Gagal mengupload data');
+                },
+                complete: function() {
+                    $spinner.addClass('d-none');
+                    $text.text('Submit');
+                    $button.prop('disabled', false);
                 }
             });
         });

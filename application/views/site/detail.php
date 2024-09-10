@@ -145,7 +145,7 @@
 								</div>
 
 								<div class="row">
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 										<label class="form-label" for="file">Foto/Layout</label>
 										<input type="file" id="file" name="file" accept="image/*" hidden>
 										<div class="img-area" data-img="">

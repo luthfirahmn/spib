@@ -712,11 +712,12 @@ class Data extends MY_Controller
 						$data_row[] = $formattedDate;
 					} elseif ($cell->getColumn() == 'C') {
 
-						// pre($cell->getValue());
+						// $timezone = new DateTimeZone(getLocalTimezone());
+
+
 						if (is_numeric($cell->getValue())) {
-							$time = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
-							// date_default_timezone_set('Asia/Jakarta');
-							$formattedTime = date('H:i:s', $time);
+							$UNIX_DATE = ($cell->getValue() - 25569) * 86400;
+							$formattedTime = gmdate("H:i:s", $UNIX_DATE);
 						} else {
 							$formattedTime = $cell->getValue();
 						}

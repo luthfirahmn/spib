@@ -128,15 +128,15 @@
 							<h5>Data Instrument</h5>
 						</div>
 						<div class="card-body table-border-style">
-							<div class="row mb-3">
-								<div class="col-md-6">
+							<div class="row  mb-3">
+								<div class="col-md-9">
 									<?php if ($hak_akses->insert == '1') { ?>
 										<a href="<?= base_url('InstrumentData/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
 											<i class="ti ti-plus"></i>Add Instrument
 										</a>
 									<?php } ?>
 								</div>
-								<div class="col-md-6">
+								<div class="col-md-3">
 									<select class="form-control" name="ms_regions_id" id="ms_regions_id">
 										<?php foreach ($region as $reg) { ?>
 											<option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
@@ -153,8 +153,8 @@
 											<th>Instrument Name</th>
 											<th>Instrument Type</th>
 											<th>Station</th>
-											<th>Last Data</th>
 											<th>Total Data</th>
+											<th>Last Data</th>
 											<th>Action</th>
 										</tr>
 									</thead>

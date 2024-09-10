@@ -112,8 +112,8 @@
                                     </div>
                                     <div class="form-group col-md-2">
                                         <select class="select2" name="periode" id="periode">
-                                            <option value="Jam">Jam</option>
-                                            <option value="Harian">Harian</option>
+                                            <option value="Jam">Harian</option>
+                                            <option value="Harian">Bulanan</option>
                                             <!-- <option value="Bulanan">Bulanan</option> -->
                                         </select>
                                     </div>
@@ -127,6 +127,29 @@
                                 </div>
                             </form>
                         </div>
+                        <style>
+                            .chart-layout {
+                                min-height: 40vh;
+                            }
+
+                            @media (min-width: 1800px) {
+                                .chart-layout {
+                                    height: 45vh;
+                                }
+                            }
+
+                            @media (min-width: 1900px) {
+                                .chart-layout {
+                                    height: 50vh;
+                                }
+                            }
+
+                            @media (min-width: 2000px) {
+                                .chart-layout {
+                                    height: 60vh;
+                                }
+                            }
+                        </style>
                         <div class="col-xl-12 overflow-x-auto">
                             <div class="d-flex justify-content-center">
                                 <div class="spinner-border" role="status" id="loading" style="display:none">
@@ -134,8 +157,8 @@
                                 </div>
                             </div>
                             <div class="fs-1 text-center" id="nama_site_text"></div>
-                            <div style="max-width: 100%; overflow-x: auto;overflow-y: hidden;">
-                                <div class="" id="chart"></div>
+                            <div class="chart-layout" style="max-width: 100%; overflow-x: auto;overflow-y: hidden; ">
+                                <div id="chart"></div>
                             </div>
 
                         </div>
@@ -454,7 +477,7 @@
                         toastr.error(response.msg);
                     }
                     if ($('#stasiun').val() !== '') {
-                        $('#nama_site_text').html('Grafik Stasiun ' + $('#stasiun option:selected').html())
+                        $('#nama_site_text').html($('#stasiun option:selected').html())
                     }
                     generateChart(response.data, response.periode, response.data_tambah)
                 },
@@ -548,8 +571,9 @@
                             fontSize: '16px'
                         }
                     },
-                    // min: 0,
-                    max: Math.ceil(leftY.max / 200) * 200,
+                    min: 0,
+                    // max: Math.ceil(leftY.max / 200) * 200,
+                    max: leftY.max,
                     tickAmount: 5,
                     show: showYAxis
                 });
@@ -587,7 +611,7 @@
             var options = {
                 chart: {
                     type: 'line',
-                    height: 350,
+                    height: '100%',
                     toolbar: {
                         show: true,
                         offsetX: 0,

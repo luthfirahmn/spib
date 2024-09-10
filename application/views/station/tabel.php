@@ -27,7 +27,7 @@
 					<td><?= $rec->id_station ?></td>
 					<td>
 						<div class="d-inline-block align-middle" bis_skin_checked="1">
-							<img src="<?= base_url('assets/upload/station/' . $rec->foto) ?>" alt="image" class="img-radius wid-40 align-top m-r-15" onClick="viewImage('<?= $rec->foto ?>')">
+							<img src="<?= base_url('assets/upload/station/' . $rec->foto) ?>" alt="image" class=" wid-40 align-top m-r-15" onClick="viewImage('<?= $rec->foto ?>')">
 						</div>
 					</td>
 

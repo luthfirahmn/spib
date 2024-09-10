@@ -929,7 +929,7 @@ function cek_data_sebelumnya_mentah($instrument_id, $data_jadi_string)
         $currentDate = new DateTime();
         $currentDate->modify('-1 day');
         $currentHour = (int)$currentDate->format('H');
-        if ($currentHour === 7) {
+        if ($currentHour === 1) {
             return 0;
         }
 
@@ -981,4 +981,10 @@ function switchDatabase($hostname, $username, $password, $database, $port)
     );
 
     return $params;
+}
+
+
+function getLocalTimezone()
+{
+    return date_default_timezone_get(); // Or use any other method to retrieve the timezone
 }

@@ -420,7 +420,7 @@ class Grafik extends MY_Controller
                         if (!empty($row_pertama)) {
                             foreach ($row_pertama as $index => $row_pertama_val) {
                                 $detail[$index] = (object) array(
-                                    'tanggal' => $row_pertama_val->tanggal,
+                                    'tanggal' => date('d', strtotime($row_pertama_val->tanggal)),
                                     'data_jadi' => $row->value,
                                 );
                             }
@@ -455,7 +455,7 @@ class Grafik extends MY_Controller
 
                         $query = $db_site->query("
                             SELECT 
-                                DATE(t1.tanggal) as tanggal,
+                                DAY(t1.tanggal) as tanggal,
                                 FORMAT(AVG(t2.data_jadi), 2) as data_jadi
                             FROM data t1
                             LEFT JOIN data_value t2 ON t1.id = t2.data_id
@@ -464,7 +464,7 @@ class Grafik extends MY_Controller
                             AND t2.data_jadi != ''
                             {$kt}
                             {$ddt}
-                            GROUP BY DATE(t1.tanggal)
+                            GROUP BY DAY(t1.tanggal)
                             ORDER BY tanggal ASC
                         ");
                         $detail = $query->result();

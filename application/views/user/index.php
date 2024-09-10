@@ -86,7 +86,15 @@
 												<td><?= $rec->username ?></td>
 												<td><?= $rec->jabatan ?></td>
 												<td><?= $rec->role_name ?></td>
-												<td><?= $rec->region_name ?></td>
+												<?php
+												$regionName = $rec->region_name;
+
+												$formattedRegionName = str_replace(',', ',<br>', $regionName);
+
+												$formattedRegionName = rtrim($formattedRegionName, ',') . '<br>';
+												?>
+
+												<td><?= $formattedRegionName ?></td>
 												<td>
 													<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 														<div class="btn-group" role="group">

@@ -145,8 +145,8 @@
 										<button type="button" class="select-image">Select Foto</button>
 									</div>
 								</div>
-								<a href="<?= base_url('Station') ?>" type="button" class="btn btn-danger">Cancel</a>
 								<button type="submit" class="btn btn-primary">Submit</button>
+								<a href="<?= base_url('Station') ?>" type="button" class="btn btn-danger">Cancel</a>
 						</div>
 
 						</form>

@@ -121,48 +121,29 @@
 
                         var popupContent = `
             <div class="row">
-                <div class="col-5">
+                <div class="col-12">
                     <img id="stationImage" src="<?= base_url('assets/upload/station/') ?>${station.foto}" style="width: 100%;">
                 </div>
-                <div class="col-7">
-                    <span class="fs-5">STA. <b>${station.nama_stasiun}<br>
-                    ${station.site_name}</b><br>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${latlng.lat},${latlng.lng}" target="_blank" class="fs-6">${station.longitude} ${station.latitude}</a>
-                    </span>
-                </div>
             </div>
-            <div class="row">
+            <div class="row mt-2">
                 <div class="col-12 text-center text-muted">
-                <p class="fs-6">${time}</p>
-                </div>
-                <div class="col-12 text-center text-muted">
-                    <table class="table" style="width:100%">
+                    <table class="table " style="width:100%; text-align:start;">
                         <tr class="bg-light">
-                            <th>Sensor</th>
-                            <th>Nilai</th>
-                        </tr>`;
-
-                        // Check for sensor data and append to the table
-                        if (Array.isArray(station.sensor_data) && station.sensor_data.length > 0) {
-                            station.sensor_data.forEach(function(row) {
-                                popupContent += `
-                        <tr>
-                            <td>${row.jenis_sensor} (${row.unit_sensor})</td>
-                            <td>${row.data_jadi}</td>
-                        </tr>`;
-                            });
-                        } else {
-                            popupContent += `
-                    <tr>
-                        <td colspan="2">Tidak ada data</td>
-                    </tr>`;
-                        }
-
-                        popupContent += `
+                            <td>Site</td>
+                            <td>${station.site_name}</td>
+                        </tr>
+                         <tr class="">
+                            <td>Station</td>
+                            <td>${station.nama_stasiun}</td>
+                        </tr>
+                          <tr class="bg-light">
+                            <td>Coordinate</td>
+                            <td> <a href="https://www.google.com/maps/search/?api=1&query=${latlng.lat},${latlng.lng}" target="_blank" class="fs-6">${station.longitude} ${station.latitude}</a></td>
+                        </tr>
                     </table>
                 </div>
             </div>
-            <a href="<?= base_url() ?>/data" type="button" class="btn btn-light-primary mb-3 btn-sm">Detail</a>
+            <a href="<?= base_url() ?>/data" type="button" class="btn btn-light-primary mb-3 col-12 btn-sm">View Data</a>
             `;
 
                         L.popup()
