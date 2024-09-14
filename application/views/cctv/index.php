@@ -67,12 +67,14 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card">
-                        <div class="card-header align-items-center d-flex px-4 py-1">
-                            <h5>CCTV</h5>
-                            <div class="ms-auto d-flex  align-items-center mt-2">
-                                <div class="form-group me-2 d-flex  align-items-center">
-                                    <label class="form-label w-75" for="ms_regions_id">Select Region</label>
-                                    <select class="form-control  me-2" name="ms_regions_id" id="ms_regions_id">
+                        <div class="card-header align-items-center d-flex px-4 py-1 justify-content-between">
+                            <div class="w-50">
+                                <h5>CCTV</h5>
+                            </div>
+                            <div class="ms-auto   align-items-center mt-2 w-100 ">
+                                <div class="form-group  d-flex  align-items-center">
+                                    <label class="form-label me-2 " style="width: 60%;" for="ms_regions_id">Select Region</label>
+                                    <select class="form-control  me-2 w-100" name="ms_regions_id" id="ms_regions_id">
                                         <?php foreach ($region as $reg) { ?>
                                             <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                         <?php } ?>
@@ -85,9 +87,15 @@
                                         <option value="30">30 Minute</option>
                                         <option value="60">60 Minute</option>
                                     </select>
-                                    <button type="button" class="btn btn-outline-primary d-inline-flex w-75" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                                        <i class="ti ti-plus"></i>Add CCTV
+                                    <button type="button" class="btn btn-outline-info d-inline-flex w-75 me-2" onclick="refreshCCTV()">
+                                        <i class="ti ti-refresh me-1"></i>Refresh CCTV
+
                                     </button>
+                                    <button type="button" class="btn btn-outline-primary d-inline-flex w-75" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                                        <i class="ti ti-plus me-2"></i>Add CCTV
+                                    </button>
+
+
                                 </div>
 
                             </div>
@@ -153,6 +161,8 @@
         </div>
     </div>
 
+
+
     <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -187,6 +197,14 @@
 </body>
 <!-- Mirrored from berrydashboard.io/bootstrap/default/table/tbl_dt-simple.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 20 Dec 2022 01:43:21 GMT -->
 <script>
+    function refreshCCTV() {
+
+        const url = `https://admin:telemetri2020@103.141.188.245:231/cgi-bin/snapshot.cgi?channel=1`;
+        window.open(url, '_blank');
+        location.reload()
+    }
+
+
     $(document).ready(function() {
         var region_id = $("#ms_regions_id").val();
         getData(region_id);
@@ -296,20 +314,19 @@
                     } else {
 
                         data.data.forEach(function(item) {
-                            dataHtml += `
-					<div class="col-md-4">
+                            dataHtml += `<div class="col-md-4" >
 						<div class="d-flex justify-content-between align-items-center">
-							<p>` + item.lokasi + `</p>
+							<p class="mt-3">` + item.lokasi + `</p>
 
 							<div class="ms-auto">
-								<button type="button" class="btn btn-sm btn-info btn-smaller" onclick="edit(` + item.id + `,'` + item.lokasi + `','` + item.url + `','` + item.url_live + `')">Edit</button>
-								<button type="button" class="btn btn-sm btn-primary btn-smaller" onclick="preview('` + item.url + `','` + item.lokasi + `')">Preview</button>
-								<button type="button" class="btn btn-sm btn-success btn-smaller" onclick="redirect('` + item.url_live + `')">Live View</button>
-								<button type="button" class="btn btn-sm btn-danger btn-smaller" onclick="deleteData(` + item.id + `)">Delete</button>
+								<button type="button" class="btn btn-sm btn-outline-info btn-smaller" onclick="edit(` + item.id + `,'` + item.lokasi + `','` + item.url + `','` + item.url_live + `')">Edit</button>
+								<button type="button" class="btn btn-sm btn-outline-primary btn-smaller" onclick="preview('` + item.url + `','` + item.lokasi + `')">Preview</button>
+								<button type="button" class="btn btn-sm btn-outline-success btn-smaller" onclick="redirect('` + item.url_live + `')">Live View</button>
+								<button type="button" class="btn btn-sm btn-outline-danger btn-smaller" onclick="deleteData(` + item.id + `)">Delete</button>
 							</div>
 						</div>
-                            <embed class="img-cctv"  src="` +
-                                item.url + `"  width="380" height="250" type="image/jpeg" />
+                            <embed class="img-cctv" style="border: 1.7px solid #cacaca; border-radius:10px"  src="` +
+                                item.url + `"  width="100%" height="250" type="image/jpeg" />
 					</object>
 					</div>
 					`;
@@ -335,7 +352,7 @@
                 }
             });
         } else {
-            dataHtml = `<div class="container-fluid bg-light d-flex align-items-center justify-content-center">
+            dataHtml = `<div class="container-fluid bg-light d-flex align-items-center justify-content-center ">
 							<div class="bg-grey-100 text-center p-4">
 							<h4 class="">Tidak Ada Data</h1>
 							</div>

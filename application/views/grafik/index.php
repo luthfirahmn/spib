@@ -156,7 +156,7 @@
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                             </div>
-                            <div class="fs-1 text-center" id="nama_site_text"></div>
+                            <!-- <div class="fs-1 text-center" id="nama_site_text"></div> -->
                             <div class="chart-layout" style="max-width: 100%; overflow-x: auto;overflow-y: hidden; ">
                                 <div id="chart"></div>
                             </div>
@@ -217,7 +217,7 @@
             var stasiun = $("#stasiun").val();
 
             if (stasiun == "") {
-                toastr.error("Site harus diisi");
+                toastr.error("Region harus diisi");
                 $(this).val('');
                 return
             }
@@ -571,7 +571,7 @@
                             fontSize: '16px'
                         }
                     },
-                    min: 0,
+                    min: leftY.min < 0 ? leftY.min : 0,
                     // max: Math.ceil(leftY.max / 200) * 200,
                     max: leftY.max,
                     tickAmount: 5,

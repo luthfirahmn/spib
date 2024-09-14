@@ -22,7 +22,10 @@ class Dashboard extends MY_Controller
 		} else {
 			$region_id = $region_id;
 		}
-		$all_data = $this->get_all_data($region_id);
+		$all_datas = $this->get_all_data($region_id);
+
+		$all_data = $this->sort_by_instrument_recursive($all_datas);
+		// pre($all_data);
 		if ($all_data) {
 			$data['nama_region'] = $this->db->get_where('ms_regions', 'id = ' . $region_id)->row();
 			$data['station'] = $all_data;
@@ -35,6 +38,26 @@ class Dashboard extends MY_Controller
 		$this->load->view('dashboard/index', $data);
 	}
 
+	function sort_by_instrument_recursive($data)
+	{
+		foreach ($data as &$value) {
+			// Periksa apakah $value adalah array dan memiliki elemen yang bisa diurutkan
+			if (is_array($value)) {
+				// Jika elemen adalah array, rekursif untuk mengurutkan
+				$this->sort_by_instrument_recursive($value);
+
+				// Jika elemen array yang lebih dalam adalah array dari objek, urutkan berdasarkan 'instrument'
+				if (isset($value[0]) && is_object($value[0]) && isset($value[0]->instrument)) {
+					usort($value, function ($a, $b) {
+						$instrumentA = str_replace(' ', '', $a->instrument);
+						$instrumentB = str_replace(' ', '', $b->instrument);
+						return strcmp($instrumentA, $instrumentB);
+					});
+				}
+			}
+		}
+		return $data;
+	}
 
 	public function get_all_data($region_id)
 	{

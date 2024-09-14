@@ -60,22 +60,28 @@
 				<div class="col-sm-12">
 					<form action="<?= base_url('Role/edit_proses') ?>" method="post" enctype="multipart/form-data">
 						<div class="card">
-							<div class="card-header">
+							<div class="card-header pb-0">
 								<h5>Role Management</h5>
 								</br>
 
 								<div class="row">
-									<div class="form-group col-md-6">
-										<a type="button" class="btn btn-light-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+									<div class="form-group col-md-8">
+										<a type="button" class="btn btn-light-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
 											<i class="ti ti-plus"></i>Add Role
 										</a>
+										<button type="button" class="btn btn-outline-primary " id="btn_edit_role">
+											<i class="ti ti-pencil"></i> Edit
+										</button>
+										<button type="button" class="btn btn-outline-danger " id="btn_delete_role" onclick="deleteRole()">
+											<i class="ti ti-trash"></i> Delete
+										</button>
 									</div>
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 										<div class="row align-items-center">
-											<div class="col-2">
+											<div class="col-3">
 												<label class=" form-label " for=" username">Role Name</label>
 											</div>
-											<div class="col-8">
+											<div class="col-7">
 												<select class="form-control" name="ms_roles_id" id="ms_roles_id" onchange="load_data(this.value)">
 													<?php foreach ($role as $role) { ?>
 														<option value="<?= $role->id ?>"><?= $role->role_name ?></option>
@@ -87,15 +93,7 @@
 								</div>
 
 							</div>
-							<div class=" mx-4 mt-3 d-flex">
-								<h3 class="me-3 role_name" style="text-transform: capitalize;"></h3>
-								<button type="button" class="btn btn-light-success  rounded-circle btn-sm me-1" id="btn_edit_role">
-									<i class="ti ti-pencil"></i>
-								</button>
-								<button type="button" class="btn btn-light-danger  rounded-circle btn-sm" id="btn_delete_role" onclick="deleteRole()">
-									<i class="ti ti-trash"></i>
-								</button>
-							</div>
+
 
 							<div class="card-body" id="data_akses">
 

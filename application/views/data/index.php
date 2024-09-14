@@ -225,8 +225,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="add_data">Simpan</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="add_data">Submit</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -292,8 +292,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="edit_data">Simpan</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="edit_data">Submit</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -637,25 +637,29 @@
                                 };
                             }
                         });
-
-                        tableColumns.push({
-                            data: null,
-                            title: "Actions",
-                            render: function(data, type, row) {
-                                return `
+                        <?php if ($hak_akses->update == 1 && $hak_akses->delete == 1) { ?>
+                            tableColumns.push({
+                                data: null,
+                                title: "Actions",
+                                render: function(data, type, row) {
+                                    return `
                             <div class="dropdown">
                                 <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     Action
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                  <?php if ($hak_akses->update == '1') { ?>
                                     <li><a class="dropdown-item edit-row" href="#" data-id="${row.id}">Edit</a></li>
+                                  <?php } ?>
+                                   <?php if ($hak_akses->update == '1') { ?>
                                     <li><a class="dropdown-item delete-row" href="#" data-id="${row.id}">Delete</a></li>
+                                     <?php } ?>
                                 </ul>
                             </div>
                         `;
-                            }
-                        });
-
+                                }
+                            });
+                        <?php } ?>
                         new DataTable("#pc-dt-simple", {
                             scrollY: true,
                             responsive: false,

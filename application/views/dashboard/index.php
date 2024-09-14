@@ -121,14 +121,14 @@
     <div class="pc-container ">
         <div class="pc-content">
             <div class="d-flex justify-content-between">
-                <div class="w-lg-25">
+                <div class="w-50">
                     <h3>
                         <?= $nama_region->site_name ?>
                     </h3>
                 </div>
-                <div class="form-group d-flex align-items-center mb-2  w-lg-25">
-                    <label class="form-label  mb-0 w-lg-50 ">Select Region</label>
-                    <select class="form-control w-lg-100" name="ms_regions_id" id="ms_regions_id">
+                <div class="form-group d-flex align-items-center mb-2 " style="width: 30%;">
+                    <label class="form-label  mb-0  " style="width: 30%;">Select Region</label>
+                    <select class="form-control w-75" name="ms_regions_id" id="ms_regions_id">
                         <?php
                         foreach ($region as $reg) { ?>
                             <option value="<?= $reg->id ?>" <?= $this->uri->segment(3) == $reg->id ? 'selected' : '' ?>><?= $reg->site_name ?></option>

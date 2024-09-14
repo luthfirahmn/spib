@@ -55,7 +55,7 @@
 						</div>
 						<div class="card-body table-border-style">
 							<a href="<?= base_url('region/tambah') ?>" type="button" class="btn btn-light-primary mb-3">
-								<i class="ti ti-plus"></i>Tambah Region
+								<i class="ti ti-plus"></i>Add Region
 							</a>
 							<div class="table-responsive">
 								<table class="table" id="pc-dt-simple">

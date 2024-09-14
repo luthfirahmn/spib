@@ -21,7 +21,7 @@ $jabatan = $this->session->userdata('jabatan');
             <h4 style="padding-top: 10px;">Telemetry View</h4>
         <?php else : ?>
             <div class="header-logo">
-                <img src="<?= base_url() . 'assets/upload/' . $list_region_user[0]->logo_site ?>" alt="" class="logo logo-lg" style="width: 40px;" />
+                <img src="<?= base_url() . 'assets/upload/' . $list_region_user[0]->logo_site ?>" alt="" class="logo logo-lg" style="width: 40px; " />
                 <!-- <img src="<?= base_url() . 'assets/logo_simetri.png' ?>" alt="" class="logo logo-lg" style="width: 40px;" /> -->
             </div>
 
@@ -45,8 +45,19 @@ $jabatan = $this->session->userdata('jabatan');
                 </li>
             </ul>
         </div>
-        <div class="ms-auto justify-content-center">
-            <a href="#" class="bg-light rounded p-1 fs-3 ">
+        <div class="ms-auto d-flex justify-content-center align-items-center">
+            <style>
+                .timetext {
+                    font-size: 20px;
+                }
+
+                @media screen and (max-width: 600px) {
+                    .timetext {
+                        font-size: 14px;
+                    }
+                }
+            </style>
+            <a href="#" class="bg-light rounded p-1  timetext ">
                 <i class="ti ti-clock"></i>
                 <span id="local-day"></span>,
                 <span id="local-date"></span> -
@@ -77,7 +88,7 @@ $jabatan = $this->session->userdata('jabatan');
 
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                        <img src="<?= base_url() ?>assets/upload/<?= $foto ?>" class="user-avtar" />
+                        <img src="<?= base_url() ?>assets/upload/<?= $foto ?>" class="user-avtar" width="34" height="34" />
                         <span>
                             <i class="ti ti-settings"></i>
                         </span>

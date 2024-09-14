@@ -704,6 +704,15 @@ class Data extends MY_Controller
 							$date = PHPExcel_Shared_Date::ExcelToPHP($cell->getValue());
 
 							$formattedDate = date('Y-m-d', $date);
+
+							$currentDate = (new DateTime())->setTime(0, 0);
+
+							$inputDate = new DateTime($formattedDate);
+							$inputDate->setTime(0, 0);
+
+							if ($inputDate > $currentDate) {
+								throw new Exception("Tanggal tidak valid");
+							}
 						} else {
 							$formattedDate = $cell->getValue();
 						}
@@ -807,7 +816,7 @@ class Data extends MY_Controller
 
 			echo json_encode(array('error' => false, "message" => "data berhasil diinput"));
 		} catch (Exception $e) {
-			$db_site->rollback();
+			$db_site->trans_rollback();
 			echo json_encode(["error" => true, "message" => $e->getMessage()]);
 		}
 	}
