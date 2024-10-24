@@ -9,7 +9,7 @@ $list_region_user = $this->session->userdata('list_region');
 		<?php if (count($list_region_user) > 1) : ?>
 			<div class="m-header">
 				<a href="#" class="b-brand fs-4">
-					<img src="<?= base_url() . 'assets/logo.jpg' ?>" alt="" class="logo logo-lg" width="35" />
+					<img src="<?= base_url() . 'assets/logo.png' ?>" alt="" class="logo logo-lg" width="35" />
 					Telemetry View
 				</a>
 			</div>

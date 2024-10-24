@@ -76,18 +76,14 @@
 											<i class="ti ti-trash"></i> Delete
 										</button>
 									</div>
-									<div class="form-group col-md-4">
-										<div class="row align-items-center">
-											<div class="col-3">
-												<label class=" form-label " for=" username">Role Name</label>
-											</div>
-											<div class="col-7">
-												<select class="form-control" name="ms_roles_id" id="ms_roles_id" onchange="load_data(this.value)">
-													<?php foreach ($role as $role) { ?>
-														<option value="<?= $role->id ?>"><?= $role->role_name ?></option>
-													<?php } ?>
-												</select>
-											</div>
+									<div class="form-group col-md-4 col-12">
+										<div class="d-flex align-items-center gap-4">
+											<label class=" form-label " for=" username" class="pe-2 text-nowrap">Role Name</label>
+											<select class="form-control w-75" name="ms_roles_id" id="ms_roles_id" onchange="load_data(this.value)">
+												<?php foreach ($role as $role) { ?>
+													<option value="<?= $role->id ?>"><?= $role->role_name ?></option>
+												<?php } ?>
+											</select>
 										</div>
 									</div>
 								</div>

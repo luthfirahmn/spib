@@ -33,6 +33,7 @@ function formula($type_instrument_name, $data_jadi, $data, $koefisien, $data_typ
             "Tiltmeter 1530" => "tiltmeter1530",
             "Seismograph" => "seismograph",
             "Accelerometer" => "accelerometer",
+            "Jointmeter" => "jointmeter"
 
         ];
         if (!array_key_exists($type_instrument_name, $instrument_functions)) {
@@ -406,7 +407,7 @@ function standard($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tamba
                 if ($data_sebelumnya == 0) {
                     $hitung = $data_tambahan['rainfall'];
                 } else {
-                    $hitung = $data_sebelumnya;
+                    $hitung = $data_sebelumnya + $data_tambahan['rainfall'];
                 }
                 break;
             case "accelerometer":
@@ -477,7 +478,7 @@ function tipping_bucket($data_jadi, $data_mentah, $koefisien, $data_type, &$data
                 if ($data_sebelumnya == 0) {
                     $hitung = $data_tambahan['rainfall'];
                 } else {
-                    $hitung = $data_sebelumnya;
+                    $hitung = $data_sebelumnya + $data_tambahan['rainfall'];
                 }
                 return ['id_sensor' => $data_jadi->jenis_sensor_jadi, 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')', 'hasil' => number_format($hitung, 3)];
                 break;
@@ -734,7 +735,53 @@ function seismometer($data_jadi, $data_mentah, $koefisien, $data_type)
 
 
 
+function jointmeter($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
+{
+    try {
+        $faktor_a = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
+        $faktor_b = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
+        $faktor_c = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
+        $koefisien['tct'] = isset($koefisien['tct']) ? (float)$koefisien['tct'] : 0;
+        $koefisien['kalibrasi_frekuensi'] = isset($koefisien['kalibrasi_frekuensi']) ? (float)$koefisien['kalibrasi_frekuensi'] : 0;
+        $koefisien['t0'] = isset($koefisien['t0']) ? (float)$koefisien['t0'] : 0;
 
+        switch ($data_jadi->kode_sensor_jadi) {
+            case "displacement":
+                $hitung = (($faktor_a * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ($faktor_b * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + $faktor_c) - ((float)$koefisien['tct'] * (((float)$data_mentah['temperature'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
+
+
+                $data_tambahan['displacement'] = number_format($hitung, 3);
+
+                return [
+                    'id_sensor' => $data_jadi->jenis_sensor_jadi,
+                    'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
+                    'hasil' => number_format($hitung, 3)
+                ];
+                break;
+            case "changed_displacement":
+
+                $data_sebelumnya = str_replace(',', '', cek_data_awal($data_mentah['instrument_id'], 'displacement'));
+                $displacement = str_replace(',', '', $data_tambahan['displacement']);
+
+
+                $data_sebelumnya = floatval($data_sebelumnya);
+                $displacement = floatval($displacement);
+
+                $hitung = $displacement - $data_sebelumnya;
+
+                return [
+                    'id_sensor' => $data_jadi->jenis_sensor_jadi,
+                    'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
+                    'hasil' => number_format($hitung, 3)
+                ];
+                break;
+            default:
+                throw new Exception();
+        }
+    } catch (Exception $e) {
+        return false;
+    }
+}
 
 //==============================================
 
@@ -755,7 +802,7 @@ function cek_total_data($instrument_id, $data_jadi_string)
 
         $db_site = change_connection($instrument_data->ms_regions_id);
         // Step 1: Get the latest date
-        $latest_date_query = $db_site->query("SELECT MAX(t1.tanggal) as latest_date
+        $latest_date_query = $db_site->query("SELECT MAX(t1.tanggal) as latest_date, MAX(t1.jam) latest_jam
                                       FROM data t1
                                       LEFT JOIN data_value t2 ON t1.id = t2.data_id
                                       WHERE t1.kode_instrument = '{$instrument_data->kode_instrument}'
@@ -764,21 +811,33 @@ function cek_total_data($instrument_id, $data_jadi_string)
                                      ");
         $latest_date_result = $latest_date_query->row();
         $latest_date = $latest_date_result->latest_date;
+        $latest_jam = $latest_date_query->latest_jam;
 
         // Step 2: Calculate the next day
-        $next_day = date('Y-m-d', strtotime($latest_date . ' +1 day'));
+        // $next_day = date('Y-m-d', strtotime($latest_date . ' +1 day'));
 
         // Step 3: Sum all data from 01:00 AM of the latest date to 12:00 AM of the next day
+        // $sum_query = $db_site->query("SELECT SUM(t2.data_jadi) as total_sum
+        //                       FROM data t1
+        //                       LEFT JOIN data_value t2 ON t1.id = t2.data_id
+        //                       WHERE t1.kode_instrument = '{$instrument_data->kode_instrument}'
+        //                       AND t2.sensor_id = {$jenis_sensor_jadi->id}
+        //                       AND t2.data_primer = 0 AND t2.data_jadi != ''
+        //                       AND (
+        //                           (t1.tanggal = '{$latest_date}' AND t1.jam >= '00:00:00')
+        //                           OR (t1.tanggal = '{$next_day}' AND t1.jam < '00:00:00')
+        //                       )
+        //                      ");
+
         $sum_query = $db_site->query("SELECT SUM(t2.data_jadi) as total_sum
                               FROM data t1
                               LEFT JOIN data_value t2 ON t1.id = t2.data_id
                               WHERE t1.kode_instrument = '{$instrument_data->kode_instrument}'
                               AND t2.sensor_id = {$jenis_sensor_jadi->id}
                               AND t2.data_primer = 0 AND t2.data_jadi != ''
-                              AND (
-                                  (t1.tanggal = '{$latest_date}' AND t1.jam >= '01:00:00')
-                                  OR (t1.tanggal = '{$next_day}' AND t1.jam <= '00:00:00')
-                              )
+                              AND t1.tanggal = '{$latest_date}'
+                              AND t1.jam != '23:00:00'
+                              
                              ");
         $sum_result = $sum_query->row();
         $total_sum = $sum_result->total_sum;
@@ -882,7 +941,7 @@ function cek_data_sebelumnya($instrument_id, $data_jadi_string)
             $dateTime->modify('+1 hour');
             $newJam = $dateTime->format('H:i');
 
-            if ($newJam == '01:00') {
+            if ($newJam == '00:00') {
                 return 0;
             }
             return $result->data_jadi;
@@ -927,9 +986,9 @@ function cek_data_sebelumnya_mentah($instrument_id, $data_jadi_string)
 
         // Periksa apakah data lewat 1 hari dan jam saat itu adalah 07:00
         $currentDate = new DateTime();
-        $currentDate->modify('-1 day');
+        // $currentDate->modify('-1 day');
         $currentHour = (int)$currentDate->format('H');
-        if ($currentHour === 1) {
+        if ($currentHour === 0) {
             return 0;
         }
 

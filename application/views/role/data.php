@@ -11,8 +11,8 @@
 </div>
 </br>
 <?php foreach ($akses as $rec) { ?>
-	<div class="row">
-		<div class="col-form-label col-md-2 col-sm-2 pt-0"><?= $rec->menu_name ?></div>
+	<div class="row mb-2 ">
+		<div class="col-form-label col-md-2 col-sm-2 pt-0  fw-semibold"><?= $rec->menu_name ?></div>
 		<div class="col-sm-2 col-md-2">
 			<div class="form-check">
 				<input class="form-check-input" type="checkbox" id="view_<?= $rec->id ?>" name="view[<?= $rec->id ?>]" <?= ($rec->view == '1') ? 'checked' : ''; ?>>

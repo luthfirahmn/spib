@@ -144,7 +144,7 @@
 									</select>
 								</div>
 							</div>
-							<div id="list_data_filter">
+							<div id="list_data_filter" class="table-responsive">
 								<table id="instrumentTable" class="display" style="width:100%">
 									<thead>
 										<tr>
@@ -191,6 +191,8 @@
 			$('#instrumentTable').DataTable({
 				"processing": true,
 				"serverSide": true,
+				"responsive": true,
+
 				"ajax": {
 					"url": "<?php echo base_url('InstrumentData/list'); ?>",
 					"type": "POST",

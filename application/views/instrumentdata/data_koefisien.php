@@ -8,16 +8,16 @@
 			</label>
 		</div>
 		<div class="form-group col-md-6">
-			<button type="button" class="btn btn-outline-danger d-inline-flex" onclick="hapusTempKoefisien('<?= $id ?>')" style="float: right;">
+			<button type="button" class="btn btn-outline-danger d-inline-flex " onclick="hapusTempKoefisien('<?= $id ?>')" style="float: right;">
 				<i class="ti ti-trash"></i>Hapus
 			</button>
-			<button type="button" class="btn btn-outline-warning d-inline-flex" onclick="editTempKoefisien('<?= $id ?>')" style="float: right;">
+			<button type="button" class="btn btn-outline-warning d-inline-flex me-2" onclick="editTempKoefisien('<?= $id ?>')" style="float: right;">
 				<i class="ti ti-pencil"></i>Edit
 			</button>
 		</div>
 	</div>
-	<div class="row">
-		<table class="table border-2">
+	<div class="row table-responsive">
+		<table class="table border-2" style="width: 100%;">
 			<thead>
 				<tr>
 					<th>Data Koefisien</th>

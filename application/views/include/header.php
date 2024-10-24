@@ -15,7 +15,7 @@ $jabatan = $this->session->userdata('jabatan');
 
         <?php if (count($list_region_user) > 1) : ?>
             <div class="header-logo">
-                <img src="<?= base_url() . 'assets/logo.jpg' ?>" alt="" class="logo logo-lg" style="width: 40px;" />
+                <img src="<?= base_url() . 'assets/logo.png' ?>" alt="" class="logo logo-lg" style="width: 40px;" />
             </div>
 
             <h4 style="padding-top: 10px;">Telemetry View</h4>

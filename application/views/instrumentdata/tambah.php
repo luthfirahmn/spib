@@ -61,7 +61,7 @@
 							<form action="<?= base_url('InstrumentData/tambah_proses') ?>" method="post">
 
 								<div class="row">
-									<div class="col-12 bg-primary p-2 ">
+									<div class="col-12 bg-primary pt-2 ">
 										<label class="form-label text-white" for="name"><b>Informasi Umum</b></label>
 									</div>
 									<hr>
@@ -117,7 +117,7 @@
 
 
 								<div class="row">
-									<div class="col-12 bg-info p-2 ">
+									<div class="col-12 bg-info pt-2 ">
 										<label class="form-label text-white" for="name"><b>Informasi Sensor</b></label>
 									</div>
 									<hr>
@@ -145,7 +145,7 @@
 								<div id="form_vwp" style="display: none;">
 
 									<div class="row">
-										<div class="col-12 bg-warning p-2 ">
+										<div class="col-12 bg-warning pt-2 ">
 											<label class="form-label text-white" for="name"><b>Informasi Instalasi</b></label>
 										</div>
 										<hr>
@@ -203,7 +203,7 @@
 								<div id="form_kalibrasi">
 
 									<div class="row">
-										<div class="col-12 bg-dark p-2 ">
+										<div class="col-12 bg-dark pt-2 ">
 											<label class="form-label text-white" for="name"><b>Informasi Kalibrasi</b></label>
 										</div>
 										<hr>
@@ -293,8 +293,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-						<button class="btn btn-primary" id="btn_update">Simpan</button>
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+						<button class="btn btn-primary" id="btn_update">Submit</button>
 					</div>
 				</form>
 			</div>
@@ -354,8 +354,8 @@
 						<div id="modal_parameter_edit"></div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-						<button type="submit" class="btn btn-primary" id="btn_updateEdit">Simpan</button>
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+						<button type="submit" class="btn btn-primary" id="btn_updateEdit">Submit</button>
 					</div>
 				</form>
 			</div>

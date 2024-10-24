@@ -67,19 +67,21 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card">
-                        <div class="card-header align-items-center d-flex px-4 py-1 justify-content-between">
-                            <div class="w-50">
+                        <div class="card-header align-items-center d-lg-flex px-4 py-1 justify-content-between">
+                            <div class="w-50 my-2">
                                 <h5>CCTV</h5>
                             </div>
-                            <div class="ms-auto   align-items-center mt-2 w-100 ">
-                                <div class="form-group  d-flex  align-items-center">
-                                    <label class="form-label me-2 " style="width: 60%;" for="ms_regions_id">Select Region</label>
-                                    <select class="form-control  me-2 w-100" name="ms_regions_id" id="ms_regions_id">
-                                        <?php foreach ($region as $reg) { ?>
-                                            <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <select class="form-control  me-2" id="updateInterval">
+                            <div class="ms-auto  align-items-center mt-2 w-100 ">
+                                <div class="form-group  d-lg-flex  align-items-center">
+                                    <div class="d-lg-flex align-items-center w-100 text-nowrap">
+                                        <label class="form-label me-3 " for="ms_regions_id">Select Region</label>
+                                        <select class="form-control  me-2 mb-2 mb-lg-0 " style="min-width: 200px ;" name="ms_regions_id" id="ms_regions_id">
+                                            <?php foreach ($region as $reg) { ?>
+                                                <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <select class="form-control mb-2 mb-lg-0   me-2" style="width: 60%;" id="updateInterval">
                                         <option disabled>Interval Update Capture</option>
                                         <option value="1" selected>1 Minute</option>
                                         <option value="5">5 Minute</option>
@@ -87,7 +89,8 @@
                                         <option value="30">30 Minute</option>
                                         <option value="60">60 Minute</option>
                                     </select>
-                                    <button type="button" class="btn btn-outline-info d-inline-flex w-75 me-2" onclick="refreshCCTV()">
+
+                                    <button type="button" class="btn btn-outline-info d-inline-flex w-75 me-2 mb-2 mb-lg-0 " onclick="refreshCCTV()">
                                         <i class="ti ti-refresh me-1"></i>Refresh CCTV
 
                                     </button>
@@ -131,8 +134,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" id="add_data">Simpan</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="add_data">Submit</button>
                 </div>
             </div>
         </div>
@@ -154,7 +157,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="edit_data">Edit</button>
                 </div>
             </div>
@@ -393,7 +396,7 @@
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Hapus',
-            cancelButtonText: 'Batal'
+            cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
 

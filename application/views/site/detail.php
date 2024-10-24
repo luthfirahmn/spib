@@ -123,15 +123,17 @@
 										<input type="number" step=".001" class="form-control" id="elevasi_normal" name="elevasi_normal" value="<?= $site->elevasi_normal ?>" required>
 									</div>
 									<div class="form-group col-md-6">
-										<label for="elevasi_waspada" class="form-label">Elevasi Waspada</label>
-										<input type="number" step=".001" class="form-control" id="elevasi_waspada" name="elevasi_waspada" value="<?= $site->elevasi_waspada ?>" required>
-									</div>
-								</div>
-								<div class="row">
-									<div class="form-group col-md-6">
 										<label class="form-label" for="elevasi_siaga">Elevasi Siaga</label>
 										<input type="number" step=".001" class="form-control" id="elevasi_siaga" name="elevasi_siaga" value="<?= $site->elevasi_siaga ?>" required>
 									</div>
+
+								</div>
+								<div class="row">
+									<div class="form-group col-md-6">
+										<label for="elevasi_waspada" class="form-label">Elevasi Waspada</label>
+										<input type="number" step=".001" class="form-control" id="elevasi_waspada" name="elevasi_waspada" value="<?= $site->elevasi_waspada ?>" required>
+									</div>
+
 									<div class="form-group col-md-6">
 										<label for="elevasi_awas" class="form-label">Elevasi Awas</label>
 										<input type="number" step=".001" class="form-control" id="elevasi_awas" name="elevasi_awas" value="<?= $site->elevasi_awas ?>" required>

@@ -141,9 +141,12 @@ class M_data extends CI_Model
 			$length = $length + 1;
 		}
 
-		$start_datetime = $tanggal . ' 01:00:00';
-		$end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 00:00:00'));
+		// $start_datetime = $tanggal . ' 01:00:00';
+		// $end_datetime = date('Y-m-d H:i:s', strtotime($tanggal . ' +1 day 00:00:00'));
 
+
+		$start_datetime = $tanggal . ' 00:00:00';
+		$end_datetime = $tanggal . ' 23:00:00';
 
 		if ($waktu == 'jam') {
 

@@ -63,7 +63,7 @@
                                 <div class="row" style="width: 100%;">
                                     <div class="form-group col-md-2">
                                         <select class="select2" name="ms_regions_id" id="ms_regions_id">
-                                            <option value="">Select Region</option>
+
                                             <?php foreach ($region as $reg) { ?>
                                                 <option value="<?= $reg->id ?>"><?= $reg->site_name ?></option>
                                             <?php } ?>
@@ -75,27 +75,16 @@
                                             <option value="">Select Station</option>
                                         </select>
                                     </div>
-                                    <input type="hidden" id="stasiun_type" name="stasiun_type">
-                                    <div class="form-group col-md-2">
-                                        <select class="select2" name="elevasi" id="elevasi" disabled>
+                                    <div class="form-group col-md-2" style="display: none;">
+                                        <select class="select2 " name="elevasi" id="elevasi">
                                             <option value="" selected>Select Elevation</option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-2">
-                                        <select class="select2" name="status" id="status" disabled>
+                                    <div class="form-group col-md-2" style="display: none;">
+                                        <select class="select2 " name="status" id="status">
                                             <option value="" selected>Select Status</option>
 
                                         </select>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <select class="select2" name="tipe_data" id="tipe_data">
-                                            <option value="OTOMATIS" selected>OTOMATIS</option>
-                                            <option value="MANUAL">MANUAL</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group col-md-2">
-                                        <button class="btn btn-sm btn-warning" type="button" onclick="zoomImage()"><i class="ti ti-maximize me-1"></i>Preview Layout</button>
                                     </div>
                                     <div class="form-group col-md-2 ">
                                         <select class="pilih_instrument pb-5" name="pilih_instrument" id="pilih_instrument" " style=" width: 100%">
@@ -105,9 +94,19 @@
                                         <select class="select_data pb-5" name="select_data" id="select_data" style="width: 100%">
                                         </select>
                                     </div>
+                                    <input type="hidden" id="stasiun_type" name="stasiun_type" style="display: none;">
+
+                                </div>
+                                <div class="row" style="width: 100%;">
                                     <div class="form-group col-md-2 ">
                                         <select class="select_data_tambah" name="data_tambah[]" id="data_tambah" multiple="multiple" style="width: 100%" disabled>
 
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <select class="select2" name="tipe_data" id="tipe_data">
+                                            <option value="OTOMATIS" selected>OTOMATIS</option>
+                                            <option value="MANUAL">MANUAL</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-2">
@@ -121,9 +120,17 @@
                                         <input type="date" class="form-control p-1" id="waktu" name="waktu" value="<?php date_default_timezone_set('Asia/Jakarta');
                                                                                                                     echo date('Y-m-d'); ?>">
                                     </div>
+
                                     <div class="form-group col-md-2">
-                                        <button type="button" class="btn btn-sm btn-primary" onclick="filter()"><i class="ti ti-search me-1"></i>Filter</button>
+                                        <button type="button" class="btn btn-sm btn-primary w-100" onclick="filter()"><i class="ti ti-search me-1"></i>Filter</button>
                                     </div>
+                                    <div class="form-group col-md-2">
+                                        <button class="btn btn-sm btn-warning w-100" type="button " onclick="zoomImage()"><i class="ti ti-maximize me-1"></i>Preview Layout</button>
+                                    </div>
+
+
+
+
                                 </div>
                             </form>
                         </div>
@@ -195,7 +202,9 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $(".select2").select2();
+            $(".select2").select2({
+                width: '100%' // Set the width of the Select2 dropdown to 100%
+            });
             $("#stasiun").select2();
             $(".pilih_instrument").select2({
                 placeholder: "Select Instrument",
@@ -210,6 +219,9 @@
                 allowClear: true
             });
 
+
+            $("#ms_regions_id").trigger("change");
+
         });
 
         function zoomImage() {
@@ -217,7 +229,7 @@
             var stasiun = $("#stasiun").val();
 
             if (stasiun == "") {
-                toastr.error("Region harus diisi");
+                toastr.error("Stasiun harus diisi");
                 $(this).val('');
                 return
             }
@@ -263,7 +275,7 @@
                     var stasiun = $('#stasiun');
                     var html = '';
                     if (result.length > 0) {
-                        html += '<option value="">Pilih Stasiun</option>';
+                        html += '<option value="">Select Station</option>';
                         for (i = 0; i < result.length; i++) {
                             html += '<option data-id="' + result[i].stasiun_type + '" value=' + result[i].id + '>' + result[i].nama_stasiun +
                                 '</option>';
@@ -297,8 +309,8 @@
                 return
             }
 
-            $("#elevasi").prop('disabled', true);
-            $("#status").prop('disabled', true);
+            $("#elevasi").closest(".form-group").hide();
+            $("#status").closest(".form-group").hide();
             $("#data_tambah").prop('disabled', true);
 
             reset_field();
@@ -324,16 +336,16 @@
                     get_instrument('by_station');
                     break;
                 case 'GEOLOGI':
-                    $("#elevasi").prop('disabled', false);
-                    $("#status").prop('disabled', false);
+                    $("#elevasi").closest(".form-group").show();
+                    $("#status").closest(".form-group").show();
                     $("#status").html('<option value="2" selected>Pasca Konstruksi</option>' +
                         '<option value="1">Konstruksi</option>');
                     $('#status').trigger('change');
                     step_geologi(regions_id, stasiun)
                     break;
                 default:
-                    $("#elevasi").prop('disabled', true);
-                    $("#status").prop('disabled', true);
+                    $("#elevasi").closest(".form-group").hide();
+                    $("#status").closest(".form-group").hide();
                     $("#data_tambah").prop('disabled', true);
                     get_instrument('by_station');
 
@@ -492,7 +504,7 @@
                 var namaSensor = sensor.nama_instrument + ' - ' + sensor.jenis_sensor;
                 var unitSensor = ' (' + sensor.unit_sensor + ')';
                 return {
-                    name: namaSensor + unitSensor,
+                    name: namaSensor,
                     data: sensor.detail.map(function(detail) {
                         return detail.data_jadi;
                     })
@@ -505,7 +517,7 @@
                     var namaSensor = sensor.nama_instrument + ' - ' + sensor.jenis_sensor;
                     var unitSensor = ' (' + sensor.unit_sensor + ')';
                     series.push({
-                        name: namaSensor + unitSensor,
+                        name: namaSensor,
                         data: sensor.detail.map(function(detail) {
                             return detail.data_jadi;
                         }),
@@ -548,6 +560,20 @@
 
         function generateChart(data, periode, data_tambah) {
 
+            if (data_tambah.length > 0) {
+
+                const firstUnitSensor = data_tambah[0].unit_sensor;
+
+                for (let i = 1; i < data_tambah.length; i++) {
+                    if (data_tambah[i].unit_sensor !== firstUnitSensor) {
+                        toastr.error("Gabungan Additional Data hanya dapat ditampilkan jika Unitnya sama");
+                        return;
+                    }
+                }
+
+            }
+
+
             var region = $('#ms_regions_id option:selected').html()
             var kode_instrument = $('#pilih_instrument option:selected').attr('data-id')
             var nama_instrument = $('#pilih_instrument option:selected').html()
@@ -573,7 +599,7 @@
                     },
                     min: leftY.min < 0 ? leftY.min : 0,
                     // max: Math.ceil(leftY.max / 200) * 200,
-                    max: leftY.max,
+                    max: leftY.max + 10,
                     tickAmount: 5,
                     show: showYAxis
                 });
@@ -586,8 +612,8 @@
                 let rightY = calculateOverallMinMax(data_tambah);
                 var newConfig = {
                     opposite: true,
-                    reversed: true,
-                    yAxisIndex: 1,
+                    // reversed: true,
+                    // yAxisIndex: 1,
                     title: {
                         text: data_tambah[0].unit_sensor,
                         style: {
@@ -599,14 +625,13 @@
                     // min: 0,
                     // max: rightY.max
                 };
-                // if (data_tambah[0].nama_instrument.toUpperCase() === "RAINFALL") {
-                //     newConfig.reversed = true;
-                //     newConfig.yAxisIndex = 1;
-                // }
+                if (data_tambah[0].nama_instrument.toUpperCase() === "RAINFALL") {
+                    newConfig.reversed = true;
+                    newConfig.yAxisIndex = 1;
+                }
                 yAxisConfig.push(newConfig);
 
             }
-            console.log(yAxisConfig);
 
             var options = {
                 chart: {
