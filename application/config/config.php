@@ -26,8 +26,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 //Setingan Database
 $config['database_host']    = 'localhost';
-$config['database_user']    = 'root';
-$config['database_pass']    = 'root';
+// $config['database_user']    = 'root';
+// $config['database_pass']    = 'root';
+$config['database_user']    = 'monitoring';
+$config['database_pass']    = 'Monitoring123#';
 $config['database_name']    = 'spib_master';
 
 //Setingan Base URL
