@@ -30,10 +30,11 @@ function formula($type_instrument_name, $data_jadi, $data, $koefisien, $data_typ
             "Strain Meter Rosette" => "strainmeterrosette",
             "Tiltmeter" => "tiltmeter",
             "Tiltmeter 0510" => "tiltmeter",
-            "Tiltmeter 1530" => "tiltmeter1530",
+            "Tiltmeter 1530" => "tiltmeter",
             "Seismograph" => "seismograph",
             "Accelerometer" => "accelerometer",
-            "Jointmeter" => "jointmeter"
+            "Joint Pint Meter" => "jointmeter",
+            "In Place Inclinometer" => "ipi"
 
         ];
         if (!array_key_exists($type_instrument_name, $instrument_functions)) {
@@ -405,7 +406,7 @@ function standard($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tamba
             case "total_rainfall":
                 $data_sebelumnya = cek_total_data($data_mentah['instrument_id'], 'rainfall');
                 if ($data_sebelumnya == 0) {
-                    $hitung = $data_tambahan['rainfall'];
+                    $hitung = 0;
                 } else {
                     $hitung = $data_sebelumnya + $data_tambahan['rainfall'];
                 }
@@ -476,7 +477,7 @@ function tipping_bucket($data_jadi, $data_mentah, $koefisien, $data_type, &$data
             case "total_rainfall":
                 $data_sebelumnya = cek_total_data($data_mentah['instrument_id'], 'rainfall');
                 if ($data_sebelumnya == 0) {
-                    $hitung = $data_tambahan['rainfall'];
+                    $hitung = 0;
                 } else {
                     $hitung = $data_sebelumnya + $data_tambahan['rainfall'];
                 }
@@ -591,6 +592,8 @@ function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$
         $faktor_a = isset($koefisien['faktor_a']) ? (float)$koefisien['faktor_a'] : 0;
         $faktor_b = isset($koefisien['faktor_b']) ? (float)$koefisien['faktor_b'] : 0;
         $faktor_c = isset($koefisien['faktor_c']) ? (float)$koefisien['faktor_c'] : 0;
+        $initial_delta_strain = isset($koefisien['initial_delta_strain']) ? (float)$koefisien['initial_delta_strain'] : 0;
+
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "strain":
@@ -607,7 +610,8 @@ function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$
                 break;
             case "delta_strain":
 
-                $data_sebelumnya = str_replace(',', '', cek_data_awal($data_mentah['instrument_id'], 'strain'));
+                $data_sebelumnya = $initial_delta_strain;
+                // $data_sebelumnya = str_replace(',', '', cek_data_awal($data_mentah['instrument_id'], 'strain'));
                 $strain = str_replace(',', '', $data_tambahan['strain']);
 
 
@@ -631,25 +635,35 @@ function strainmeterrosette($data_jadi, $data_mentah, $koefisien, $data_type, &$
 }
 
 
-function tiltmeter($data_jadi, $data_mentah, $koefisien, $data_type)
+function tiltmeter($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
 {
     try {
         $v0 = isset($koefisien['v0']) ? (float)$koefisien['v0'] : 0;
         $offset = isset($koefisien['offset']) ? (float)$koefisien['offset'] : 0;
         $sensitivity = isset($koefisien['sensitivity']) ? (float)$koefisien['sensitivity'] : 0;
+        $initial_angle = isset($koefisien['initial_angle']) ? (float)$koefisien['initial_angle'] : 0;
 
         switch ($data_jadi->kode_sensor_jadi) {
-            case "sudut_kemiringan":
-                $sudut_inisial = (($v0 - $offset) / $sensitivity);
-                $current_angle = ((float)$data_mentah['tegangan_mems'] - $offset) / $sensitivity;
-                $hitung =  $current_angle - $sudut_inisial;
+            case "angle":
+                $hitung = (($v0 - $offset) / $sensitivity);
+
+                $data_tambahan['angle'] = number_format($hitung, 3);
                 return [
                     'id_sensor' => $data_jadi->jenis_sensor_jadi,
                     'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
                     'hasil' => number_format($hitung, 3)
                 ];
                 break;
+            case "changed_angle":
+                // $changed_angle = ((float)$data_mentah['tegangan_mems'] - $offset) / $sensitivity;
+                $hitung =  $data_tambahan['angle'] - $initial_angle;
 
+                return [
+                    'id_sensor' => $data_jadi->jenis_sensor_jadi,
+                    'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
+                    'hasil' => number_format($hitung, 3)
+                ];
+                break;
             default:
                 throw new Exception();
         }
@@ -732,9 +746,6 @@ function seismometer($data_jadi, $data_mentah, $koefisien, $data_type)
     }
 }
 
-
-
-
 function jointmeter($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
 {
     try {
@@ -744,10 +755,14 @@ function jointmeter($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tam
         $koefisien['tct'] = isset($koefisien['tct']) ? (float)$koefisien['tct'] : 0;
         $koefisien['kalibrasi_frekuensi'] = isset($koefisien['kalibrasi_frekuensi']) ? (float)$koefisien['kalibrasi_frekuensi'] : 0;
         $koefisien['t0'] = isset($koefisien['t0']) ? (float)$koefisien['t0'] : 0;
+        $initial_displacement = isset($koefisien['initial_displacement']) ? (float)$koefisien['initial_displacement'] : 0;
+
 
         switch ($data_jadi->kode_sensor_jadi) {
             case "displacement":
-                $hitung = (($faktor_a * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ($faktor_b * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + $faktor_c) - ((float)$koefisien['tct'] * (((float)$data_mentah['temperature'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
+                $hitung = (($faktor_a * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) +
+                    ($faktor_b * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + $faktor_c) -
+                    ((float)$koefisien['tct'] * (((float)$data_mentah['suhu'] + (float)$koefisien['kalibrasi_suhu']) - (float)$koefisien['t0'])));
 
 
                 $data_tambahan['displacement'] = number_format($hitung, 3);
@@ -760,14 +775,16 @@ function jointmeter($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tam
                 break;
             case "changed_displacement":
 
-                $data_sebelumnya = str_replace(',', '', cek_data_awal($data_mentah['instrument_id'], 'displacement'));
-                $displacement = str_replace(',', '', $data_tambahan['displacement']);
+                // $data_sebelumnya = str_replace(',', '', cek_data_awal($data_mentah['instrument_id'], 'displacement'));
+
+                // $displacement = str_replace(',', '', $data_tambahan['displacement']);
 
 
-                $data_sebelumnya = floatval($data_sebelumnya);
-                $displacement = floatval($displacement);
+                // $data_sebelumnya = floatval($initial_displacement);
+                // $displacement = floatval($displacement);
 
-                $hitung = $displacement - $data_sebelumnya;
+                // $hitung = $displacement - $data_sebelumnya;
+                $hitung = $data_tambahan['displacement'] - $initial_displacement;
 
                 return [
                     'id_sensor' => $data_jadi->jenis_sensor_jadi,
@@ -782,6 +799,60 @@ function jointmeter($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tam
         return false;
     }
 }
+
+
+function ipi($data_jadi, $data_mentah, $koefisien, $data_type, &$data_tambahan)
+{
+    // try {
+    //     $a_axis = isset($data_mentah['a_axis']) ? (float)$data_mentah['a_axis'] : 0;
+    //     $suhu = isset($data_mentah['suhu']) ? (float)$data_mentah['suhu'] : 0;
+    //     $b_axis = isset($data_mentah['b_axis']) ? (float)$data_mentah['b_axis'] : 0;
+
+
+    //     $initial_angle_aaxis = isset($koefisien['initial_angle_aaxis']) ? (float)$koefisien['initial_angle_aaxis'] : 0;
+    //     $initial_angle_baxis = isset($koefisien['initial_angle_baxis']) ? (float)$koefisien['initial_angle_baxis'] : 0;
+    //     $gage_length = isset($koefisien['gage_length']) ? (float)$koefisien['gage_length'] : 0;
+
+
+    //     switch ($data_jadi->kode_sensor_jadi) {
+    //         case "strain":
+    //             $hitung = (($faktor_a * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) ** 2) + ($faktor_b * ((float)$data_mentah['frekuensi'] + (float)$koefisien['kalibrasi_frekuensi']) + $faktor_c));
+
+
+    //             $data_tambahan['strain'] = number_format($hitung, 3);
+
+    //             return [
+    //                 'id_sensor' => $data_jadi->jenis_sensor_jadi,
+    //                 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
+    //                 'hasil' => number_format($hitung, 3)
+    //             ];
+    //             break;
+    //         case "delta_strain":
+
+    //             $data_sebelumnya = $initial_delta_strain;
+    //             // $data_sebelumnya = str_replace(',', '', cek_data_awal($data_mentah['instrument_id'], 'strain'));
+    //             $strain = str_replace(',', '', $data_tambahan['strain']);
+
+
+    //             $data_sebelumnya = floatval($data_sebelumnya);
+    //             $strain = floatval($strain);
+
+    //             $hitung = $strain - $data_sebelumnya;
+
+    //             return [
+    //                 'id_sensor' => $data_jadi->jenis_sensor_jadi,
+    //                 'nama_sensor' => $data_jadi->nama_sensor  . ' (' . $data_jadi->unit_sensor . ')',
+    //                 'hasil' => number_format($hitung, 3)
+    //             ];
+    //             break;
+    //         default:
+    //             throw new Exception();
+    //     }
+    // } catch (Exception $e) {
+    //     return false;
+    // }
+}
+
 
 //==============================================
 

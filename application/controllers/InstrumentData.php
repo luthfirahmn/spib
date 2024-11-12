@@ -46,10 +46,13 @@ class InstrumentData extends MY_Controller
 		$this->db->join('ms_user_regions e', 'a.ms_regions_id = e.ms_regions_id');
 		$this->db->where('e.ms_users_id', $ap_id_user);
 		$this->db->where('b.id', $site_id);
+		$this->db->group_by('a.id');
 
 		// Apply search filter
 		if ($search) {
+
 			$this->db->like('a.kode_instrument', $search);
+			$this->db->or_like('a.nama_instrument', $search);
 			$this->db->or_like('b.site_name', $search);
 			$this->db->or_like('c.name', $search);
 			$this->db->or_like('d.nama_stasiun', $search);
@@ -91,6 +94,7 @@ class InstrumentData extends MY_Controller
 
 		if ($search) {
 			$this->db->like('a.kode_instrument', $search);
+			$this->db->or_like('a.nama_instrument', $search);
 			$this->db->or_like('b.site_name', $search);
 			$this->db->or_like('c.name', $search);
 			$this->db->or_like('d.nama_stasiun', $search);
