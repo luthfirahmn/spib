@@ -34,7 +34,7 @@ class InstrumentData extends MY_Controller
 		$draw = $this->input->post('draw');
 		$start = $this->input->post('start');
 		$length = $this->input->post('length');
-		$search = $this->input->post('search')['value'];
+		$search = $this->input->post('search')['value'] ?? null;
 		$order = $this->input->post('order');
 
 		// Build query with pagination and search
