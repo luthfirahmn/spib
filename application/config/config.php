@@ -33,9 +33,11 @@ $config['database_pass']    = 'Monitoring123#';
 $config['database_name']    = 'spib_master';
 
 //Setingan Base URL
-$config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
-$config['base_url'] .= "://" . $_SERVER['HTTP_HOST'];
-$config['base_url'] .= preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
+// $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+// $config['base_url'] .= "://" . $_SERVER['HTTP_HOST'];
+// $config['base_url'] .= preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
+
+$config['base_url'] = 'http://localhost:8080/spib/';
 
 //Setingan Folder Assets dan Folder didalamnya
 $config['assets']            = $config['base_url'] . 'assets/';
